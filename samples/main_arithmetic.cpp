@@ -1,5 +1,5 @@
 // реализация пользовательского приложения
-#include "../src/arithmetic.cpp"
+#include "arithmetic.h"
 #include <locale>
 #include<string>
 #include <iomanip>
