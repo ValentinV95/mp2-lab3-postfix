@@ -1,11 +1,7 @@
-#include<stdlib.h>
-#include<math.h>
-#include<iostream>
-#include<string>
 
 
 
-using namespace std;
+
 
 // объявление и реализация шаблонного стека
 // стек поддерживает операции: 

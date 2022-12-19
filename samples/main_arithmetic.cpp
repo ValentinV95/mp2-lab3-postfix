@@ -28,17 +28,10 @@ int main()
 		cout << endl;
 		
 		
-		TPostfix<double> MainPart(infix);
+		TPostfix MainPart(infix);
 
-		
-
-
-
+	
 		cout << endl << endl << endl;
-
-
-
-
 
 
 
@@ -74,22 +67,6 @@ int main()
 		}
 
 */
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
   return 0;
 }
