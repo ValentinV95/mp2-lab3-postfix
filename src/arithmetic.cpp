@@ -105,7 +105,7 @@ void TPostfix::toLexem() // Converting an expression into lexem array
 		{
 			if (i != 0 && infix[i - 1] == ')')
 			{
-				errornumber = i;
+				errornumber = i - 1;
 				throw "Closing bracket was installed in wrong position";
 			}
 
@@ -113,7 +113,7 @@ void TPostfix::toLexem() // Converting an expression into lexem array
 			{
 				if (i != 0 && infix[i - 1] >= '0' && infix[i - 1] != '~')
 				{
-					errornumber = i + 1;
+					errornumber = i;
 					throw "Variables must be latin lowercase letter";
 				}
 
@@ -127,7 +127,7 @@ void TPostfix::toLexem() // Converting an expression into lexem array
 					if ((i + 1) != size && infix[i + 1] < '0' && infix[i + 1] != '-')
 					{
 						errornumber = i + 1;
-						throw "Wrong exponent form";
+						throw "Wrong exponent notation";
 					}
 
 					else data[lexemnumber] += infix[i];
@@ -166,7 +166,7 @@ void TPostfix::toLexem() // Converting an expression into lexem array
 
 	if (brackets != 0)
 	{
-		errornumber = size - 1;
+		errornumber = size;
 		throw "Opening bracket and closing one must be equal number";
 	}
 
@@ -434,7 +434,10 @@ void TPostfix::getError() // Output all symbols to symbol with error
 {
 	if (errornumber > -1)
 	{
-		for (size_t i = 0; i <= errornumber; i++)
-			cout << infix[i] << " ";
+		cout << infix << endl;
+		for (size_t i = 0; i < errornumber; i++)
+			cout << " ";
+		cout << "^" << endl;
+
 	}
 }

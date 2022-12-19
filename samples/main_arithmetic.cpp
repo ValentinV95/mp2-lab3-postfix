@@ -1,8 +1,5 @@
 // реализация пользовательского приложения
 #include "arithmetic.h"
-#include <locale>
-#include<string>
-#include <iomanip>
 
 int main()
 {
@@ -38,7 +35,8 @@ int main()
 		catch (const char* msg)
 		{
 			expression.getError();
-			std::cout << "<- " << msg << std::endl;
+			//cout << "<- " << msg << endl;
+			cout << msg << endl;
 		}
 	}
 }
