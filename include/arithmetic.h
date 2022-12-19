@@ -143,7 +143,7 @@ public:
 		 type = 1;
 	 }
 
-	 Const(Tstack<char> a, Tstack<char> save_const, int znak)
+	 Const(Tstack<char> &a, Tstack<char> &save_const, int znak)
 	 {
 		 type = 1;
 		 int dblsize = a.size();
@@ -382,7 +382,7 @@ public:
 			{
 
 				int stop = 0;
-				Tstack<char> number;
+				Tstack<char> number1,number2;
 				while ((infix[i] >= '0' && infix[i] <= '9') || infix[i] == '.')
 				{
 					if (infix[i] == '.')
@@ -395,12 +395,13 @@ public:
 						}
 						problem_flag = i;
 					}
-					number.Push(infix[i]);
+					number1.Push(infix[i]);
+					number2.Push(infix[i]);
 					i++;
 				}
 				problem_flag = -1;
 				i--;
-				Const* constanta = new Const(number, number, znak);
+				Const* constanta = new Const(number1, number2, znak);
 				cout << "number :  " << constanta->lexem_const << endl;
 
 				mas[pos] = constanta;

@@ -40,14 +40,12 @@ public:
 		pMem = new T[memSize];
 	}
 
-	/*	~Tstack()
-		{
-			//-|написать здесь что-то|--|написать здесь что-то|--|написать здесь что-то|--|написать здесь что-то|-
-		}
-	*/
+	~Tstack()
+	{
+		delete[] pMem;
+	}
+	
 
-	~Tstack() = default;
-	//-|сделать свой деструктор|-
 
 	bool isEmpty() { return top == -1; }
 	bool isFull() { return top == memSize - 1; }
