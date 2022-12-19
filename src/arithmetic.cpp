@@ -150,7 +150,7 @@ void TPostfix::to_postfix()
 			pi++;
 			if (!flg1) break;
 		}
-		if (cmp >= 97 && cmp <= 117)
+		if (cmp >= 97 && cmp <= 122)
 		{
 			vars[cmp] = 0.0;
 			Var* s = new Var(cmp);
@@ -268,7 +268,7 @@ double TPostfix::CALCULATE()
 		{
 			value.push_back(-value.pop());
 		}
-		else if (shw[0] >= 97 && shw[0] <= 117)
+		else if (shw[0]!='x' && (shw[0] >= 97 && shw[0] <= 122) || shw == "x")
 		{
 			value.push_back(vars[shw[0]]);
 		}
