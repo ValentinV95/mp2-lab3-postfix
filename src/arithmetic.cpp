@@ -375,7 +375,7 @@ void TArithmetic::parser()
 				}
 				if (i != 0 && infix[i - 1] != ')' && lex != '(')  // if we encountered a binary operation,
 				{                                                 // then there was an operand or bracket before that
-					if (isDigit(infix[i - 1]) || lex == '.')
+					if (isDigit(infix[i - 1]))
 					{
 						lexems[++j] = new Constant(multilex);
 					}
