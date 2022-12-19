@@ -176,6 +176,8 @@ const string TArithmetic::find_error()
 
 	int open_count = 0;
 	int close_count = 0;
+	bool e_already_exists = false;
+	bool point_already_exists = false;
 
 	char sym = infix[0];
 	char nSym;
@@ -204,6 +206,8 @@ const string TArithmetic::find_error()
 			}
 			else if (sym == ')')
 			{
+				e_already_exists = false;
+				point_already_exists = false;
 				close_count++;
 				if (nSym == '(' || !find_operation(nSym))
 				{
@@ -212,6 +216,11 @@ const string TArithmetic::find_error()
 			}
 			else if (find_operation(sym))
 			{
+				if (i != 0 && infix[i - 1] != 'e')
+				{
+					e_already_exists = false;
+					point_already_exists = false;
+				}
 				if (nSym != '-' && nSym != '(' && (!isAlpha(nSym) || nSym == 'e') && !isDigit(nSym))
 				{
 					return wrong_infix + "<-";
@@ -226,13 +235,21 @@ const string TArithmetic::find_error()
 			}
 			else if (isDigit(sym))
 			{
-				if (!isDigit(nSym) && nSym != '.' && (nSym == '(' || !find_operation(nSym)) && nSym != 'e')
+				if (nSym == '.')
+				{
+					if (point_already_exists || e_already_exists)
+					{
+						return wrong_infix + "<-";
+					}
+				}
+				else if (!isDigit(nSym) && (nSym == '(' || !find_operation(nSym)) && (nSym != 'e' || e_already_exists))
 				{
 					return wrong_infix + "<-";
 				}
 			}
 			else if (sym == '.')
 			{
+				point_already_exists = true;
 				if (!isDigit(nSym))
 				{
 					return wrong_infix + "<-";
@@ -240,6 +257,7 @@ const string TArithmetic::find_error()
 			}
 			else if (sym == 'e')
 			{
+				e_already_exists = true;
 				if (i == 0)
 				{
 					return wrong_infix + "<-" + "(invalid use of 'e' lexem)";
@@ -277,6 +295,8 @@ bool TArithmetic::check_input(const string& inp)
 	char sym = inp[0];
 	char nSym;
 	char pSym;
+	bool e_already_exists = false;
+	bool point_already_exists = false;
 
 	if (sym != '-' && !isDigit(sym))
 	{
@@ -297,17 +317,19 @@ bool TArithmetic::check_input(const string& inp)
 		}
 		else if (sym == '.')
 		{
-			if (!isDigit(pSym) || !isDigit(nSym))
+			if (point_already_exists || e_already_exists || !isDigit(pSym) || !isDigit(nSym))
 			{
 				return false;
 			}
+			point_already_exists = true;
 		}
 		else if (sym == 'e')
 		{
-			if (!isDigit(pSym) || !isDigit(nSym) && nSym != '-' && nSym != '+')
+			if (e_already_exists || !isDigit(pSym) || !isDigit(nSym) && nSym != '-' && nSym != '+')
 			{
 				return false;
 			}
+			e_already_exists = true;
 		}
 		else if (sym == '-' || sym == '+')
 		{

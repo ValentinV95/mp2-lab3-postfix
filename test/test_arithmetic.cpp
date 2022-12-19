@@ -263,10 +263,12 @@ TEST(TArithmetic, throws_when_next_lexem_after_digit_is_wrong)
 	ASSERT_ANY_THROW(TArithmetic post_3(infix));
 }
 
-TEST(TArithmetic, can_create_postfix_with_correct_next_lexem_after_point)
+TEST(TArithmetic, can_create_postfix_with_correct_use_of_point)
 {
 	string infix = "1.5";
-	ASSERT_NO_THROW(TArithmetic post(infix));
+	ASSERT_NO_THROW(TArithmetic post_1(infix));
+	infix = "-(1.1+1.1)-1.1";
+	ASSERT_NO_THROW(TArithmetic post_2(infix));
 }
 
 TEST(TArithmetic, throws_when_next_lexem_after_point_is_wrong)
@@ -283,6 +285,18 @@ TEST(TArithmetic, throws_when_next_lexem_after_point_is_wrong)
 	ASSERT_ANY_THROW(TArithmetic post_5(infix));
 	infix = "1.)";
 	ASSERT_ANY_THROW(TArithmetic post_6(infix));
+	infix = "1.";
+	ASSERT_ANY_THROW(TArithmetic post_7(infix));
+}
+
+TEST(TArithmetic, throws_when_number_of_points_or_e_is_violated)
+{
+	string infix = "1.1.1";
+	ASSERT_ANY_THROW(TArithmetic post_1(infix));
+	infix = "1e-1.1";
+	ASSERT_ANY_THROW(TArithmetic post_2(infix));
+	infix = "1e-1e-1";
+	ASSERT_ANY_THROW(TArithmetic post_3(infix));
 }
 
 TEST(TArithmetic, can_get_postfix)
