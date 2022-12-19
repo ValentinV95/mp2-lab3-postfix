@@ -366,12 +366,12 @@ public:
 
 			if (infix[i] == '-' && infix[i + 1] >= '0' && infix[i + 1] <= '9')
 			{
-				if (i - 1 >= 0 && (infix[i - 1] < '0' || infix[i - 1] > '9') && infix[i - 1] != '.' && infix[i - 1] != ')' && (infix[i] == 'x' || infix[i] == 'y' || infix[i] == 'z' || infix[i] == 'a' || infix[i] == 'b' || infix[i] == 'c' || infix[i] == 'd' || infix[i] == 'e' || infix[i] == 'f' || infix[i] == 'g')) //[не операнд / не ')']  " - " [операнд константа] 
+				if (i - 1 >= 0 && (infix[i - 1] < '0' || infix[i - 1] > '9') && infix[i - 1] != '.' && infix[i - 1] != ')' && !(infix[i-1] >= 97 && infix[i-1] <= 122)) //[не операнд / не ')']  " - " [операнд константа] 
 				{
 					znak = -1;
 					i++;
 				}
-				else if (i - 1 < 0)  //             [пусто]  " - " [операнд константа] 
+				else if (i == 0)  //             [пусто]  " - " [операнд константа] 
 				{
 					znak = -1;
 					i++;
