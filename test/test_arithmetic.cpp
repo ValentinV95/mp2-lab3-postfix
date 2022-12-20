@@ -3,89 +3,6 @@
 #include "arithmetic.h"
 #include <gtest.h>
 
-TEST(Lexema, can_create_lexema_from_a_string)
-{
-	EXPECT_NO_THROW(Lexema lexema("string"));
-}
-
-TEST(Lexema, can_create_lexema_from_a_char)
-{
-	EXPECT_NO_THROW(Lexema lexema('c'));
-}
-
-TEST(Lexema, checks_is_the_operation_lexema_an_operation)
-{
-	Lexema lexema('+');
-	EXPECT_TRUE(lexema.isOperation());
-}
-
-TEST(Lexema, checks_is_the_variable_lexema_an_operation)
-{
-	Lexema lexema('a');
-	EXPECT_FALSE(lexema.isOperation());
-}
-
-TEST(Lexema, checks_is_the_const_lexema_an_operation)
-{
-	Lexema lexema('1');
-	EXPECT_FALSE(lexema.isOperation());
-}
-
-TEST(Lexema, checks_is_the_variable_lexema_a_variable)
-{
-	Lexema lexema('a');
-	EXPECT_TRUE(lexema.isVariable());
-}
-
-TEST(Lexema, checks_is_the_operation_lexema_a_variable)
-{
-	Lexema lexema('+');
-	EXPECT_FALSE(lexema.isVariable());
-}
-
-TEST(Lexema, checks_is_the_const_lexema_a_variable)
-{
-	Lexema lexema('1');
-	EXPECT_FALSE(lexema.isVariable());
-}
-
-TEST(Lexema, checks_is_the_const_lexema_a_const)
-{
-	Lexema lexema('1');
-	EXPECT_TRUE(lexema.isConst());
-}
-
-TEST(Lexema, checks_is_the_operation_lexema_a_const)
-{
-	Lexema lexema('+');
-	EXPECT_FALSE(lexema.isConst());
-}
-
-TEST(Lexema, checks_is_the_variable_lexema_a_const)
-{
-	Lexema lexema('a');
-	EXPECT_FALSE(lexema.isConst());
-}
-
-TEST(Const, can_create_a_const_from_a_lexema)
-{
-	Lexema lexema('1');
-	EXPECT_NO_THROW(Const cnst(lexema));
-}
-
-TEST(Const, can_get_value_of_a_correct_const)
-{
-	Lexema lexema('1');
-	Const cnst(lexema);
-	EXPECT_EQ(1, cnst.get_value());
-}
-
-TEST(Const, can_get_value_of_an_incorrect_const)
-{
-	Lexema lexema('a');
-	Const cnst(lexema);
-	EXPECT_EQ(0, cnst.get_value());
-}
 
 TEST(ArithmeticExpression, can_create_an_expression_from_a_correct_string)
 {
@@ -325,24 +242,24 @@ TEST(ArithmeticExpression, can_create_correct_expression_with_same_priority)
 TEST(ArithmeticExpression, can_get_operands_of_the_expression)
 {
 	ArithmeticExpression expression("a+b");
-	EXPECT_EQ(expression.GetOperands()[0].lexema, "a");
-	EXPECT_EQ(expression.GetOperands()[1].lexema, "b");
+	EXPECT_EQ(expression.GetOperands()[0], "a");
+	EXPECT_EQ(expression.GetOperands()[1], "b");
 }
 
 TEST(ArithmeticExpression, can_calculate_the_value_of_the_expression)
 {
 	ArithmeticExpression expression("a+b+5");
-	map<Lexema, double> values;
-	values[(Lexema)"a"] = 2;
-	values[(Lexema)"b"] = 3;
+	map<string, double> values;
+	values["a"] = 2;
+	values["b"] = 3;
 	EXPECT_EQ(10, expression.Calculate(values));
 }
 
-TEST(TArithmetic, throws_when_there_is_division_by_zero)
+TEST(ArithmeticExpression, throws_when_there_is_division_by_zero)
 {
 	string infix = "1/0";
 	ArithmeticExpression post_1(infix);
-	map<Lexema, double> values;
+	map<string, double> values;
 	ASSERT_ANY_THROW(post_1.Calculate(values));
 }
 
@@ -350,14 +267,14 @@ TEST(ArithmeticExpression, can_calculate_the_value_of_the_expression_with_real_c
 {
 	string infix = "1.0-.5";
 	ArithmeticExpression post(infix);
-	map<Lexema, double> values;
+	map<string, double> values;
 	EXPECT_EQ(true, abs(0.5 - post.Calculate(values)) < 0.000000001);
 }
 
-TEST(TArithmetic, can_calculate_the_value_of_the_expression_with_exponential_form_of_constants)
+TEST(ArithmeticExpression, can_calculate_the_value_of_the_expression_with_exponential_form_of_constants)
 {
 	string infix = ".5e1+1e-1";
 	ArithmeticExpression post(infix);
-	map<Lexema, double> values;
+	map<string, double> values;
 	EXPECT_EQ(true, abs(5.1 - post.Calculate(values)) < 0.000000001);
 }

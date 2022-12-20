@@ -10,12 +10,12 @@ int main()
 	ArithmeticExpression expr(exprStr);
 	cout << expr.GetInfix() << endl;
 	cout << expr.GetPostfix() << endl;
-	vector<Lexema> operands = expr.GetOperands();
-	map<Lexema, double> values;
+	vector<string> operands = expr.GetOperands();
+	map<string, double> values;
 	double val;
 	for (const auto& op : operands)
 	{
-		cout << "Enter value of " << op.lexema << ": ";
+		cout << "Enter value of " << op << ": ";
 		cin >> val;
 		values[op] = val;
 	}
