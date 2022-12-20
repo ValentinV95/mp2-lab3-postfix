@@ -29,8 +29,9 @@ int main()
 		
 		
 		TPostfix MainPart(infix);
-
-	
+		MainPart.checked_infix();
+		MainPart.to_postfix_form();
+		MainPart.calculation();
 		cout << endl << endl << endl;
 
 

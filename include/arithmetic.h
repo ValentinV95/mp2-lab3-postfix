@@ -88,13 +88,13 @@ public:
  {
  public:
 	 char lexem_var;
-
+	 int var_znak = 1;
 	 Var();
-	 Var(char var);
+	 Var(char var, int znak);
 
 	 int get_priority() { return 0; }
 	 char get_char_op() { return lexem_var; }
-	 double get_double() { return 0.0; }
+	 double get_double() { return var_znak; }
 	 void shop();
 
  };
@@ -110,13 +110,19 @@ class TPostfix
 {
 
 public:
+	int infix_len;
+	int c_k1, c_k2;   // number of '(' and ')'
 	LEXEM** mas;
+	LEXEM** postfix_mas;     // postfix form has no "()"
 	int L_Size=0;
 	int true_size = 0;
 	map<char, double> vars;
 
 	TPostfix(string infix);
 
+	
 	void search(string infix);
-
+	void to_postfix_form();
+	void checked_infix();
+	void calculation();
 };
