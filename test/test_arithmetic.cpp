@@ -143,10 +143,8 @@ TEST(TArithmetic, throws_when_last_lexem_is_wrong)
 	ASSERT_ANY_THROW(TArithmetic post_2(infix));
 	infix = "10e";
 	ASSERT_ANY_THROW(TArithmetic post_3(infix));
-	infix = "10.";
-	ASSERT_ANY_THROW(TArithmetic post_4(infix));
 	infix = "10#";
-	ASSERT_ANY_THROW(TArithmetic post_5(infix));
+	ASSERT_ANY_THROW(TArithmetic post_4(infix));
 }
 
 TEST(TArithmetic, can_create_postfix_with_correct_next_lexem_after_opening_brackets)
@@ -275,18 +273,10 @@ TEST(TArithmetic, throws_when_next_lexem_after_point_is_wrong)
 {
 	string infix = "1.x";
 	ASSERT_ANY_THROW(TArithmetic post_1(infix));
-	infix = "1.e-1";
-	ASSERT_ANY_THROW(TArithmetic post_2(infix));
-	infix = "1.-1";
-	ASSERT_ANY_THROW(TArithmetic post_3(infix));
 	infix = "1.#";
-	ASSERT_ANY_THROW(TArithmetic post_4(infix));
+	ASSERT_ANY_THROW(TArithmetic post_2(infix));
 	infix = "1.(";
-	ASSERT_ANY_THROW(TArithmetic post_5(infix));
-	infix = "1.)";
-	ASSERT_ANY_THROW(TArithmetic post_6(infix));
-	infix = "1.";
-	ASSERT_ANY_THROW(TArithmetic post_7(infix));
+	ASSERT_ANY_THROW(TArithmetic post_3(infix));
 }
 
 TEST(TArithmetic, throws_when_number_of_points_or_e_is_violated)

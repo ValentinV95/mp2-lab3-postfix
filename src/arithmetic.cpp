@@ -31,23 +31,23 @@ void TArithmetic::Operation::SetValue(const string& val)
 {
 	if (val == "(" || val == ")")
 	{
-		value = 0;
+		value = 0.0;
 	}
 	else if (val == "+" || val == "-")
 	{
-		value = 1;
+		value = 1.0;
 	}
 	else if (val == "*" || val == "/")
 	{
-		value = 2;
+		value = 2.0;
 	}
 	else if (val == "~")
 	{
-		value = 3;
+		value = 3.0;
 	}
 	else
 	{
-		value = 4;
+		value = 4.0;
 	}
 }
 
@@ -62,7 +62,7 @@ double TArithmetic::Operand::toNumeric(const string& strlex)
 	const int e_index = strlex.find('e');
 
 	string after_e = "";
-	double e_degree_indicator = 0;
+	double e_degree_indicator = 0.0;
 
 	if (strlex[0] == '-')
 	{
@@ -250,7 +250,7 @@ const string TArithmetic::find_error()
 			else if (sym == '.')
 			{
 				point_already_exists = true;
-				if (!isDigit(nSym))
+				if (!isDigit(nSym) && nSym != 'e' && (!find_operation(nSym) || nSym == '('))
 				{
 					return wrong_infix + "<-";
 				}
@@ -262,7 +262,7 @@ const string TArithmetic::find_error()
 				{
 					return wrong_infix + "<-" + "(invalid use of 'e' lexem)";
 				}
-				else if (!isDigit(infix[i - 1]) || nSym != '-' && nSym != '+' && !isDigit(nSym))
+				else if (!isDigit(infix[i - 1]) && infix[i-1] != '.' || nSym != '-' && nSym != '+' && !isDigit(nSym))
 				{
 					return wrong_infix + "<-" + "(invalid use of 'e' lexem)";
 				}
@@ -278,7 +278,7 @@ const string TArithmetic::find_error()
 	{
 		close_count++;
 	}
-	else if ((!isAlpha(sym) || sym == 'e') && !isDigit(sym))
+	else if ((!isAlpha(sym) || sym == 'e') && !isDigit(sym) && (sym != '.' || point_already_exists || e_already_exists))
 	{
 		return wrong_infix += "<-";
 	}
@@ -317,7 +317,7 @@ bool TArithmetic::check_input(const string& inp)
 		}
 		else if (sym == '.')
 		{
-			if (point_already_exists || e_already_exists || !isDigit(pSym) || !isDigit(nSym))
+			if (point_already_exists || e_already_exists || !isDigit(pSym) || !isDigit(nSym) && nSym != 'e')
 			{
 				return false;
 			}
@@ -325,7 +325,7 @@ bool TArithmetic::check_input(const string& inp)
 		}
 		else if (sym == 'e')
 		{
-			if (e_already_exists || !isDigit(pSym) || !isDigit(nSym) && nSym != '-' && nSym != '+')
+			if (e_already_exists || !isDigit(pSym) && pSym != '.' || !isDigit(nSym) && nSym != '-' && nSym != '+')
 			{
 				return false;
 			}
@@ -343,7 +343,7 @@ bool TArithmetic::check_input(const string& inp)
 			return false;
 		}
 	}
-	if (!isDigit(inp[max_i]))
+	if (!isDigit(inp[max_i]) && (inp[max_i] != '.' || point_already_exists || e_already_exists))
 	{
 		return false;
 	}
@@ -375,7 +375,7 @@ void TArithmetic::parser()
 				}
 				if (i != 0 && infix[i - 1] != ')' && lex != '(')  // if we encountered a binary operation,
 				{                                                 // then there was an operand or bracket before that
-					if (isDigit(infix[i - 1]))
+					if (isDigit(infix[i - 1]) || infix[i - 1] == '.')
 					{
 						lexems[++j] = new Constant(multilex);
 					}
@@ -403,7 +403,7 @@ void TArithmetic::parser()
 	}
 	if (lex != ')')
 	{
-		if (isDigit(lex))
+		if (isDigit(lex) || lex == '.')
 		{
 			lexems[++j] = new Constant(multilex);
 		}
