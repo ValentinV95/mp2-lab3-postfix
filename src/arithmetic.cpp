@@ -2,18 +2,7 @@
 #include "../include/arithmetic.h"
 #include "../include/stack.h"
 
-#include <exception>
-#include <string>
-#include <iostream>
-#include <map>
-#include <vector>
-#include <sstream>
 
-using std::string;
-using std::cout;
-using std::map;
-using std::invalid_argument;
-using std::out_of_range;
 
 
 
@@ -26,8 +15,8 @@ double string_to_double(string s)
 
 	for (i = 0; i < LEN; i++)
 	{
-		if ((int(s[i]) < 48 || int(s[i]) > 57) && (s[i] != '-') && (s[i] != '+') && (s[i] != 'E') && (s[i] != '.')) throw  invalid_argument("This is not double!");
-		if ((flg) && (s[i] != '.') && (s[i] != 'E'))
+		if ((int(s[i]) < 48 || int(s[i]) > 57) && (s[i] != '-') && (s[i] != '+') && (s[i] != 'e') && (s[i] != '.')) throw  invalid_argument("This is not double!");
+		if ((flg) && (s[i] != '.') && (s[i] != 'e'))
 		{
 			res *= Help;
 			res += (int(s[i]) - 48);
@@ -40,14 +29,14 @@ double string_to_double(string s)
 			Help = 1.0 / 10.0;
 			if (kd > 1) throw  invalid_argument("Two dots!");
 		}
-		if (s[i] == 'E')
+		if (s[i] == 'e')
 		{
 			i++;
 			Help = 10.0;
 			while (i < LEN)
 			{
-				if ((int(s[i]) < 48 && int(s[i]) > 57) && (s[i] != '-') && (s[i] != '+') && (s[i] != 'E')) throw  invalid_argument("This is not double!");
-				if ((s[i] == 'E') || (s[i] == '.')) throw invalid_argument("Bad input!Dot after 'e' or 'e' after 'e'");
+				if ((int(s[i]) < 48 && int(s[i]) > 57) && (s[i] != '-') && (s[i] != '+') && (s[i] != 'e')) throw  invalid_argument("This is not double!");
+				if ((s[i] == 'e') || (s[i] == '.')) throw invalid_argument("Bad input!Dot after 'e' or 'e' after 'e'");
 				else if (s[i] == '-')
 				{
 					ks++;
@@ -94,10 +83,127 @@ TPostfix::TPostfix(string str)
 	size = 0;
 }
 
+void TPostfix::infix_check()
+{
+
+	//Функция которая проверяет все возможные ошибки написания в инфиксной форме
+
+	if (infix == "NULL") throw exception("No infix form! First you need to initialisate infix form!");
+	else if (infix != "NULL")
+	{
+		int flg,flg2;
+		char cmp;
+		string error;
+		TStack<int> problems;
+		for (int i = 0; i < infix.length(); i++)
+		{
+			cmp = infix[i];
+			flg2 = (cmp == '+' || cmp == '/' || cmp == '*');
+			flg = (cmp > 47 && cmp < 58 || cmp == 46) || (cmp >= 97 && cmp <= 122) || flg2 || cmp=='-' || cmp == '(' || cmp == ')';
+			if (infix.length() > i && cmp == '(')
+			{
+				if (infix[i + 1] == ')')
+				{
+					error = "Empty brackets in the ";
+					error += to_string(i + 1);
+					error += " and ";
+					error += to_string(i + 2);
+					error += " elements of the infix!  infix: ";
+					error += infix;
+					throw invalid_argument(error);
+				}
+			}
+			if (!flg)
+			{
+				error = "Invalid character in the ";
+				error += to_string(i+1);
+				error += " element of the infix!  infix: ";
+				error += infix;
+				throw invalid_argument(error);
+			}
+			if (cmp == '-' && i == 0 && infix.length() > 1)
+			{
+				if (infix[i + 1] == '+' || infix[i + 1] == '/' || infix[i + 1] == '*')
+				{
+					error = "Bad operation(at start) in the ";
+					error += to_string(i + 2);
+					error += " element of the infix!  infix: ";
+					error += infix;
+					throw invalid_argument(error);
+				}
+			}
+			else if ((flg2 || cmp == '-') && (i + 1 == infix.length()))
+			{
+				error = "Bad operation(at end) in the ";
+				error += to_string(i + 1);
+				error += " element of the infix!  infix: ";
+				error += infix;
+				throw invalid_argument(error);
+			}
+			if ((flg2 || cmp == ')') && (i == 0)) throw invalid_argument("Bad start of infix form!");
+			else if ((flg2 || cmp == ')' && i > 0))
+			{
+				if (infix[i - 1] == '+' || infix[i - 1] == '-' || infix[i - 1] == '/' || infix[i - 1] == '*' || infix[i - 1] == '(')
+				{
+					error = "Bad operation in the ";
+					if (cmp == ')')
+						error += to_string(i);
+					else
+						error += to_string(i + 1);
+					error += " element of the infix!  infix: ";
+					error += infix;
+					throw invalid_argument(error);
+				}
+			}
+			if (cmp == '(') problems.push_back(i+1);
+			if ((cmp == ')' && !problems.IsEmpty())) problems.pop();
+			else if (cmp == ')' && problems.IsEmpty())
+			{
+				error = "Have no open bracket for bracket in the ";
+				error += to_string(i);
+				error += " element of the infix!  infix: ";
+				error += infix;
+				throw invalid_argument(error);
+			}
+			if (cmp == '(' && i > 0)
+			{
+				if (infix[i - 1] != '-' && infix[i - 1] != '+' && infix[i - 1] != '/' && infix[i - 1] != '*' && infix[i - 1] != '(')
+				{
+					error = "No operation between opearnd and bracket in the ";
+					error += to_string(i + 1);
+					error += " element of the infix!  infix: ";
+					error += infix;
+					throw invalid_argument(error);
+				}
+			}
+			if (cmp == ')' && i + 1 < infix.length())
+			{
+				if (infix[i + 1] != '-' && infix[i + 1] != '+' && infix[i + 1] != '/' && infix[i + 1] != '*' && infix[i + 1] != ')')
+				{
+					error = "No operation between opearnd and bracket in the ";
+					error += to_string(i + 1);
+					error += " element of the infix!  infix: ";
+					error += infix;
+					throw invalid_argument(error);
+				}
+			}
+		}
+		if (!problems.IsEmpty())
+		{
+			error = "Have no close bracket for bracket in the ";
+			error += to_string(problems.pop());
+			error += " element of the infix!  infix: ";
+			error += infix;
+			throw invalid_argument(error);
+		}
+	}
+}
+
 void TPostfix::to_postfix()
 
 {
-	postfix = new Lexem * [infix.length()];
+	infix_check();
+	postfix = new Lexem * [infix.length()];//(_ленивое программирование_) Лексем точно не может быть больше чем букв
 	size_t j = 0, flg1 = 1, flg2 = 1, flg3 = 1, pi = 0;
 	string dbl;
 	char cmp;
@@ -107,7 +213,7 @@ void TPostfix::to_postfix()
 		dbl = "";
 		cmp = char(infix[j]);
 
-		if (cmp > 47 && cmp < 58 || cmp == 46)
+		if (cmp > 47 && cmp < 58 || cmp == 46) //Проверка на константу
 		{
 			if (infix[j] == '\0') break;
 			flg1 = 1; flg2 = 1; flg3 = 1;
@@ -118,7 +224,8 @@ void TPostfix::to_postfix()
 					flg1 = 0;
 					break;
 				}
-				if (infix[j] == 'E')
+				if (j>0)
+				if (infix[j] == 'e' && (infix[j-1] == 46 ||(( infix[j - 1] != '+')&& (infix[j - 1] != '-')&& (infix[j - 1] != '*')&& (infix[j - 1] != '/'))))
 				{
 					flg3 = 0;
 					dbl.push_back(infix[j]);
@@ -144,13 +251,13 @@ void TPostfix::to_postfix()
 				j++;
 				i++;
 			}
-			Value* s = new Value(string_to_double(dbl));
+			Value* s = new Value(dbl);
 			size++;
 			postfix[pi] = s;
 			pi++;
 			if (!flg1) break;
 		}
-		if (cmp >= 97 && cmp <= 122)
+		if (cmp >= 97 && cmp <= 122) //Проверка на переменную
 		{
 			vars[cmp] = 0.0;
 			Var* s = new Var(cmp);
@@ -159,7 +266,7 @@ void TPostfix::to_postfix()
 			pi++;
 
 		}
-		switch (cmp)
+		switch (cmp) //Проверка на операцию и скобки
 		{
 		case '(':
 		{
@@ -178,12 +285,15 @@ void TPostfix::to_postfix()
 			ST.pop();
 			break;
 		}
-		case '+': case '-': case '*': case '/':case '~':
+		case '+': case '-': case '*': case '/':
 		{
 			if (j > 0)
 			{
-				if (((infix[j - 1] == '+') || (infix[j - 1] == '/') || (infix[j - 1] == '*') || (infix[j - 1] == '-')) && (cmp == '-') || (cmp == '-') && (j == 0)) cmp = '~';
+				if (((infix[j - 1] == '+') || (infix[j - 1] == '/') || (infix[j - 1] == '*') || (infix[j - 1] == '-') || (infix[j - 1] == '(')) && (cmp == '-')) cmp = '~';
 			}
+			if (infix.length() > 1 && j == 0 && cmp == '-')
+				if (infix[j + 1] != '+' && infix[j + 1] != '*' && infix[j + 1] != '/')
+					cmp = '~';
 			if (cmp != '~' && j == 0) throw std::exception("bad operation");
 			else if (((cmp == '+' || cmp == '-') && (ST.show() == '*' || ST.show() == '/')) || ((ST.show() == '~') && (cmp == '+' || cmp == '-' || cmp == '/' || cmp == '*')) || ((cmp == '+' || cmp == '-') && (ST.show() == '-' || ST.show() == '+')))
 			{
@@ -212,22 +322,74 @@ void TPostfix::to_postfix()
 		postfix[pi] = s;
 		pi++;
 	}
-}
 
-void TPostfix::showP() {
+	Lexem** tmp = new Lexem*[size];//удаление лишней памяти
 	for (size_t i = 0; i < size; i++)
 	{
-		cout << postfix[i]->show() << " ";
+		tmp[i] = postfix[i];
 	}
+	delete[]postfix;
+	postfix = tmp;
 }
 
-size_t TPostfix::get_size() { return size; }
+string TPostfix::showP() 
+{
+
+	//Функция которая возвращает постфиксную форму записи в виде строки
+
+	string P = "";
+	if (infix != "NULL" && postfix == nullptr)
+	{
+		set_infix(infix);
+		to_postfix();
+	}
+	if (postfix != nullptr)
+	{
+		for (size_t i = 0; i < size; i++)
+		{
+			P+=postfix[i]->show() + " ";
+		}
+		return P;
+	}
+	else throw invalid_argument("No infix form,or bad infix form without lexems!");
+}
+
+void TPostfix::set_infix(string infx)
+{
+
+	//Функция которая задает новую инфиксную форму
+
+	infix = infx;
+	if (postfix != nullptr)
+	vars.clear();
+	delete[]postfix;
+	postfix = nullptr;
+	size = 0;
+}
+
+size_t TPostfix::get_size()
+{ 
+	if (postfix != nullptr) return size;
+	if (infix != "NULL")
+	{
+		set_infix(infix);
+		to_postfix();
+	}
+	if (postfix == nullptr) throw invalid_argument("No infix form,or bad infix form without lexems!");
+	return size; 
+}
 
 double TPostfix::CALCULATE()
 {
+
+	if (infix != "NULL")
+	{
+		set_infix(infix);
+		to_postfix();
+	}
+	if (postfix == nullptr) throw invalid_argument("No infix form,or bad infix form without lexems!");
 	double ss;
 
-	cout << "Before start calculate." << std::endl;
 	for (auto i = vars.begin(); i != vars.end(); i++)
 	{
 		cout << "Input " << i->first << " value: " << std::endl;
@@ -256,6 +418,7 @@ double TPostfix::CALCULATE()
 		{
 			right = value.pop();
 			left = value.pop();
+			if (fabs(right) < 10.e-16) throw exception("Division by Zero");
 			value.push_back(left / right);
 		}
 		else if (shw == "*")

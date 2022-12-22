@@ -1,23 +1,34 @@
-// реализация пользовательского приложения
-
 #include "arithmetic.h"
+#include <string.h>
+
+
 
 int main()
 {
-	//Lexem** mas = new Lexem * [3];
-	//Value a(33.234);
-	//Operation b('/');
-	//Var c("x1");
-	//mas[0] = &a;
-	//mas[1] = &b;
-	//mas[2] = &c;
-	//cout << mas[0]->show();
-	//cout << mas[1]->show();
-	//cout << mas[2]->show();
-	string s;
-	std::cin >> s;
-	TPostfix arg(s);
-	arg.to_postfix();
-	arg.showP();
-	cout << std::endl << "size: " << arg.get_size() << std::endl << arg.CALCULATE();
+	string s = "Start";
+
+	cout << "Solve infix equations by postfix solve method." << endl << endl;
+
+	cout << "1)Dont input spaces." << endl;
+	cout << "2)You have operations:'+','-','/','*' and you can use brackets '(',')'." << endl;
+	cout << "3)You can input '-' any times, anythere without end of the string." << endl;
+	cout << "4)You have operands:'a'-'z'." << endl;
+	cout << "5)If you input not logical equation the programm will write exception(empty brackets isnot logical)" << endl << endl;
+
+	while (true)
+	{
+		cout << endl << "Input equation or if you want to stop input 'STOP': " << endl;
+		getline(cin, s);
+		if (s == "STOP") break;
+		TPostfix arg(s);
+		try
+		{
+			cout << endl << "Postfix form: " << arg.showP() << endl << "size of  lexems: " << arg.get_size() << endl << "answer: " << arg.CALCULATE() << endl << endl;
+		}
+		catch (exception& e)
+		{
+			cout << "exception" << e.what() << endl;
+		}
+	}
+	cout << "The programm stopped." << endl;
 }

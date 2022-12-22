@@ -1,15 +1,22 @@
 // объ€вление функций и классов дл€ вычислени€ арифметических выражений
 
+#include <exception>
 #include <string>
 #include <iostream>
 #include <map>
+#include <vector>
 #include <sstream>
+#include <exception>
+
 using std::string;
 using std::cout;
+using std::cin;
+using std::endl;
 using std::map;
-
-
 using std::invalid_argument;
+using std::out_of_range;
+using std::exception;
+using std::to_string;
 
 
 class Lexem
@@ -40,17 +47,14 @@ public:
 class Value :public Operand
 {
 public:
-	double value;
-	Value(double dbl)
+	string value;
+	Value(string dbl)
 	{
 		value = dbl;
 	}
 	string show()
 	{
-		std::ostringstream strs;
-		strs << value;
-		std::string str = strs.str();
-		return str;
+		return value;
 	}
 };
 
@@ -71,15 +75,16 @@ public:
 class TPostfix
 {
 private:
-	string infix;
-	Lexem** postfix;
+	string infix = "NULL";
+	Lexem** postfix = nullptr;
 	size_t size;
 	map<char,double> vars;
 public:
 	TPostfix(string str);
 	void to_postfix();
-	void showP();
-
+	string showP();
+	void set_infix(string infx);
+	void infix_check();
 
 	size_t get_size();
 
