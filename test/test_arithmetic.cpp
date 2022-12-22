@@ -31,7 +31,7 @@ TEST(class_Operator, can_make_operator)
 
 TEST(class_Operator, can_whatis_for_operator)
 {
-	Lexems* a[2];
+	Lexems* a[1];
 	a[0] = new Operator('*');
 	EXPECT_EQ("Operator", a[0]->whatis());
 }

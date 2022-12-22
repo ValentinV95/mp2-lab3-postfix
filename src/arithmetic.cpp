@@ -20,13 +20,13 @@ Lexems::~Lexems() { }
 
 Operator::Operator(char _lex) : Lexems(&_lex)
 {
-	if (lex == "~")
+	if (_lex == '~')
 		this->priority = 1;
-	else if (lex == "*" || lex == "/")
+	else if (_lex == '*' || _lex == '/')
 		this->priority = 2;
-	else if (lex == "+" || lex == "-")
+	else if (_lex == '+' || _lex == '-')
 		this->priority = 3;
-	else if (lex == "(" || lex == ")")
+	else if (_lex == '(' || _lex == ')')
 		this->priority = 0;
 	else
 		throw std::exception("error");
