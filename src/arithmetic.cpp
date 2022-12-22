@@ -9,17 +9,15 @@
 std::map<std::string, double> valueVar;
 std::map<std::string, double>* valueVarPtr = &valueVar;
 
-Lexems::Lexems(std::string _lex)
-{
-	lex = _lex;
-}
+Lexems::Lexems() { }
 
 Lexems::~Lexems() { }
 
 /*-----------------------------------------------------------------------*/
 
-Operator::Operator(char _lex) : Lexems(&_lex)
+Operator::Operator(char _lex) : Lexems()
 {
+	lex = _lex;
 	if (_lex == '~')
 		this->priority = 1;
 	else if (_lex == '*' || _lex == '/')
@@ -87,7 +85,10 @@ Operator::~Operator() { }
 
 /*-----------------------------------------------------------------------*/
 
-Operand::Operand(std::string _lex) : Lexems(_lex) { }
+Operand::Operand(std::string _lex) : Lexems()
+{
+	lex = _lex;
+}
 
 std::string Operand::whatis()
 {
@@ -113,7 +114,10 @@ Operand::~Operand() { }
 
 /*-----------------------------------------------------------------------*/
 
-Var::Var(char _lex) : Lexems(&_lex) { }
+Var::Var(char _lex) : Lexems()
+{
+	lex = _lex;
+}
 
 std::string Var::whatis()
 {
