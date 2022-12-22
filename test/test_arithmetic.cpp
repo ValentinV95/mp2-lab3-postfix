@@ -1,3 +1,3 @@
 // тесты для вычисления арифметических выражений
 
-#include <gtest.h>
+#include "../gtest/gtest.h"
