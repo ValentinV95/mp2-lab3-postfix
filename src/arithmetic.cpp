@@ -295,9 +295,9 @@ void TPostfix::to_postfix()
 				if (infix[j + 1] != '+' && infix[j + 1] != '*' && infix[j + 1] != '/')
 					cmp = '~';
 			if (cmp != '~' && j == 0) throw std::exception("bad operation");
-			else if (((cmp == '+' || cmp == '-') && (ST.show() == '*' || ST.show() == '/')) || ((ST.show() == '~') && (cmp == '+' || cmp == '-' || cmp == '/' || cmp == '*')) || ((cmp == '+' || cmp == '-') && (ST.show() == '-' || ST.show() == '+')))
+			else if (((cmp == '+' || cmp == '-') && (ST.show() == '*' || ST.show() == '/')) || ((ST.show() == '~') && (cmp == '+' || cmp == '-' || cmp == '/' || cmp == '*')) || ((cmp == '+' || cmp == '-') && (ST.show() == '-' || ST.show() == '+')) || (cmp == '/'||cmp=='*')&&(ST.show()=='/' || ST.show()=='*'))
 			{
-				while ((!ST.IsEmpty()) && (((cmp == '+' || cmp == '-') && (ST.show() == '*' || ST.show() == '/')) || ((ST.show() == '~') && (cmp == '+' || cmp == '-' || cmp == '/' || cmp == '*')) || ((cmp == '+' || cmp == '-') && (ST.show() == '-' || ST.show() == '+'))))
+				while ((!ST.IsEmpty()) && (((cmp == '+' || cmp == '-') && (ST.show() == '*' || ST.show() == '/')) || ((ST.show() == '~') && (cmp == '+' || cmp == '-' || cmp == '/' || cmp == '*')) || ((cmp == '+' || cmp == '-') && (ST.show() == '-' || ST.show() == '+')) || (cmp == '/' || cmp == '*') && (ST.show() == '/' || ST.show() == '*')))
 				{
 					Operation* s = new Operation(ST.pop());
 					size++;
@@ -431,7 +431,7 @@ double TPostfix::CALCULATE()
 		{
 			value.push_back(-value.pop());
 		}
-		else if (shw[0]!='x' && (shw[0] >= 97 && shw[0] <= 122) || shw == "x")
+		else if (shw[0] >= 97 && shw[0] <= 122)
 		{
 			value.push_back(vars[shw[0]]);
 		}

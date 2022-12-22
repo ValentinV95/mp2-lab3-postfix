@@ -15,19 +15,21 @@ int main()
 	cout << "4)You have operands:'a'-'z'." << endl;
 	cout << "5)If you input not logical equation the programm will write exception(empty brackets isnot logical)" << endl << endl;
 
+	TPostfix arg(s);
+
 	while (true)
 	{
 		cout << endl << "Input equation or if you want to stop input 'STOP': " << endl;
-		getline(cin, s);
+		cin >> s;
 		if (s == "STOP") break;
-		TPostfix arg(s);
+		arg.set_infix(s);
 		try
 		{
 			cout << endl << "Postfix form: " << arg.showP() << endl << "size of  lexems: " << arg.get_size() << endl << "answer: " << arg.CALCULATE() << endl << endl;
 		}
 		catch (exception& e)
 		{
-			cout << "exception" << e.what() << endl;
+			cout << "exception:" << e.what() << endl;
 		}
 	}
 	cout << "The programm stopped." << endl;
