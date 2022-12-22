@@ -11,6 +11,8 @@ private:
 public:
 	Stack(size_t sz = 1) : size(sz)
 	{
+		if (sz <= 0)
+			throw std::exception("uncorrect length");
 		data = new T[size]();
 	}
 
@@ -25,19 +27,15 @@ public:
 
 	bool isFull() noexcept			//проверка на полноту
 	{
-		if (index == size - 1)
-			return true;
-		return false;
+		return index == size - 1;
 	}
 
 	bool isEmpty() noexcept			//проверка на пустоту
 	{
-		if (index == -1)
-			return true;
-		return false;
+		return index == -1;
 	}
 
-	void push(T Elem) noexcept		// - вставка элемента
+	void push(T Elem)				// - вставка элемента
 	{
 		if (isFull())
 		{
@@ -51,7 +49,7 @@ public:
 		data[++index] = Elem;
 	}
 
-	T& pop()                    // - извлечение элемента
+	T& pop()					  // - извлечение элемента
 	{
 		if (this->isEmpty())
 			throw std::exception("isEmpty: stack_is_empty");

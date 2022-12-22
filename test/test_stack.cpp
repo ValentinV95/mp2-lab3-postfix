@@ -8,6 +8,11 @@ TEST(Stack, can_create_stack_with_positive_length)
 	ASSERT_NO_THROW(Stack<int> a(3));
 }
 
+TEST(Stack, throws_when_create_stack_with_null_length)
+{
+	ASSERT_ANY_THROW(Stack<int> a(0));
+}
+
 TEST(Stack, throws_when_create_stack_with_negative_length)
 {
 	ASSERT_ANY_THROW(Stack<int> a(-5));

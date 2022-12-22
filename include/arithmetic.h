@@ -79,8 +79,11 @@ public:
 	TPostfix(std::string eq);
 	void init_infix();
 	void init_postfix();
+	void correctChecker(const size_t& i, const size_t index);
 	double resolve();
 	void selectVar(size_t i);
+	std::string get_infixLexem(const size_t id);
+	std::string get_postfixLexem(const size_t id);
 	void infix_show();
 	void postfix_show();
 	~TPostfix();

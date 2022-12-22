@@ -7,13 +7,15 @@
 int main()
 {
 	setlocale(LC_ALL, "Russian");
-	std::string Eq = "(a+b*c/d-e)*(f+g*h)";
+	std::cout << "-----------------SOLVING EXPRESSIONS-----------------\n" << "enter your expressions:" << std::endl;
+	std::string Eq;
+	std::cin >> Eq;
 	try
 	{
 		TPostfix Equation(Eq);
 		Equation.infix_show();
 		Equation.postfix_show();
-		std::cout << Equation.resolve();
+		std::cout << "result:  " << Equation.resolve();
 	}
 	catch (const std::exception& ex)
 	{

@@ -20,14 +20,13 @@ Lexems::~Lexems() { }
 
 Operator::Operator(char _lex) : Lexems(&_lex)
 {
-	int switch_on = int(_lex);
-	if (switch_on == 126)
+	if (lex == "~")
 		this->priority = 1;
-	else if (switch_on == 42 || switch_on == 47)
+	else if (lex == "*" || lex == "/")
 		this->priority = 2;
-	else if (switch_on == 43 || switch_on == 45)
+	else if (lex == "+" || lex == "-")
 		this->priority = 3;
-	else if (switch_on == 40 || switch_on == 41)
+	else if (lex == "(" || lex == ")")
 		this->priority = 0;
 	else
 		throw std::exception("error");
@@ -40,29 +39,28 @@ std::string Operator::whatis()
 
 void Operator::ToDo(Stack<double>& S)
 {
-	int switch_on = lex[0];
-	double r_value = S.pop();
+	const double r_value = S.pop();
 	double l_value;
-	if (switch_on == 126)// ~
+	if (lex == "~")
 	{
 		S.push((-1) * r_value);
 	}
-	else if (switch_on == 42)// *
+	else if (lex == "*")
 	{
 		l_value = S.pop();
 		S.push(l_value * r_value);
 	}
-	else if (switch_on == 43)// +
+	else if (lex == "+")
 	{
 		l_value = S.pop();
 		S.push(l_value + r_value);
 	}
-	else if (switch_on == 45)// -
+	else if (lex == "-")
 	{
 		l_value = S.pop();
 		S.push(l_value - r_value);
 	}
-	else if (switch_on == 47)// /
+	else if (lex == "/")
 	{
 		l_value = S.pop();
 		if (r_value == 0)
@@ -166,11 +164,14 @@ void TPostfix::init_infix()
 	int error_index;
 	for (size_t i = 0; i < infix_size; )
 	{
-		if (isOperand(start_eq[i]) || int(start_eq[i]) == 44)
+		if (isOperand(start_eq[i]) || start_eq[i] == ',')
 		{
 			std::string operand;
-			while (isOperand(start_eq[i]) || int(start_eq[i]) == 44 || int(start_eq[i]) == 101)
+			bool e_index = false;
+			while (isOperand(start_eq[i]) || start_eq[i] == ',' || start_eq[i] == 'e' || (start_eq[i] == '-' && e_index))
 			{
+				if (start_eq[i] == 'e')
+					e_index = true;
 				operand += start_eq[i];
 				i++;
 			}
@@ -180,37 +181,30 @@ void TPostfix::init_infix()
 		}
 		else if (isOperator(start_eq[i]))
 		{
-			if (int(start_eq[i]) == 40 || int(start_eq[i]) == 41)
+			if (start_eq[i] == '(' || int(start_eq[i]) == ')')
 			{
 				counter_bracket += (int(start_eq[i]) - 41) + (int(start_eq[i]) - 40);
 				error_index = i;
 			}
 
-			if (int(start_eq[i]) == 45 && (i == 0 || (!isOperand(start_eq[i - 1]) && !isVar(start_eq[i - 1]))))
+			if (start_eq[i] == '-' && (i == 0 || (!isOperand(start_eq[i - 1]) && !isVar(start_eq[i - 1]))))
 				infix_form[index] = new Operator('~');
 			else
 				infix_form[index] = new Operator(start_eq[i]);
 
-
-			//---------------------------------exception----------------------------------------//
-			if (int(start_eq[i]) == 40 && !isOperand(start_eq[i + 1]) && !isVar(start_eq[i + 1]))
-				throw lexException("no correct set bracket", start_eq, i);
-			if (int(start_eq[i]) == 41 && !isOperand(start_eq[i - 1]) && !isVar(start_eq[i - 1]))
-				throw lexException("no correct set bracket", start_eq, i);
-			if (infix_form[index]->prioritet() == 1 && !isOperand(start_eq[i + 1]) && !isVar(start_eq[i + 1]) && int(start_eq[i + 1]) != 40)
-				throw lexException("no correct unary operator", start_eq, i + 1);
-			if ((infix_form[index]->prioritet() == 2 || infix_form[index]->prioritet() == 3) && (index == 0 || index == start_eq.size()))
-				throw lexException("no correct binary operator", start_eq, i);
-			if ((infix_form[index]->prioritet() == 2 || infix_form[index]->prioritet() == 3) && !isOperand(start_eq[i + 1]) && !isVar(start_eq[i + 1]) && int(start_eq[i + 1]) != 40)
-				throw lexException("no correct binary operator", start_eq, i + 1);
-			if ((infix_form[index]->prioritet() == 2 || infix_form[index]->prioritet() == 3) && !isOperand(start_eq[i - 1]) && !isVar(start_eq[i - 1]) && int(start_eq[i - 1]) != 41)
-				throw lexException("no correct binary operator", start_eq, i - 1);
+			correctChecker(i, index);
 
 			index++;
 			i++;
 		}
 		else if (isVar(start_eq[i]))
 		{
+			if (i != 0)
+				if (isVar(start_eq[i - 1]) || isOperand(start_eq[i - 1]))
+					throw lexException("no correct var", start_eq, i - 1);
+			if (i >= infix_size)
+				if (isVar(start_eq[i + 1]) || isOperand(start_eq[i + 1]))
+					throw lexException("no correct var", start_eq, i + 1);
 			infix_form[index++] = new Var(start_eq[i]);
 			i++;
 		}
@@ -226,12 +220,28 @@ void TPostfix::init_infix()
 	infix_size = index;
 }
 
+void TPostfix::correctChecker(const size_t& i, const size_t index)
+{
+	if (start_eq[i] == '(' && !isOperand(start_eq[i + 1]) && !isVar(start_eq[i + 1]))
+		throw lexException("no correct set bracket", start_eq, i);
+	if (start_eq[i] == ')' && !isOperand(start_eq[i - 1]) && !isVar(start_eq[i - 1]))
+		throw lexException("no correct set bracket", start_eq, i);
+	if (infix_form[index]->prioritet() == 1 && !isOperand(start_eq[i + 1]) && !isVar(start_eq[i + 1]) && start_eq[i + 1] != '(')
+		throw lexException("no correct unary operator", start_eq, i + 1);
+	if ((infix_form[index]->prioritet() == 2 || infix_form[index]->prioritet() == 3) && (index == 0 || index == start_eq.size()))
+		throw lexException("no correct binary operator", start_eq, i);
+	if ((infix_form[index]->prioritet() == 2 || infix_form[index]->prioritet() == 3) && !isOperand(start_eq[i + 1]) && !isVar(start_eq[i + 1]) && start_eq[i + 1] != '(')
+		throw lexException("no correct binary operator", start_eq, i + 1);
+	if ((infix_form[index]->prioritet() == 2 || infix_form[index]->prioritet() == 3) && !isOperand(start_eq[i - 1]) && !isVar(start_eq[i - 1]) && start_eq[i - 1] != ')')
+		throw lexException("no correct binary operator", start_eq, i - 1);
+}
+
 void TPostfix::init_postfix()
 {
 	Stack<Lexems*> S(postfix_size);
 	size_t i = 0;         //колво лексем в постфиксной форме
 	size_t index = 0;     //кол-во лексем в исходном уравнении
-	for (; index < infix_size && i < postfix_size; )
+	while (index < infix_size && i < postfix_size)
 	{
 		if (infix_form[index]->whatis() == "Operand" || infix_form[index]->whatis() == "Var")
 		{
@@ -250,7 +260,7 @@ void TPostfix::init_postfix()
 
 		else if (!S.isEmpty() && infix_form[index]->show() == ")")
 		{
-			while (int(S.view_top()->show()[0]) != 40)
+			while (S.view_top()->show() != "(")
 			{
 				postfix_form[i++] = S.pop();
 			}
@@ -284,6 +294,7 @@ double TPostfix::resolve()
 
 void TPostfix::infix_show()
 {
+	std::cout << "your infix form:" << std::endl;
 	for (size_t i = 0; i < infix_size; i++)
 	{
 		std::cout << infix_form[i]->show();
@@ -293,6 +304,7 @@ void TPostfix::infix_show()
 
 void TPostfix::postfix_show()
 {
+	std::cout << "your postfixfix form:" << std::endl;
 	for (size_t i = 0; i < postfix_size; i++)
 	{
 		std::cout << postfix_form[i]->show();
@@ -300,9 +312,20 @@ void TPostfix::postfix_show()
 	std::cout << "\n";
 }
 
+std::string TPostfix::get_infixLexem(const size_t id) //only for test
+{
+	return infix_form[id]->show();
+}
+
+std::string TPostfix::get_postfixLexem(const size_t id)  //only for test
+{
+	return postfix_form[id]->show();
+}
+
 TPostfix::~TPostfix()
 {
-
+	for (size_t i = 0; i < infix_size; i++)
+		delete infix_form[i];
 	delete[] infix_form;
 	delete[] postfix_form;
 }
@@ -319,18 +342,12 @@ bool isOperand(const char& lexema) noexcept
 
 bool isOperator(const char& lexema) noexcept  // ~, *, +, -, /, (, )
 {
-	if (int(lexema) == 42 || int(lexema) == 43 || int(lexema) == 45 || int(lexema) == 47 || int(lexema) == 126 || int(lexema) == 40 || int(lexema) == 41)  
-		return true;
-	else
-		return false;
+	return (lexema == '*' || lexema == '+' || lexema == '-' || lexema == '/' || lexema == '~' || lexema == '(' || lexema == ')');
 }
 
 bool isVar(const char& lexema) noexcept
 {
-	if ((int(lexema) >= 65 && int(lexema) <= 90) || (int(lexema) >= 97 && int(lexema) <= 122))
-		return true;
-	else
-		return false;
+	return ((int(lexema) >= 65 && int(lexema) <= 90) || (int(lexema) >= 97 && int(lexema) <= 122)); //a-z; A-Z;
 }
 
 double convert(const std::string strOperand)
@@ -347,14 +364,19 @@ double convert(const std::string strOperand)
 	size_t power = 10;
 	for ( ; strOperand[i] != ',' && i < strOperand.size(); i++)     //integer part
 	{
-		
 		if (isOperand(strOperand[i]))
 		{
 			result = result * power + (double(strOperand[i]) - 48);
 		}
 		else
+		{
+			i--;
 			break;
+		}
 	}
+
+	if ((i+1) >= strOperand.size() && strOperand[i] == ',')
+		throw lexException("no correct number", strOperand, i);
 
 	i++;
 
@@ -366,8 +388,11 @@ double convert(const std::string strOperand)
 			power *= 10;
 		}
 		else
-			throw lexException("no correct number", strOperand, i);
+			throw lexException("no correct number", strOperand, i-1);
 	}
+
+	if (i >= strOperand.size() && strOperand[i-1] == 'e')
+		throw lexException("no correct number", strOperand, i);
 
 	if (i >= strOperand.size())
 		return result * sign;
@@ -392,7 +417,7 @@ double convert(const std::string strOperand)
 			i++;
 		}
 		else
-			throw lexException("no correct number", strOperand, i);
+			throw lexException("no correct number", strOperand, i-1);
 	}
 	result *= std::pow(10, power_num*sign_num);
 

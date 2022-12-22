@@ -99,7 +99,37 @@ TEST(Postfix, correct_posfix_constract)
 	ASSERT_NO_THROW(TPostfix("(a+12*23,45/d-0,23e-1)*(f+45,678*h)"));
 }
 
-//check correct postfix and infix
+TEST(Postfix, correct_convert_in_infix_form)
+{
+	TPostfix A("a*4,35-87");
+	Lexems* B[5];
+	B[0] = new Var('a');
+	B[1] = new Operator('*');
+	B[2] = new Operand("4,35");
+	B[3] = new Operator('-');
+	B[4] = new Operand("87");
+	EXPECT_EQ(B[0]->show(), A.get_infixLexem(0));
+	EXPECT_EQ(B[1]->show(), A.get_infixLexem(1));
+	EXPECT_EQ(B[2]->show(), A.get_infixLexem(2));
+	EXPECT_EQ(B[3]->show(), A.get_infixLexem(3));
+	EXPECT_EQ(B[4]->show(), A.get_infixLexem(4));
+}
+
+TEST(Postfix, correct_convert_in_postfix_form)
+{
+	TPostfix A("a*4,35-87");
+	Lexems* B[5];
+	B[0] = new Var('a');
+	B[1] = new Operand("4,35");
+	B[2] = new Operator('*');
+	B[3] = new Operand("87");
+	B[4] = new Operator('-');
+	EXPECT_EQ(B[0]->show(), A.get_postfixLexem(0));
+	EXPECT_EQ(B[1]->show(), A.get_postfixLexem(1));
+	EXPECT_EQ(B[2]->show(), A.get_postfixLexem(2));
+	EXPECT_EQ(B[3]->show(), A.get_postfixLexem(3));
+	EXPECT_EQ(B[4]->show(), A.get_postfixLexem(4));
+}
 
 TEST(Postfix, throw_when_no_correct_use_bracket_end)
 {
