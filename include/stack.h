@@ -24,8 +24,6 @@ private:
 
 public:
 
-	Tstack(T* p, size_t in_size) : top(-1), memSize(in_size), pMem(p) {}
-
 	Tstack(size_t in_size) : top(-1), memSize(in_size)
 	{
 		pMem = new T[memSize];

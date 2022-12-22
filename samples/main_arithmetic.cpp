@@ -3,8 +3,6 @@
 int main()
 {
 
-	
-
 
 		string infix;
 
@@ -12,62 +10,50 @@ int main()
 		getline(cin, infix);
 		cout << endl << endl << "Your input without spaces :  ";
 		infix = without_spaces(infix);
-		
-
-//------------------------------------------------------------------------
-
-
-
-		
-
-//------------------------------------------------------------------------
-
-
-		cout << endl<<endl<<endl << "All operands in input";
-
-		cout << endl;
-		
-		
-		TPostfix MainPart(infix);
-		MainPart.checked_infix();
-		MainPart.to_postfix_form();
-		MainPart.calculation();
-		cout << endl << endl << endl;
-
-
-
-/*                 [ Test zone 1 ]             For Ivan, Grigory and Anton
-
-		Tstack<char> temp;
-
-		temp.Push('1');
-		temp.Push('2');
-		temp.Push('3');
-		temp.Push('4');
-		temp.Push('.');
-		temp.Push('5');
-		temp.Push('6');
-
-		Const tomp1(temp, temp, 1);
-		Const tomp2(temp, temp, 1);
-		Const tomp3(temp, temp, -1);
-		Const tomp4(temp, temp, 1);
-		Const tomp5(temp, temp, -1);
-
-		LEXEM mas[5];
-
-		mas[0] = tomp1;
-		mas[1] = tomp2;
-		mas[2] = tomp3;
-		mas[3] = tomp4;
-		mas[4] = tomp5;
-
-		for (int i = 0; i < 5; i++)
+		cout << infix;
+		try
 		{
-			cout << mas[i].show()<<endl;
+			cout << endl << endl;
+			bool alternative;
+			alternative = choice();
+			int move_choice;
+
+			TPostfix MainPart(infix, alternative,0);
+
+
+			cout << endl << endl << endl << " Do you want to see more information about your infix form ?"<< endl << endl <<" (1) YES"<<endl<<" (else) NO" << endl << endl << " Answer: ";
+			cin >> move_choice;
+			cout << endl;
+
+
+			if (move_choice == 1)
+			{
+				MainPart.checked_infix(alternative);
+			}
+			cout << endl;
+
+
+			MainPart.to_postfix_form(alternative,0);
+			cout << endl << endl << endl;
+			double resultat= MainPart.calculation(0);
+			cout << endl << endl << "Resultat : " << resultat;
+			cout << endl << endl << endl;
+
+
+			cout << endl << endl << endl << " Do you want to see full information about postfix form ? " << endl << endl <<" (1) YES"<<endl<<" (else) NO"<<endl<<endl<< " Answer: ";
+			cin >> move_choice;
+			cout << endl;
+			if (move_choice == 1)
+			{
+				MainPart.get_full_information(alternative);
+			}
+		
+		}
+		catch (const exception& e)
+		{
+			cout << e.what()<<endl;
 		}
 
-*/
 
   return 0;
 }

@@ -7,12 +7,13 @@
 
 Operation::Operation()
 {
+	alter_lexem_m = lexem_m;
 	type = 3;
 }
 
 Operation::Operation(char a)
 {
-
+	alter_lexem_m = lexem_m;
 	type = 3;
 	lexem_m.push_back(a);
 
@@ -56,7 +57,7 @@ Operation::Operation(char a)
 
 
 
-Const::Const(Tstack<char>& a, Tstack<char>& save_const, int znak)
+Const::Const(Tstack<char>& a, Tstack<char>& save_const, int znak,bool alternative)
 {
 	type = 1;
 	int dblsize = a.size();
@@ -100,8 +101,15 @@ Const::Const(Tstack<char>& a, Tstack<char>& save_const, int znak)
 	for (int y = 0; y < numsize; y++)
 	{
 		lexem_m.push_back(num_str[y]);
+		alter_lexem_m.push_back(num_str[y]);
 	}
-	cout << endl << "string :  " << lexem_m << endl;
+	if(znak == -1)
+	{
+		alter_lexem_m.push_back(' ');
+		alter_lexem_m.push_back(' ');
+		alter_lexem_m.push_back('~');
+	}
+
 }
 
 Const::Const()
@@ -118,7 +126,7 @@ Var::Var()
 	lexem_var = '$';
 }
 
-Var::Var(char var, int znak)
+Var::Var(char var, int znak, bool alternative)
 {
 	type = 2;
 
@@ -130,16 +138,25 @@ Var::Var(char var, int znak)
 
 	lexem_m.push_back(var);
 	lexem_var = var;
-
+	alter_lexem_m.push_back(var);
+	if (znak == -1)
+	{
+		alter_lexem_m.push_back(' ');
+		alter_lexem_m.push_back(' ');
+		alter_lexem_m.push_back('~');
+	}
 	
 }
 
 
 
-TPostfix::TPostfix(string infix)
+TPostfix::TPostfix(string infix,bool alternative,bool test)
 {
-	search(infix);
-
+	if (infix.length() == 0)
+	{
+		throw exception("Literaly no input:  Empty infix");
+	}
+	search(infix,alternative,test);
 
 }
 
@@ -148,14 +165,21 @@ TPostfix::TPostfix(string infix)
 //------------------------------------------------|)
 
 
-void Const::shop()
+void Const::shop(bool alternative)
 {
-	cout << " " << lexem_m;
+	if (alternative)
+	{
+		cout << "  " << alter_lexem_m;
+	}
+	else
+	{
+		cout << "  " << lexem_m;
+	}
 }
 
-void Operation::shop()
+void Operation::shop(bool alternative)
 {
-	cout << " " << lexem_m;
+	cout << "  " << lexem_m;
 }
 
 string LEXEM::show()
@@ -164,9 +188,16 @@ string LEXEM::show()
 	return tmp;
 }
 
-void Var::shop()
+void Var::shop(bool alternative)
 {
-	cout << " " << lexem_m;
+	if (alternative)
+	{
+		cout << "  " << alter_lexem_m;
+	}
+	else
+	{
+		cout << "  " << lexem_m;
+	}
 }
 
 
@@ -189,8 +220,11 @@ void Var::shop()
 
 
 
-void TPostfix::search(string infix)
+void TPostfix::search(string infix,bool alternative,bool test)
 {
+
+
+	
 	int problem_flag = -1;
 
 	int pos = 0;
@@ -201,8 +235,8 @@ void TPostfix::search(string infix)
 
 
 	int count_c = 0;
-	int c_k1 = 0;
-	int c_k2 = 0;
+	c_k1 = 0;
+	c_k2 = 0;
 
 
 
@@ -227,6 +261,14 @@ void TPostfix::search(string infix)
 		}
 		if (infix[i] >= '0' && infix[i] <= '9')
 		{
+			if (pos > 0)
+			{
+				if (mas[pos-1]->get_type()==2)
+				{
+					if(!test) cout << endl << endl << "There is a problem in symbol: " << i << " and " << i + 1 << endl;
+					throw exception("Wrong input: Two operands in a row");
+				}	
+			}
 
 			int stop = 0;
 			Tstack<char> number1, number2;
@@ -237,8 +279,8 @@ void TPostfix::search(string infix)
 					stop++;
 					if (stop == 2)
 					{
-						cout << endl << endl << "There is a problem in " << problem_flag << " and " << i << " symbols !" << endl << "Two points in one operand" << endl << endl;
-						exit(0);
+						if (!test) cout << endl << endl << "There is a problem in " << problem_flag << " and " << i << " symbols !" << endl ;
+						throw exception("Two points in one operand");
 					}
 					problem_flag = i;
 				}
@@ -248,8 +290,7 @@ void TPostfix::search(string infix)
 			}
 			problem_flag = -1;
 			i--;
-			mas[pos] = new Const(number1, number2, znak);
-			cout << "number :  " << mas[pos]->get_double() << endl;
+			mas[pos] = new Const(number1, number2, znak,alternative);
 
 			pos++;
 
@@ -259,36 +300,38 @@ void TPostfix::search(string infix)
 		//=============================[ operand - variable ]
 
 
-		else if (infix[i] == '-' && infix[i + 1] >= 97 && infix[i + 1] <= 122)
+		if (infix[i] == '-' && infix[i + 1] >= 97 && infix[i + 1] <= 122)
 		{
 			if (i - 1 >= 0 && (infix[i - 1] == '+' || infix[i - 1] == '-' || infix[i - 1] == '*' || infix[i - 1] == '/' || infix[i - 1] == '(')) //[no operand / not ')']  " - " [operand constanta] 
 			{
 				oznak = -1;
+				i++;
 			}
 			else if (i == 0)  //             [empty]  " - " [operand constanta] 
 			{
 				oznak = -1;
+				i++;
 			}
 
 		}
-		else if (infix[i] >= 97 && infix[i] <= 122)
+		if (infix[i] >= 97 && infix[i] <= 122)
 		{
 			if (i - 1 >= 0 && infix[i - 1] == ')')
 			{
-				cout << endl << endl << "There is a problem in symbol: " << i << " and " << i + 1 << endl << "Wrong input: Missing operation between ')' and '" << infix[i] << "'" << endl << endl;
-				exit(0);
+				if (!test) cout << endl << endl << "There is a problem in symbol: " << i << " and " << i + 1 << endl << " Missing operation between ')' and '" << infix[i] << "'" << endl << endl;
+				throw exception("Wrong input: can't find operation");
 			}
 
 
 
 			if (pos > 0 && (mas[pos - 1]->get_type() == 1 || mas[pos - 1]->get_type() == 2))
 			{
-				cout << endl << endl << "There is a problem in symbol: " << i << " and " << i + 1 << endl << "Wrong input: Two operands" << endl << endl;
-				exit(0);
+				if (!test) cout << endl << endl << "There is a problem in symbol: " << i << " and " << i + 1 << endl;
+				throw exception("Wrong input: Two operands in a row");
 			}
 
 			vars[infix[i]] = 0.0;
-			mas[pos] = new Var(infix[i], oznak);
+			mas[pos] = new Var(infix[i], oznak, alternative);
 			pos++;
 
 			oznak = 1;
@@ -296,28 +339,28 @@ void TPostfix::search(string infix)
 
 		//=============================[ operation (without " () " ]
 
-		else if (infix[i] == '+' || infix[i] == '-' || infix[i] == '*' || infix[i] == '/')
+		 if (infix[i] == '+' || infix[i] == '-' || infix[i] == '*' || infix[i] == '/')
 		{
 			if (i == 0)
 			{
-				cout << endl << endl << "There is a problem in first symbol" << endl << "Wrong input: Operation at the begining" << endl << endl;
-				exit(0);
+				if (!test) cout << endl << endl << "There is a problem in first symbol" << endl ;
+				throw exception("Wrong input: Operation at the begining");
 			}
 			if (i + 1 == infix.length())
 			{
-				cout << endl << endl << "There is a problem in last symbol" << endl << "Wrong input: Operation at the end" << endl << endl;
-				exit(0);
+				if (!test) cout << endl << endl << "There is a problem in last symbol" << endl ;
+				throw exception("Wrong input: Operation at the end");
 
 			}
 			if (mas[pos - 1]->get_type() == 3 && infix[i - 1] != ')')
 			{
-				cout << endl << endl << "There is a problem in symbol: " << i << " and " << i + 1 << endl << "Wrong input: Operation before operation" << endl << endl;
-				exit(0);
+				if (!test) cout << endl << endl << "There is a problem in symbol: " << i << " and " << i + 1 << endl ;
+				throw exception("Wrong input: Operation before operation");
 			}
 			if (infix[i + 1] == ')')
 			{
-				cout << endl << endl << "There is a problem in symbol: " << i + 1 << endl << "Wrong input: Operation have no operand next to him" << endl << endl;
-				exit(0);
+				if (!test) cout << endl << endl << "There is a problem in symbol: " << i + 1 << endl ;
+				throw exception("Wrong input: Operation have no operand next to him");
 			}
 			mas[pos] = new Operation(infix[i]);
 			pos++;
@@ -326,17 +369,17 @@ void TPostfix::search(string infix)
 
 		//=============================[ operation - () ]
 
-		else if (infix[i] == '(' || infix[i] == ')')
+		  if (infix[i] == '(' || infix[i] == ')')
 		{
 			if (infix[i] == '(' && (i - 1 >= 0 && infix[i - 1] != '+' && infix[i - 1] != '-' && infix[i - 1] != '*' && infix[i - 1] != '/' && infix[i - 1] != '('))
 			{
-				cout << endl << endl << "There is a problem in symbol: " << i << " and " << i + 1 << endl << "Wrong input: Missing operation between '" << infix[i - 1] << "' and '('" << endl << endl;
-				exit(0);
+				if (!test) cout << endl << endl << "There is a problem in symbol: " << i << " and " << i + 1 << endl << " Missing operation between '" << infix[i - 1] << "' and '('" << endl << endl;
+				throw exception("Wrong input : can't find operation");
 			}
 			if (infix[i] == ')' && ((pos > 0 && !(mas[pos - 1]->get_type() == 1 || mas[pos - 1]->get_type() == 2)) || (i > 0 && infix[i - 1] == '(')) && (i > 0 && infix[i - 1] != ')'))
 			{
-				cout << endl << endl << "There is a problem after symbol '(' and before symbol ')'  which placed before " << i + 1 << " symbol" << endl << "Wrong input: operand must be under parentheses" << endl << endl;
-				exit(0);
+				if (!test) cout << endl << endl << "There is a problem after symbol '(' and before symbol ')'  which placed before " << i + 1 << " symbol" << endl ;
+				throw exception("Wrong input: operand must be under parentheses");
 			}
 
 			if (infix[i] == '(')
@@ -352,8 +395,8 @@ void TPostfix::search(string infix)
 
 			if (count_c < 0)
 			{
-				cout << endl << endl << "There is a problem in symbol: " << i + 1 << endl << "Wrong input: Operation ')' is incorrect" << endl << endl;
-				exit(0);
+				if (!test) cout << endl << endl << "There is a problem in symbol: " << i + 1 << endl ;
+				throw exception("Wrong input: Operation ')' is incorrect");
 			}
 
 			mas[pos] = new Operation(infix[i]);
@@ -362,20 +405,20 @@ void TPostfix::search(string infix)
 
 		//=============================[ Thing what has not been included (trash) ]
 
-		else
+		 if((infix[i]!='+' && infix[i] != '-' && infix[i] != '*' && infix[i] != '/' && infix[i] != '(' && infix[i] != ')') && (infix[i]<97 || infix[i]>122)&&(infix[i] <'0'||infix[i]>'9' ))
 		{
-			cout << endl << endl << "There is a problem in " << i + 1 << " symbol !" << endl << " wrong input" << endl << endl;
-			exit(0);
+			 if (!test) cout << endl << endl << "There is a problem in " << i + 1 << " symbol !" << endl ;
+			throw exception(" Wrong input");
 		}
-
+		
 	}
 
-	cout << endl << endl;
+	if (!test)cout << endl << endl;
 
 	if (count_c != 0)
 	{
-		cout << endl << endl << "There is a problem in the whole input !" << endl << " wrong input: We have " << c_k1 << "'('  but  " << c_k2 << "')'" << endl << endl;
-		exit(0);
+		if (!test) cout << endl << endl << "There is a problem in the whole input !" << endl << " We have " << c_k1 << "'('  but  " << c_k2 << "')'" << endl ;
+		throw exception(" Wrong input: wrong number of parentheses");
 	}
 	L_Size = pos;
 
@@ -399,7 +442,7 @@ void TPostfix::search(string infix)
 
 
 
-void TPostfix::to_postfix_form()
+void TPostfix::to_postfix_form(bool alternative,bool test)
 {
 
 
@@ -440,7 +483,7 @@ void TPostfix::to_postfix_form()
 				while (postfixStack.Top() != '(')
 				{
 					postfix_mas[j++] = new Operation(postfixStack.Pop());
-
+					if (!test)cout << postfix_mas[j - 1]->get_lexem_m() << endl;
 				}
 				postfixStack.Pop();
 			}
@@ -448,18 +491,16 @@ void TPostfix::to_postfix_form()
 
 		if (mas[i]->get_type() == 3)
 		{
-			if (((mas[i]->get_lexem_m() == "+" || mas[i]->get_lexem_m() == "-") && (postfixStack.Top() == '*' || postfixStack.Top() == '/')) || ((mas[i]->get_lexem_m() == "+" || mas[i]->get_lexem_m() == "-") && (postfixStack.Top() == '+' || postfixStack.Top() == '-')))
+			if (mas[i]->get_priority()<= get_priority_outside(postfixStack.Top()))
 			{
-				postfix_mas[j++] = new Operation(postfixStack.Pop());
-				postfixStack.Push(mas[i]->get_char_op());
+				while (!postfixStack.isEmpty()    &&    (mas[i]->get_type()==3)   &&   (mas[i]->get_priority() <= get_priority_outside(postfixStack.Top())))
+				{
+					postfix_mas[j++] = new Operation(postfixStack.Pop());
+				}
 			}
-			else
-			{
 				postfixStack.Push(mas[i]->get_char_op());
-			}
-
+			
 		}
-
 
 	}
 
@@ -471,19 +512,24 @@ void TPostfix::to_postfix_form()
 
 
 
-	cout << endl << " Postfix :   ";
-
-	for (int i = 0; i < true_size; i++)
+	if (!test)
 	{
-		postfix_mas[i]->shop();
-	}
+		cout << endl << " Postfix :   ";
 
+
+		for (int i = 0; i < true_size; i++)
+		{
+			postfix_mas[i]->shop(alternative);
+		}
+
+	}
+	
 }
 
 
 
 
-void TPostfix::calculation()
+double TPostfix::calculation(bool test)
 {
 
 	//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
@@ -506,32 +552,37 @@ void TPostfix::calculation()
 
 	double ss;
 
-	cout << endl << "Before start calculate." << std::endl;
+	if (!test) cout << endl << "Before start calculate." << std::endl;
 
-	cout << endl << endl << "Input variables :" << endl << endl;
+	if (!test) cout << endl << endl << "Input variables :" << endl << endl;
 
 	for (auto i = vars.begin(); i != vars.end(); i++)
 	{
-		cout << "Input " << i->first << " value: " << std::endl;
+		if (!test)cout << "Input " << i->first << " value: " << std::endl;
 		std::cin >> ss;
 		vars[i->first] = ss;
+		j++;
+	}
+	if (j == 0)
+	{
+		if (!test) cout << "   ( There are no variables )" << endl<<endl<<endl;
 	}
 
-	cout << endl << "Operands in postfix form :" << endl;
+	if (!test) cout << endl << "Operands in postfix form :" << endl;
 
 	for (int i = 0; i < true_size; i++)
 	{
 		if (postfix_mas[i]->get_type() == 1)
 		{
 			calc.Push(postfix_mas[i]->get_double());
-			cout << "     const :" << postfix_mas[i]->get_double();
+			if (!test) cout << "     const :" << postfix_mas[i]->get_double();
 		}
 		else if (postfix_mas[i]->isOperand())
 		{
 			double znak_k = postfix_mas[i]->get_double();
 			vars[postfix_mas[i]->get_char_op()] *= znak_k;
 			calc.Push(vars[postfix_mas[i]->get_char_op()]);
-			cout << "     var :" << vars[postfix_mas[i]->get_char_op()];
+			if (!test) cout << "     var :" << vars[postfix_mas[i]->get_char_op()];
 
 		}
 
@@ -566,10 +617,10 @@ void TPostfix::calculation()
 			{
 				two = calc.Pop();
 				one = calc.Pop();
-				if (two < 0.00000000000001)
+				if (abs(two) < 0.00000000000001)
 				{
-					cout << endl << endl << "There is a problem in the whole input !" << endl << " wrong input: We have division by zero |  " << one << "/0  |" << endl << endl;
-					exit(0);
+					if (!test) cout << endl << endl << "There is a problem in the whole input !" << endl << " We have division by zero |  " << one << "/0  |" << endl ;
+					throw exception("wrong input : can't divide by zero");
 				}
 				calc.Push(one / two);
 
@@ -583,7 +634,8 @@ void TPostfix::calculation()
 	}
 
 	res = calc.Pop();
-	cout << endl << endl << "Resultat : " << res;
+	return res;
+	
 
 }
 
@@ -593,22 +645,38 @@ void TPostfix::calculation()
 
 
 
-void TPostfix::checked_infix()
+void TPostfix::checked_infix(bool alternative)
 {
-
+	int minuses = 0;
 	cout << "Checked Infix : ";
 	for (int l_r = 0; l_r < L_Size; l_r++)
 	{
 		cout << mas[l_r]->show();
+		if (alternative)
+		{
+			if (mas[l_r]->get_double() < 0)
+			{
+				minuses++;
+			}
+		}
 	}
 
 	cout << endl << endl << "Amount of Chars :  " << infix_len << endl;
-	cout << endl << "Amount of Lexems :  " << L_Size << endl;
+	if (alternative)
+	{
+		cout << endl << "Amount of Lexems :  " << L_Size + minuses << endl;
+	}
+	else
+	{
+		cout << endl << "Amount of Lexems :  " << L_Size  << endl;
+	}
 
 
+	
+	
 
 	cout << endl << endl << " Size is: " << L_Size;
-	cout << endl << " But postfix size is: " << true_size;
+	cout << endl << " But postfix size is: " << true_size+ minuses;
 
 
 
@@ -616,6 +684,105 @@ void TPostfix::checked_infix()
 
 
 
+
+void TPostfix::get_full_information(bool alternative)
+{
+	cout << endl;
+	cout << endl;
+	cout <<"-------------------------------------------------------------------------"<< endl;
+	cout << endl;
+	cout <<"                [ Whole information about postfix form ]                 "<< endl;
+	cout << endl;
+	cout << "-------------------------------------------------------------------------" << endl;
+	cout << endl;
+	cout <<"- - - - - - -(| Amount of char in infix form: "<<infix_len<< endl;
+	cout <<"- - - - - - -(| Amount of elements in infix form: "<< L_Size<< endl;
+	cout <<"- - - - - - -(| Amount of elements in postfix form: "<< true_size<<"                ( whithout parentheses )"<< endl;
+	
+	int numbOfOperands = 0;
+	int numbOfConst = 0;
+	int numbOfVars = 0;
+	int numbOfOperations = 0;
+
+	for (int i = 0; i < true_size; i++)
+	{
+		numbOfOperands += postfix_mas[i]->isOperand();
+		if (postfix_mas[i]->isOperand())
+		{
+			if (postfix_mas[i]->get_type() == 1)
+			{
+				numbOfConst++;
+			}
+			if (postfix_mas[i]->get_type() == 2)
+			{
+				numbOfVars++;
+			}
+		}
+		numbOfOperations += postfix_mas[i]->isOperation();
+	}
+
+	cout << endl;
+	cout << endl;
+	cout << "- - - - - - -(| Amount of operands: "<< numbOfOperands << endl;
+	cout << "-   -   -   -   -   -   -< amount of constants: "<< numbOfConst <<endl;
+	cout << "-   -   -   -   -   -   -< amount of variables: "<< numbOfVars <<endl;
+	cout << "- - - - - - -(| Amount of operations: " << numbOfOperations << endl;
+	cout << endl;
+	cout << endl;
+	cout << endl;
+	cout << endl;
+	TPostfix::get_quick_info(alternative);
+	cout << endl;
+	cout << endl;
+}
+
+
+
+void TPostfix::get_quick_info(bool alternative)
+{
+	for (int i = 0; i < true_size; i++)
+	{
+		string ans = "No";
+		
+		if (alternative && postfix_mas[i]->isOperand())
+		{
+			cout << endl << endl << endl << "     (" << i + 1 << ")  element: [ " << postfix_mas[i]->get_alter_lexem_m() << " ]" << endl;
+		}
+		else
+		{
+			cout << endl << endl << endl << "     (" << i + 1 << ")  element: [ " << postfix_mas[i]->get_lexem_m() << " ]" << endl;
+		}
+		
+
+		if (postfix_mas[i]->isOperand())
+		{
+			if (postfix_mas[i]->get_double() < 0.0)
+			{
+				ans = "Yes";
+			}
+			cout <<endl<< "- - - -| Is there a unary minus ?     --->     Answer <" << ans <<">"<< endl;
+
+			ans = "No";
+
+			if (postfix_mas[i]->get_type() == 2) // x,y,z
+			{
+				cout << endl << "- - - -| Type of element:  [Operand] - (variable)" << endl;
+				cout << endl << "- - - -| Double:      <  " << vars[postfix_mas[i]->get_char_op()] << "  >" << endl;
+			}
+			if (postfix_mas[i]->get_type() == 1)
+			{
+				cout << endl << "- - - -| Type of element:  [Operand] - (constant)" << endl;
+				cout << endl << "- - - -| Double:      <  " << postfix_mas[i]->get_double() << "  >" << endl;
+			}
+		}
+		if (postfix_mas[i]->isOperation())
+		{
+			cout << endl << "- - - -| Type of element:  [Operation]" << endl;
+			cout << endl << "- - - -| Operation priority: " << postfix_mas[i]->get_priority();
+		}
+	}
+
+}
 
 
 //------------------------------------------------|)
@@ -624,7 +791,6 @@ void TPostfix::checked_infix()
 string without_spaces(string infix)
 {
 	infix.erase(remove_if(infix.begin(), infix.end(), ::isspace), infix.end());
-	cout << infix;
 	return infix;
 }
 
@@ -640,8 +806,47 @@ int get_priority_outside(char a)
 		return 2;
 		break;
 
+	case '(': case ')':
+		return 0;
+		break;
+
 	default:
 		break;
 	}
 
+}
+
+
+
+
+
+bool choice()
+{
+	bool alternative;
+	while (true)
+	{
+		int choice;
+		cout << endl;
+		cout << " How you want to see unary minus:" << endl;
+		cout << " (1)  -x" << endl;
+		cout << " (2)  x  ~                             (like two different lexems)" << endl;
+		cout << endl;
+		cout << "My choice: ";
+		cin >> choice;
+		if (choice == 1)
+		{
+			alternative = false;
+			break;
+		}
+		else if (choice == 2)
+		{
+			alternative = true;
+			break;
+		}
+		else
+		{
+			cout << " incorrect answer.  Try again" << endl;
+		}
+	}
+	return alternative;
 }
