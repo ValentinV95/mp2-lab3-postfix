@@ -191,7 +191,7 @@ void TPostfix::init_infix()
 				error_index = i;
 			}
 
-			if (start_eq[i] == '-' && (i == 0 || (!isOperand(start_eq[i - 1]) && !isVar(start_eq[i - 1]))))
+			if (start_eq[i] == '-' && (i == 0 || (!isOperand(start_eq[i - 1]) && !isVar(start_eq[i - 1]) && start_eq[i-1] != ')')))
 				infix_form[index] = new Operator('~');
 			else
 				infix_form[index] = new Operator(start_eq[i]);
@@ -296,34 +296,24 @@ double TPostfix::resolve()
 	return S.pop();
 }
 
-void TPostfix::infix_show()
+std::string TPostfix::get_infixLexem()
 {
 	std::cout << "your infix form:" << std::endl;
+	std::string out;
 	for (size_t i = 0; i < infix_size; i++)
-	{
-		std::cout << infix_form[i]->show();
-	}
-	std::cout << "\n";
+		out += infix_form[i]->show();
+
+	return out;
 }
 
-void TPostfix::postfix_show()
+std::string TPostfix::get_postfixLexem()
 {
 	std::cout << "your postfixfix form:" << std::endl;
+	std::string out;
 	for (size_t i = 0; i < postfix_size; i++)
-	{
-		std::cout << postfix_form[i]->show();
-	}
-	std::cout << "\n";
-}
+		out += postfix_form[i]->show();
 
-std::string TPostfix::get_infixLexem(const size_t id) //only for test
-{
-	return infix_form[id]->show();
-}
-
-std::string TPostfix::get_postfixLexem(const size_t id)  //only for test
-{
-	return postfix_form[id]->show();
+	return out;
 }
 
 TPostfix::~TPostfix()

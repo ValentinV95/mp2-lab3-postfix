@@ -102,33 +102,31 @@ TEST(Postfix, correct_posfix_constract)
 TEST(Postfix, correct_convert_in_infix_form)
 {
 	TPostfix A("a*4,35-87");
-	Lexems* B[5];
-	B[0] = new Var('a');
-	B[1] = new Operator('*');
-	B[2] = new Operand("4,35");
-	B[3] = new Operator('-');
-	B[4] = new Operand("87");
-	EXPECT_EQ(B[0]->show(), A.get_infixLexem(0));
-	EXPECT_EQ(B[1]->show(), A.get_infixLexem(1));
-	EXPECT_EQ(B[2]->show(), A.get_infixLexem(2));
-	EXPECT_EQ(B[3]->show(), A.get_infixLexem(3));
-	EXPECT_EQ(B[4]->show(), A.get_infixLexem(4));
+	EXPECT_EQ("a*4,35-87", A.get_infixLexem());
+}
+
+TEST(Postfix, correct_convert_unary_minus_instart)
+{
+	TPostfix A("-56*x");
+	EXPECT_EQ("~56*x", A.get_infixLexem());
+}
+
+TEST(Postfix, correct_convert_unary_minus_afteroperation)
+{
+	TPostfix A("56*-x");
+	EXPECT_EQ("56*~x", A.get_infixLexem());
+}
+
+TEST(Postfix, correct_convert_twice_bracket)
+{
+	TPostfix A("((46-x)+89)/4");
+	EXPECT_EQ("((46-x)+89)/4", A.get_infixLexem());
 }
 
 TEST(Postfix, correct_convert_in_postfix_form)
 {
 	TPostfix A("a*4,35-87");
-	Lexems* B[5];
-	B[0] = new Var('a');
-	B[1] = new Operand("4,35");
-	B[2] = new Operator('*');
-	B[3] = new Operand("87");
-	B[4] = new Operator('-');
-	EXPECT_EQ(B[0]->show(), A.get_postfixLexem(0));
-	EXPECT_EQ(B[1]->show(), A.get_postfixLexem(1));
-	EXPECT_EQ(B[2]->show(), A.get_postfixLexem(2));
-	EXPECT_EQ(B[3]->show(), A.get_postfixLexem(3));
-	EXPECT_EQ(B[4]->show(), A.get_postfixLexem(4));
+	EXPECT_EQ("a4,35*87-", A.get_postfixLexem());
 }
 
 TEST(Postfix, throw_when_no_correct_use_bracket_end)
