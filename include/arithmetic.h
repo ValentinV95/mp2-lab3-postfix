@@ -84,7 +84,6 @@ public:
 	void init_postfix();
 	void correctChecker(const size_t& i, const size_t index);
 	double resolve();
-	void selectVar(size_t i);
 	std::string get_infixLexem();
 	std::string get_postfixLexem();
 	~TPostfix();
