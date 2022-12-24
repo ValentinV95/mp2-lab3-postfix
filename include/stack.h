@@ -15,7 +15,7 @@ class Stack
 private:
 	T* data = nullptr;
 	int index = -1;
-	int real_size = 10;
+	int real_size = 2;
 public:
 	Stack()
 	{

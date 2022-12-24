@@ -139,7 +139,7 @@ TEST(TArithmetic, can_calculate_correct_infix3)
 
 TEST(TArithmetic, can_calculate_correct_infix2)
 {
-	std::string infix1 = "14+(1+3)";
+	std::string infix1 = "14+(1+3)+(-17E+5 + 14E+5 + 3E+5)/1";
 	Arithmetic try1(infix1);
 	double res = try1.Calculate();
 	EXPECT_EQ(res, 18);

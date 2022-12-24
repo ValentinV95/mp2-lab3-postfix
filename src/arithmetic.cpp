@@ -58,6 +58,7 @@ Arithmetic::Operation::Operation(char ch, int pos_start, int pos_end)
 	else if (ch == ')' || ch == '(')
 	{
 		name = "Brackets";
+		priority = 0;
 	}
 	lexem = ch;
 	this->pos_start = pos_start;
@@ -609,7 +610,7 @@ void Arithmetic::Postfix()
 				}
 			}
 		}
-		else if (lexems[i]->LexemType() == "BinaryOperation")
+		else if (lexems[i]->LexemType() == "BinaryOperation") 
 		{
 			while (!st.IsEmpty())
 			{
