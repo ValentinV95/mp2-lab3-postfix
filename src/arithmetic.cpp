@@ -53,16 +53,11 @@ void TArithmetic::Operation::SetValue(const string& val)
 
 double TArithmetic::Operand::toNumeric(const string& strlex)
 {
-	const int strlex_size = strlex.size();
 	double degree_indicator = 0.0;
 	double set_value = 0.0;
 	double sign = 1.0;
-
-	const int point_index = strlex.find('.');
-	const int e_index = strlex.find('e');
-
-	string after_e = "";
 	double e_degree_indicator = 0.0;
+	string after_e = "";
 
 	if (strlex[0] == '-')
 	{
@@ -73,25 +68,25 @@ double TArithmetic::Operand::toNumeric(const string& strlex)
 	{
 		degree_indicator--;
 	}
-	if (point_index == string::npos)
+	if (strlex.find('.') == string::npos)
 	{
-		if (e_index != string::npos)
+		if (strlex.find('e') != string::npos)
 		{
-			degree_indicator += e_index;
+			degree_indicator += strlex.find('e');
 		}
 		else
 		{
-			degree_indicator += strlex_size;
+			degree_indicator += strlex.size();
 		}
 	}
 	else
 	{
-		degree_indicator += point_index;
+		degree_indicator += strlex.find('.');
 
 	}
-	if (e_index != string::npos)
+	if (strlex.find('e') != string::npos)
 	{
-		for (int i = e_index + 1; i < strlex_size; i++)
+		for (int i = strlex.find('e') + 1; i < strlex.size(); i++)
 		{
 			after_e += strlex[i];
 		}
@@ -108,7 +103,7 @@ double TArithmetic::Operand::toNumeric(const string& strlex)
 			set_value += (symb - '0') * pow(10.0, --degree_indicator);
 		}
 	}
-	if (e_index != string::npos)
+	if (strlex.find('e') != string::npos)
 	{
 		set_value *= pow(10.0, e_degree_indicator);
 	}
@@ -154,49 +149,36 @@ bool TArithmetic::find_operation(const char& tmplex)
 
 bool TArithmetic::isDigit(const char& tmplex)
 {
-	if (tmplex >= '0' && tmplex <= '9')
-	{
-		return true;
-	}
-	return false;
+	return (tmplex >= '0') && (tmplex <= '9');
 }
 
 bool TArithmetic::isAlpha(const char& tmplex)
 {
-	if (tmplex >= 'a' && tmplex <= 'z')
-	{
-		return true;
-	}
-	return false;
+	return (tmplex >= 'a') && (tmplex <= 'z');
 }
 
 const string TArithmetic::find_error()
 {
-	const int max_i = infix.size() - 1;
-
 	int open_count = 0;
 	int close_count = 0;
 	bool e_already_exists = false;
 	bool point_already_exists = false;
-
-	char sym = infix[0];
-	char nSym;
+	char nSym;  // next
 	string wrong_infix = "Unexpected lexem: ";
 
-	wrong_infix += sym;
-	if (sym != '-' && !isAlpha(sym) && !isDigit(sym) && sym != '(')
+	wrong_infix += infix[0];
+	if (infix[0] != '-' && !isAlpha(infix[0]) && !isDigit(infix[0]) && infix[0] != '(')
 	{
 		return wrong_infix + "<-";
 	}
 	else
 	{
-		for (int i = 0; i < max_i; i++)
+		for (int i = 0; i < infix.size() - 1; i++)
 		{
-			sym = infix[i];
 			nSym = infix[i + 1];
 			wrong_infix += nSym;
 
-			if (sym == '(')
+			if (infix[i] == '(')
 			{
 				open_count++;
 				if (nSym != '(' && nSym != '-' && (!isAlpha(nSym) || nSym == 'e') && !isDigit(nSym))
@@ -204,7 +186,7 @@ const string TArithmetic::find_error()
 					return wrong_infix + "<-";
 				}
 			}
-			else if (sym == ')')
+			else if (infix[i] == ')')
 			{
 				e_already_exists = false;
 				point_already_exists = false;
@@ -214,7 +196,7 @@ const string TArithmetic::find_error()
 					return wrong_infix + "<-";
 				}
 			}
-			else if (find_operation(sym))
+			else if (find_operation(infix[i]))
 			{
 				if (i != 0 && infix[i - 1] != 'e')
 				{
@@ -226,14 +208,14 @@ const string TArithmetic::find_error()
 					return wrong_infix + "<-";
 				}
 			}
-			else if (isAlpha(sym) && sym != 'e')
+			else if (isAlpha(infix[i]) && infix[i] != 'e')
 			{
 				if (!isAlpha(nSym) && (nSym == '(' || !find_operation(nSym)))
 				{
 					return wrong_infix + "<-";
 				}
 			}
-			else if (isDigit(sym))
+			else if (isDigit(infix[i]))
 			{
 				if (nSym == '.')
 				{
@@ -247,7 +229,7 @@ const string TArithmetic::find_error()
 					return wrong_infix + "<-";
 				}
 			}
-			else if (sym == '.')
+			else if (infix[i] == '.')
 			{
 				point_already_exists = true;
 				if (!isDigit(nSym) && nSym != 'e' && (!find_operation(nSym) || nSym == '('))
@@ -255,7 +237,7 @@ const string TArithmetic::find_error()
 					return wrong_infix + "<-";
 				}
 			}
-			else if (sym == 'e')
+			else if (infix[i] == 'e')
 			{
 				e_already_exists = true;
 				if (i == 0)
@@ -273,12 +255,12 @@ const string TArithmetic::find_error()
 			}
 		}
 	}
-	sym = infix[max_i];
-	if (sym == ')')
+	char lSym = infix[infix.size() - 1];  // last
+	if (lSym == ')')
 	{
 		close_count++;
 	}
-	else if ((!isAlpha(sym) || sym == 'e') && !isDigit(sym) && (sym != '.' || point_already_exists || e_already_exists))
+	else if ((!isAlpha(lSym) || lSym == 'e') && !isDigit(lSym) && (lSym != '.' || point_already_exists || e_already_exists))
 	{
 		return wrong_infix += "<-";
 	}
@@ -291,31 +273,28 @@ const string TArithmetic::find_error()
 
 bool TArithmetic::check_input(const string& inp)
 {
-	const int max_i = inp.size() - 1;
-	char sym = inp[0];
-	char nSym;
-	char pSym;
+	char nSym;  // next
+	char pSym;  // previous
 	bool e_already_exists = false;
 	bool point_already_exists = false;
 
-	if (sym != '-' && !isDigit(sym))
+	if (inp[0] != '-' && !isDigit(inp[0]))
 	{
 		return false;
 	}
-	for (int i = 1; i < max_i; i++)
+	for (int i = 1; i < inp.size() - 1; i++)
 	{
-		sym = inp[i];
 		nSym = inp[i + 1];
 		pSym = inp[i - 1];
 
-		if (isDigit(sym))
+		if (isDigit(inp[i]))
 		{
 			if (!isDigit(nSym) && nSym != '.' && nSym != 'e')
 			{
 				return false;
 			}
 		}
-		else if (sym == '.')
+		else if (inp[i] == '.')
 		{
 			if (point_already_exists || e_already_exists || !isDigit(pSym) || !isDigit(nSym) && nSym != 'e')
 			{
@@ -323,7 +302,7 @@ bool TArithmetic::check_input(const string& inp)
 			}
 			point_already_exists = true;
 		}
-		else if (sym == 'e')
+		else if (inp[i] == 'e')
 		{
 			if (e_already_exists || !isDigit(pSym) && pSym != '.' || !isDigit(nSym) && nSym != '-' && nSym != '+')
 			{
@@ -331,7 +310,7 @@ bool TArithmetic::check_input(const string& inp)
 			}
 			e_already_exists = true;
 		}
-		else if (sym == '-' || sym == '+')
+		else if (inp[i] == '-' || inp[i] == '+')
 		{
 			if (pSym != 'e' || !isDigit(nSym))
 			{
@@ -343,7 +322,7 @@ bool TArithmetic::check_input(const string& inp)
 			return false;
 		}
 	}
-	if (!isDigit(inp[max_i]) && (inp[max_i] != '.' || point_already_exists || e_already_exists))
+	if (!isDigit(inp[inp.size() - 1]) && (inp[inp.size() - 1] != '.' || point_already_exists || e_already_exists))
 	{
 		return false;
 	}
@@ -352,29 +331,24 @@ bool TArithmetic::check_input(const string& inp)
 
 void TArithmetic::parser()
 {
-	const int infix_size = infix.size();
 	string multilex = "_";  // a constant or variable name will be built here, '_' as empty lexem
 	int j = -1;
-	char lex;
-
-	for (int i = 0; i < infix_size; i++)
+	for (int i = 0; i < infix.size(); i++)
 	{
-		lex = infix[i];
-
-		if (find_operation(lex) && multilex[multilex.size() - 1] != 'e')
+		if (find_operation(infix[i]) && multilex[multilex.size() - 1] != 'e')
 		{
-			if (lex == '-' && (i == 0 || (find_operation(infix[i - 1]) && infix[i - 1] != ')')))
+			if (infix[i] == '-' && (i == 0 || (find_operation(infix[i - 1]) && infix[i - 1] != ')')))
 			{
 				lexems[++j] = new Operation('~');
 			}
 			else
 			{
-				if (lex == '(' || lex == ')')
+				if (infix[i] == '(' || infix[i] == ')')
 				{
 					postfix_count--;  // postfix form does not contain brackets
 				}
-				if (i != 0 && infix[i - 1] != ')' && lex != '(')  // if we encountered a binary operation,
-				{                                                 // then there was an operand or bracket before that
+				if (i != 0 && infix[i - 1] != ')' && infix[i] != '(')  // if we encountered a binary operation,
+				{                                                      // then there was an operand or bracket before that
 					if (isDigit(infix[i - 1]) || infix[i - 1] == '.')
 					{
 						lexems[++j] = new Constant(multilex);
@@ -385,7 +359,7 @@ void TArithmetic::parser()
 					}
 					multilex = "_";
 				}
-				lexems[++j] = new Operation(lex);
+				lexems[++j] = new Operation(infix[i]);
 			}
 			operations_count++;
 		}
@@ -393,17 +367,17 @@ void TArithmetic::parser()
 		{
 			if (multilex == "_")
 			{
-				multilex = lex;
+				multilex = infix[i];
 			}
 			else
 			{
-				multilex += lex;
+				multilex += infix[i];
 			}
 		}
 	}
-	if (lex != ')')
+	if (infix[infix.size() - 1] != ')')
 	{
-		if (isDigit(lex) || lex == '.')
+		if (isDigit(infix[infix.size() - 1]) || infix[infix.size() - 1] == '.')
 		{
 			lexems[++j] = new Constant(multilex);
 		}
@@ -420,49 +394,33 @@ void TArithmetic::toPostfix()
 {
 	const int operations_size = (operations_count == 0) ? 1 : operations_count;  // Stack size does not be zero
 	Stack<Lexem*> operations(operations_size);
-
-	Lexem* this_top;
-	Lexem* lex;
-
 	int j = -1;
-
 	for (int i = 0; i < lexems_count; i++)
 	{
 		if (lexems[i]->what() == "Operation")
 		{
-			lex = lexems[i];
 			if (!operations.isEmpty())
 			{
-				this_top = operations.show_top();
-				if (lex->Get() == ")")
+				if (lexems[i]->Get() == ")")
 				{
 					operations_count -= 2;
-					while (this_top->Get() != "(")
+					while (operations.show_top()->Get() != "(")
 					{
 						postfix[++j] = operations.pop();
-						this_top = operations.show_top();
 					}
 					operations.pop();  // pop "("
 				}
-				else if (lex->Get() != "(" && lex->Get() != "~")
+				else if (lexems[i]->Get() != "(" && lexems[i]->Get() != "~")
 				{
-					while (this_top->Value() >= lex->Value())
+					while (!operations.isEmpty() && operations.show_top()->Value() >= lexems[i]->Value())
 					{
 						postfix[++j] = operations.pop();
-						if (operations.isEmpty())
-						{
-							break;
-						}
-						else
-						{
-							this_top = operations.show_top();
-						}
 					}
 				}
 			}
-			if (lex->Get() != ")")
+			if (lexems[i]->Get() != ")")
 			{
-				operations.push(lex);
+				operations.push(lexems[i]);
 			}
 		}
 		else
@@ -492,7 +450,6 @@ TArithmetic::TArithmetic(const string& inf) : infix(inf)
 const string TArithmetic::GetPostfix() const
 {
 	string tmp = postfix[0]->Get();
-
 	for (int i = 1; i < postfix_count; i++)
 	{
 		if (postfix[i]->Get() == "~")
@@ -511,61 +468,53 @@ const double TArithmetic::Calculate()
 {
 	Stack<double> values(postfix_count - operations_count);
 	std::map<string, string> operands;
-
 	string input_value;
-	Lexem* this_lex;
 	int i;
-
 	for (i = 0; i < postfix_count; i++)
 	{
-		this_lex = postfix[i];
-
-		if (this_lex->what() == "Variable")
+		if (postfix[i]->what() == "Variable")
 		{
-			if (!operands.count(this_lex->Get()))
+			if (!operands.count(postfix[i]->Get()))
 			{
-				std::cout << std::endl << this_lex->Get() << " = ";
+				std::cout << std::endl << postfix[i]->Get() << " = ";
 				std::getline(std::cin, input_value);  // space-controlled input
 
 				if (!check_input(input_value))
 				{
 					throw "Bad input: " + input_value;
 				}
-				operands.insert({ this_lex->Get(), input_value });
+				operands.insert({ postfix[i]->Get(), input_value });
 			}
-			postfix[i]->SetValue(operands[this_lex->Get()]);
+			postfix[i]->SetValue(operands[postfix[i]->Get()]);
 		}
 	}
-
 	double rvalue;
 	double lvalue;
 	for (i = 0; i < postfix_count; i++)
 	{
-		this_lex = postfix[i];
-
-		if (this_lex->what() == "Constant" || this_lex->what() == "Variable")
+		if (postfix[i]->what() == "Constant" || postfix[i]->what() == "Variable")
 		{
-			values.push(this_lex->Value());
+			values.push(postfix[i]->Value());
 		}
 		else
 		{
-			if (this_lex->Get() == "~")
+			if (postfix[i]->Get() == "~")
 			{
 				values.push(-values.pop());
 			}
-			else if (this_lex->Get() == "+")
+			else if (postfix[i]->Get() == "+")
 			{
 				values.push(values.pop() + values.pop());
 			}
-			else if (this_lex->Get() == "-")
+			else if (postfix[i]->Get() == "-")
 			{
 				values.push(-values.pop() + values.pop());  // like '+' but with a MINUS for the first value
 			}
-			else if (this_lex->Get() == "*")
+			else if (postfix[i]->Get() == "*")
 			{
 				values.push(values.pop() * values.pop());
 			}
-			else if (this_lex->Get() == "/")
+			else if (postfix[i]->Get() == "/")
 			{
 				rvalue = values.pop();
 				if (rvalue == 0.0)

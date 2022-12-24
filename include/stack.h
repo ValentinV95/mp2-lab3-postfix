@@ -8,7 +8,7 @@
 // - очистка стека
 // при вставке в полный стек должна перевыделяться память
 
-template<typename T>
+template<class T>
 class Stack
 {
 private:
