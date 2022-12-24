@@ -14,7 +14,6 @@ TPostfix::TPostfix(string expr) :inputStr(expr)
 	{
 		throw ex;
 	}
-	this->lexemToPostfix();
 }
 
 double TPostfix::stringToDouble(string numStr)
@@ -133,17 +132,16 @@ void TPostfix::inputCheck()
 		}
 		else if (funcs.find(cur) != funcs.end() && cur[0] != '~')
 		{
-			if (lexemVec[++i]->show()[0] != '(')
+			if (lexemVec[i+1]->show()[0] != '(')
 			{
 				string error = "Error in position " + to_string(pos.first) +
 					"\nAfter function expected '(' !";
 				throw exception(error.c_str());
 			}
-			skob.push(new Operation(string(1, '('), SKOB, lexemVec[i]->getPos()));
 		}
 		else if (cur[0] == '~')
 		{
-			if (!lexemVec[i + 1]->isOperand() && next[0] != '~' && funcs.find(next) == funcs.end())
+			if (!lexemVec[i + 1]->isOperand() && next[0] != '(' && funcs.find(next) == funcs.end())
 			{
 				string error = "Error in position " + to_string(pos.first) +
 					"\nAfter unary - expected operand, '(' or function !";
@@ -208,7 +206,7 @@ void TPostfix::inputCheck()
 			error += to_string(skob.top()->getPos().first) + ", ";
 			skob.pop();
 		}
-		error += "\nFind ')' before which there was no '(' !";
+		error += "\nFor '(' does not exist ')' !";
 		throw exception(error.c_str());
 	}
 }
@@ -245,9 +243,9 @@ void TPostfix::inputToLexem()
 		{
 			lexemVec.push_back(new Operation(string(1, '^'), POW, make_pair(i, i)));
 		}
-		else if (static_cast<int>(inputStr[i]) > 96 && static_cast<int>(inputStr[i]) < 123)
+		else if (inputStr[i] >= 'a' && inputStr[i] <= 'z')
 		{
-			if ((static_cast<int>(inputStr[i + 1]) < 96 || static_cast<int>(inputStr[i + 1]) > 123))
+			if (inputStr[i+1] < 'a' || inputStr[i+1] > 'z')
 			{
 				if (vars.find(inputStr[i]) == string::npos)
 				{
@@ -259,7 +257,7 @@ void TPostfix::inputToLexem()
 			{
 				string substr;
 
-				while (static_cast<int>(inputStr[i]) > 96 && static_cast<int>(inputStr[i]) < 123)
+				while (inputStr[i] >= 'a' && inputStr[i] <= 'z')
 				{
 					substr.push_back(inputStr[i]);
 					i++;
@@ -274,7 +272,7 @@ void TPostfix::inputToLexem()
 				i--;
 			}
 		}
-		else
+		else if (inputStr[i] >= '0' && inputStr[i] <= '9')
 		{
 			string substr;
 			string posSymInNum("0123456789.e+-");
@@ -300,10 +298,10 @@ void TPostfix::inputToLexem()
 					{
 						break;
 					}
-					if (i == inputStr.size() || (int(inputStr[i + 1]) - '0' > 9) || (int(inputStr[i + 1]) - '0' < 0))
+					if (i == inputStr.size() || (inputStr[i + 1] > '9') || (inputStr[i + 1] < '0'))
 					{
 						string error = "Error in positions " + to_string(i - substr.length()) + " to " +
-							to_string(i - 1) + "\nError in exponential form of number, after e and +/- expected power !";
+							to_string(i + 1) + "\nError in exponential form of number, after e and +/- expected power !";
 						throw exception(error.c_str());
 					}
 				}
@@ -325,12 +323,17 @@ void TPostfix::inputToLexem()
 			lexemVec.push_back(new Const(substr, stringToDouble(substr), make_pair(i - substr.length(), i - 1)));
 			i--;
 		}
+		else
+		{
+			string error = "Error in position " + to_string(i) +
+				"\nInvalid character in string !";
+			throw exception(error.c_str());
+		}
 	}
 }
 
-void TPostfix::lexemToPostfix()
+void TPostfix::toPostfix()
 {
-	vector<Lexem*> postfix;
 	TStack<Operation*> operations;
 
 	for (auto& lexem : lexemVec)
@@ -385,7 +388,7 @@ void TPostfix::lexemToPostfix()
 		postfix.push_back(operations.top());
 		operations.pop();
 	}
-	lexemVec = postfix;
+	isPostfix = true;
 }
 
 double TPostfix::calculatePostfix()
@@ -397,7 +400,7 @@ double TPostfix::calculatePostfix()
 		cout << "Enter value of " << var << ": ";
 		cin >> varsValues[var];
 	}
-	for (auto& lexem : lexemVec)
+	for (auto& lexem : postfix)
 	{
 		if (lexem->isOperand())
 		{
@@ -408,51 +411,53 @@ double TPostfix::calculatePostfix()
 			if (binOpers.find(lexem->show()) != string::npos)
 			{
 				Lexem* op = lexem;
-				if(operands.isEmpty())
-				{
-					string error = "Not found operand for operation " + op->show() +
-						", position of operation: " + to_string(op->getPos().first);
-					throw exception(error.c_str());
-				}
 				Operand* second = operands.top();
 				operands.pop();
-				if (operands.isEmpty())
-				{
-					string error = "Not found operand for operation " + op->show() +
-						", position of operation: " + to_string(op->getPos().first);
-					throw exception(error.c_str());
-				}
 				Operand* first = operands.top();
 				operands.pop();
 				operands.push(applyOperation(op, first, second));
+				if(first->show().find("res") != string::npos)
+				{
+					delete first;
+				}
+				if (second->show().find("res") != string::npos)
+				{
+					delete second;
+				}
 			}
 			else
 			{
 				Lexem* fun = lexem;
-				if (operands.isEmpty())
-				{
-					string error = "Not found operand for function " + fun->show() +
-						", position of function: " + to_string(fun->getPos().first) + " to " + to_string(fun->getPos().second);
-					throw exception(error.c_str());
-				}
 				Operand* operand = operands.top();
 				operands.pop();
 				operands.push(applyPrefFun(fun, operand));
+				if (operand->show().find("res") != string::npos)
+				{
+					delete operand;
+				}
 			}
 		}
 	}
-	return operands.top()->getValue();
+	double res = operands.top()->getValue();
+	if (operands.top()->show().find("res") != string::npos)
+	{
+		delete operands.top();
+	}
+	return res;
 }
 
 double TPostfix::calculate()
 {
-	return calculatePostfix();
+	if (isPostfix)
+		return calculatePostfix();
+	else
+		throw exception("Can`t calculate expression without translate to postfix!");
 }
 
 string TPostfix::getPostfixStr()
 {
 	string res;
-	for(auto &lexem : lexemVec)
+	for(auto &lexem : postfix)
 	{
 		res += lexem->show();
 	}

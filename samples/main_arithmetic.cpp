@@ -6,10 +6,12 @@ int main()
     string line("\n----------------------------------------------------------\n");
     cout << line << "Enter an arifmetic expression: " << line;
     string expr;
-    cin >> expr;
+    getline(cin, expr);
+    expr.erase(remove(expr.begin(), expr.end(), ' '), expr.end());
     try
     {
         TPostfix arifm(expr);
+        arifm.toPostfix();
         int choice = 1;
         do
         {
@@ -23,5 +25,6 @@ int main()
     {
         cout << ex.what() << endl;
     }
+
     return 0;
 }

@@ -59,7 +59,7 @@ public:
 
 	virtual const string& show() { return this->repr; }
 
-	virtual const bool isOperand() { return true; }
+	const bool isOperand() { return true; }
 
 	virtual const double getValue() = 0;
 };
@@ -71,11 +71,11 @@ public:
 
 	~Const() = default;
 
-	virtual const string& show() { return this->repr; }
+	const string& show() { return this->repr; }
 
-	virtual const bool isOperand() { return true; }
+	const bool isOperand() { return true; }
 
-	virtual const double getValue() { return this->value; }
+	const double getValue() { return this->value; }
 };
 
 class Var : public Operand
@@ -87,11 +87,11 @@ public:
 
 	~Var() = default;
 
-	virtual const string& show() { return this->repr; }
+	const string& show() { return this->repr; }
 
-	virtual const bool isOperand() { return true; }
+	const bool isOperand() { return true; }
 
-	virtual const double getValue() { return values[this->repr[0]]; }
+	const double getValue() { return values[this->repr[0]]; }
 };
 
 class TPostfix
@@ -100,11 +100,15 @@ private:
 	//хранение выражения
 	string inputStr;
 	vector<Lexem*> lexemVec;
+	vector<Lexem*> postfix;
 
 	//вспомогательные структуры для хранения: списка переменных и их значений, функций
 	string vars;
 	map<char, double> varsValues;
 	map<string, function<double(double)>> funcs;
+
+	//проверка, произведён ли перевод
+	bool isPostfix = false;
 
 	//вспомогательные функции
 	double stringToDouble(string numStr);
@@ -121,19 +125,23 @@ private:
 	//основные функци
 	void inputToLexem();
 
-	void lexemToPostfix();
-
 	double calculatePostfix();
 
 public:
 	TPostfix(string expr);
 
-	~TPostfix() = default;
+	~TPostfix() 
+	{
+		for (auto& lexem : lexemVec)
+			delete lexem;
+	};
+	
+	// перевод выражения в постфиксную запись
+	void toPostfix();
+
+	double calculate();
 
 	string getInputStr() { return inputStr; }
 
 	string getPostfixStr();
-
-	double calculate();
 };
-

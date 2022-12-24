@@ -96,8 +96,5 @@ public:
 
 	size_t size() const noexcept { return ind; }
 
-	void clear()
-	{
-		ind = 0;
-	}
+	void clear() { ind = 0; }
 };
