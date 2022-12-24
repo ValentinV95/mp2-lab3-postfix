@@ -591,8 +591,7 @@ void Arithmetic::Postfix()
 	int index = -1;
 	Stack<BaseLexem*> st;
 	BaseLexem* StackItem;
-
-	for (size_t i = 0; i <= last; i++)
+	for (size_t i = 0; i <= last; i++) 
 	{
 		if (lexems[i]->LexemType() == "Brackets")
 		{
