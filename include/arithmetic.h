@@ -21,7 +21,9 @@ using std::to_string;
 
 class Lexem
 {
+
 public:
+	string value;
 	virtual string show() = 0;
 
 };
@@ -32,7 +34,7 @@ class Operand:public Lexem
 class Var :public Operand
 {
 public:
-	string value;
+
 	Var(char str)
 	{
 		value = str;
@@ -47,7 +49,7 @@ public:
 class Value :public Operand
 {
 public:
-	string value;
+
 	Value(string dbl)
 	{
 		value = dbl;
@@ -61,7 +63,7 @@ public:
 class Operation :public Lexem
 {
 public:
-	string value;
+
 	Operation(char c)
 	{
 		value = c;
@@ -91,4 +93,5 @@ public:
 
 
 	double CALCULATE();
+	~TPostfix();
 };

@@ -365,6 +365,7 @@ void TPostfix::to_postfix()
 	}
 	delete[]postfix;
 	postfix = tmp;
+
 }
 
 string TPostfix::showP() 
@@ -478,4 +479,12 @@ double TPostfix::CALCULATE()
 
 	res = value.pop();
 	return res;
+}
+
+TPostfix::~TPostfix()
+{
+	if (postfix != nullptr)
+		delete[]postfix;
+	if (!vars.empty())
+		vars.clear();
 }
