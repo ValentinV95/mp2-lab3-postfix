@@ -129,8 +129,15 @@ TEST(TArithmetic, can_calculate_correct_infix1)
 	EXPECT_EQ(try1.Calculate(), 32);
 }
 
+TEST(TArithmetic, can_calculate_correct_infix3)
+{
+	std::string infix1 = "14+1+3/3+2";
+	Arithmetic try1(infix1);
+	double res = try1.Calculate();
+	EXPECT_EQ(res, 18);
+}
 
-TEST(TArithmetic, can_calculate_correct_infix)
+TEST(TArithmetic, can_calculate_correct_infix2)
 {
 	std::string infix1 = "14+(1+3)";
 	Arithmetic try1(infix1);
