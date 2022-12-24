@@ -134,8 +134,8 @@ TEST(TArithmetic, can_calculate_correct_infix)
 {
 	std::string infix1 = "14+(1+3)/(2-1)";
 	Arithmetic try1(infix1);
-	ASSERT_NO_THROW(try1.Calculate());
-	EXPECT_EQ(try1.Calculate(), 18);
+	double res = try1.Calculate();
+	EXPECT_EQ(res, 18);
 }
 
 
