@@ -121,20 +121,25 @@ TEST(TArithmetic, support_brackets)
 	ASSERT_NO_THROW(Arithmetic try2(infix2));
 }
 
-TEST(TArithmetic, can_calculate_correct_infix)
+TEST(TArithmetic, can_calculate_correct_infix1)
 {
 	std::string infix1 = "1+2/2+3E+1";
 	Arithmetic try1(infix1);
 	ASSERT_NO_THROW(try1.Calculate());
 	EXPECT_EQ(try1.Calculate(), 32);
-
-	std::string infix2 = "14+(1+3)/(2-1)";
-	Arithmetic try2(infix2);
-	ASSERT_NO_THROW(try2.Calculate());
-	EXPECT_EQ(try2.Calculate(), 18);
 }
 
-TEST(TArithmetic, throw_when_incorrect_infix)
+
+TEST(TArithmetic, can_calculate_correct_infix)
+{
+	std::string infix1 = "14+(1+3)/(2-1)";
+	Arithmetic try1(infix1);
+	ASSERT_NO_THROW(try1.Calculate());
+	EXPECT_EQ(try1.Calculate(), 18);
+}
+
+
+TEST(TArithmetic, throw_when_incorrect_infix2)
 {
 	std::string infix1 = "+";
 	ASSERT_ANY_THROW(Arithmetic try1(infix1));
