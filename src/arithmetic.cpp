@@ -31,6 +31,7 @@ double string_to_double(string s)
 		}
 		if (s[i] == 'e')
 		{
+			if (i + 1 == LEN) throw invalid_argument("Bad form of double!");
 			i++;
 			Help = 10.0;
 			while (i < LEN)
@@ -103,7 +104,7 @@ void TPostfix::infix_check()
 			if (cmp >= 97 && cmp <= 122)
 			{
 				if (i>0)
-					if (infix[i - 1] > 47 && infix[i - 1] < 58 || infix[i - 1] == 46)
+					if ((infix[i - 1] > 47 && infix[i - 1] < 58 || infix[i - 1] == 46) && (cmp != 'e'))
 					{
 						error = "No valid operation of multiplicate in the ";
 						error += to_string(i);
@@ -114,7 +115,7 @@ void TPostfix::infix_check()
 						throw invalid_argument(error);
 					}
 				if (i + 1 < infix.length())
-					if (infix[i + 1] > 47 && infix[i + 1] < 58 || infix[i + 1] == 46)
+					if ((infix[i + 1] > 47 && infix[i + 1] < 58 || infix[i + 1] == 46) && (cmp != 'e') ||(cmp == 'e' && infix[i+1]!='-' && infix[i+1]!='+'))
 					{
 						error = "No valid operation of multiplicate in the ";
 						error += to_string(i + 1);
@@ -125,6 +126,7 @@ void TPostfix::infix_check()
 						throw invalid_argument(error);
 					}
 			}
+
 			if (infix.length() > i && cmp == '(')
 			{
 				if (infix[i + 1] == ')')

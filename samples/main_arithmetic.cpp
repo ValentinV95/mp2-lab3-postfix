@@ -14,6 +14,7 @@ int main()
 	cout << "3)You can input '-' any times, anythere without end of the string." << endl;
 	cout << "4)You have operands:'a'-'z'." << endl;
 	cout << "5)Can multiplicate vars without '*'(Example: ab = a*b)." << endl;
+	cout << "6)If we think that '1.' it`s 1.0 and '.1' it`s '0.1' then my programm can think that '.' it`s '0.0'" << endl;
 	cout << "5)If you input not logical equation the programm will write exception(empty brackets isn`t logical)." << endl << endl;
 
 	TPostfix arg(s);
