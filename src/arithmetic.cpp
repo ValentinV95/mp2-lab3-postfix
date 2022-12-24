@@ -167,6 +167,7 @@ void TPostfix::inputCheck()
 					"\nFind ')' before which there was no '(' !";
 				throw exception(error.c_str());
 			}
+			delete skob.top();
 			skob.pop();
 
 			if (next[0] != ')' && operations.find(next[0]) == string::npos)
@@ -186,6 +187,7 @@ void TPostfix::inputCheck()
 	{
 		if (!skob.isEmpty())
 		{
+			delete skob.top();
 			skob.pop();
 		}
 		else
@@ -204,6 +206,7 @@ void TPostfix::inputCheck()
 		while (!skob.isEmpty())
 		{
 			error += to_string(skob.top()->getPos().first) + ", ";
+			delete skob.top();
 			skob.pop();
 		}
 		error += "\nFor '(' does not exist ')' !";
