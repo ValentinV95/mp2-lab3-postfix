@@ -15,8 +15,6 @@ using namespace std;
  class LEXEM
 {
 public:
-	int size_for_postfix = 0;
-	int postfix_size = 0;
 	int type=0;						// 1-constant, 2-variable, 3-operation , type -1 "("  , type -2 ")"
 	string lexem_m;
 	string alter_lexem_m;
@@ -33,8 +31,6 @@ public:
 	string get_lexem_m() { return lexem_m; }
 	string get_alter_lexem_m() { return alter_lexem_m; }
 	int get_type() { return type; }
-	int get_size_for_postfix() { return size_for_postfix; }
-	int get_postfix_size() { return postfix_size; }
 };
 
 
@@ -113,6 +109,7 @@ class TPostfix
 {
 
 public:
+	int secret_operations=0;
 	int infix_len;
 	int c_k1, c_k2;   // number of '(' and ')'
 	LEXEM** mas;
@@ -137,4 +134,11 @@ public:
 	int get_c_k2() { return c_k2; }
 	int get_true_size() { return true_size; }
 	int get_L_Size() { return L_Size; }
+
+
+	~TPostfix()
+	{
+		delete[] mas;		
+	}
+
 };
