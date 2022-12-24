@@ -1378,7 +1378,7 @@ class AutoHandle {
 
   ~AutoHandle() { Reset(); }
 
-  HANDLE Get() const { return handle_; }
+  HANDLE GetLexem() const { return handle_; }
   void Reset() { Reset(INVALID_HANDLE_VALUE); }
   void Reset(HANDLE handle) {
     if (handle != handle_) {
@@ -3852,7 +3852,7 @@ int TestCase::reportable_test_count() const {
   return CountIf(test_info_list_, TestReportable);
 }
 
-// Get the number of tests in this test case that should run.
+// GetLexem the number of tests in this test case that should run.
 int TestCase::test_to_run_count() const {
   return CountIf(test_info_list_, ShouldRunTest);
 }
@@ -4149,7 +4149,7 @@ void ColoredPrintf(GTestColor color, const char* fmt, ...) {
 }
 
 // Text printed in Google Test's text output and --gunit_list_tests
-// output to label the type parameter and value parameter for a test.
+// output to name the type parameter and value parameter for a test.
 static const char kTypeParamLabel[] = "TypeParam";
 static const char kValueParamLabel[] = "GetParam()";
 
@@ -7136,7 +7136,7 @@ int WindowsDeathTest::Wait() {
 
   // Wait until the child either signals that it has acquired the write end
   // of the pipe or it dies.
-  const HANDLE wait_handles[2] = { child_handle_.Get(), event_handle_.Get() };
+  const HANDLE wait_handles[2] = { child_handle_.GetLexem(), event_handle_.GetLexem() };
   switch (::WaitForMultipleObjects(2,
                                    wait_handles,
                                    FALSE,  // Waits for any of the handles.
@@ -7160,11 +7160,11 @@ int WindowsDeathTest::Wait() {
   // whether previous calls to WaitForMultipleObjects synchronized on this
   // handle or not.
   GTEST_DEATH_TEST_CHECK_(
-      WAIT_OBJECT_0 == ::WaitForSingleObject(child_handle_.Get(),
+      WAIT_OBJECT_0 == ::WaitForSingleObject(child_handle_.GetLexem(),
                                              INFINITE));
   DWORD status_code;
   GTEST_DEATH_TEST_CHECK_(
-      ::GetExitCodeProcess(child_handle_.Get(), &status_code) != FALSE);
+      ::GetExitCodeProcess(child_handle_.GetLexem(), &status_code) != FALSE);
   child_handle_.Reset();
   set_status(static_cast<int>(status_code));
   return status();
@@ -7206,7 +7206,7 @@ DeathTest::TestRole WindowsDeathTest::AssumeRole() {
       TRUE,    // The event will automatically reset to non-signaled state.
       FALSE,   // The initial state is non-signalled.
       NULL));  // The even is unnamed.
-  GTEST_DEATH_TEST_CHECK_(event_handle_.Get() != NULL);
+  GTEST_DEATH_TEST_CHECK_(event_handle_.GetLexem() != NULL);
   const std::string filter_flag =
       std::string("--") + GTEST_FLAG_PREFIX_ + kFilterFlag + "=" +
       info->test_case_name() + "." + info->name();
@@ -7219,7 +7219,7 @@ DeathTest::TestRole WindowsDeathTest::AssumeRole() {
       // Windows platforms.
       // See http://msdn.microsoft.com/en-us/library/tcxf1dw6.aspx.
       "|" + StreamableToString(reinterpret_cast<size_t>(write_handle)) +
-      "|" + StreamableToString(reinterpret_cast<size_t>(event_handle_.Get()));
+      "|" + StreamableToString(reinterpret_cast<size_t>(event_handle_.GetLexem()));
 
   char executable_path[_MAX_PATH + 1];  // NOLINT
   GTEST_DEATH_TEST_CHECK_(
@@ -7726,7 +7726,7 @@ int GetStatusFileDescriptor(unsigned int parent_process_id,
   AutoHandle parent_process_handle(::OpenProcess(PROCESS_DUP_HANDLE,
                                                    FALSE,  // Non-inheritable.
                                                    parent_process_id));
-  if (parent_process_handle.Get() == INVALID_HANDLE_VALUE) {
+  if (parent_process_handle.GetLexem() == INVALID_HANDLE_VALUE) {
     DeathTestAbort("Unable to open parent process " +
                    StreamableToString(parent_process_id));
   }
@@ -7742,7 +7742,7 @@ int GetStatusFileDescriptor(unsigned int parent_process_id,
   // The newly initialized handle is accessible only in in the parent
   // process. To obtain one accessible within the child, we need to use
   // DuplicateHandle.
-  if (!::DuplicateHandle(parent_process_handle.Get(), write_handle,
+  if (!::DuplicateHandle(parent_process_handle.GetLexem(), write_handle,
                          ::GetCurrentProcess(), &dup_write_handle,
                          0x0,    // Requested privileges ignored since
                                  // DUPLICATE_SAME_ACCESS is used.
@@ -7757,7 +7757,7 @@ int GetStatusFileDescriptor(unsigned int parent_process_id,
   const HANDLE event_handle = reinterpret_cast<HANDLE>(event_handle_as_size_t);
   HANDLE dup_event_handle;
 
-  if (!::DuplicateHandle(parent_process_handle.Get(), event_handle,
+  if (!::DuplicateHandle(parent_process_handle.GetLexem(), event_handle,
                          ::GetCurrentProcess(), &dup_event_handle,
                          0x0,
                          FALSE,
@@ -8587,7 +8587,7 @@ bool MatchRegexAtHead(const char* regex, const char* str) {
 //
 // The algorithm is recursive, but the recursion depth doesn't exceed
 // the regex length, so we won't need to worry about running out of
-// stack space normally.  In rare cases the time complexity can be
+// stack space normally.  In rare cases the time complexemity can be
 // exponential with respect to the regex length + the string length,
 // but usually it's must faster (often close to linear).
 bool MatchRegexAnywhere(const char* regex, const char* str) {

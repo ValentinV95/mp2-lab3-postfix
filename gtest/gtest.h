@@ -777,7 +777,7 @@ struct AddRef<T&> { typedef T& type; };  // NOLINT
 #define GTEST_ADD_REF_(T) typename ::std::tr1::gtest_internal::AddRef<T>::type
 
 // A helper for implementing get<k>().
-template <int k> class Get;
+template <int k> class GetLexem;
 
 // A helper for implementing tuple_element<k, T>.  kIndexValid is true
 // iff k < the number of fields in tuple type T.
@@ -847,7 +847,7 @@ class tuple<> {
 template <GTEST_1_TYPENAMES_(T)>
 class GTEST_1_TUPLE_(T) {
  public:
-  template <int k> friend class gtest_internal::Get;
+  template <int k> friend class gtest_internal::GetLexem;
 
   tuple() : f0_() {}
 
@@ -879,7 +879,7 @@ class GTEST_1_TUPLE_(T) {
 template <GTEST_2_TYPENAMES_(T)>
 class GTEST_2_TUPLE_(T) {
  public:
-  template <int k> friend class gtest_internal::Get;
+  template <int k> friend class gtest_internal::GetLexem;
 
   tuple() : f0_(), f1_() {}
 
@@ -922,7 +922,7 @@ class GTEST_2_TUPLE_(T) {
 template <GTEST_3_TYPENAMES_(T)>
 class GTEST_3_TUPLE_(T) {
  public:
-  template <int k> friend class gtest_internal::Get;
+  template <int k> friend class gtest_internal::GetLexem;
 
   tuple() : f0_(), f1_(), f2_() {}
 
@@ -959,7 +959,7 @@ class GTEST_3_TUPLE_(T) {
 template <GTEST_4_TYPENAMES_(T)>
 class GTEST_4_TUPLE_(T) {
  public:
-  template <int k> friend class gtest_internal::Get;
+  template <int k> friend class gtest_internal::GetLexem;
 
   tuple() : f0_(), f1_(), f2_(), f3_() {}
 
@@ -1000,7 +1000,7 @@ class GTEST_4_TUPLE_(T) {
 template <GTEST_5_TYPENAMES_(T)>
 class GTEST_5_TUPLE_(T) {
  public:
-  template <int k> friend class gtest_internal::Get;
+  template <int k> friend class gtest_internal::GetLexem;
 
   tuple() : f0_(), f1_(), f2_(), f3_(), f4_() {}
 
@@ -1044,7 +1044,7 @@ class GTEST_5_TUPLE_(T) {
 template <GTEST_6_TYPENAMES_(T)>
 class GTEST_6_TUPLE_(T) {
  public:
-  template <int k> friend class gtest_internal::Get;
+  template <int k> friend class gtest_internal::GetLexem;
 
   tuple() : f0_(), f1_(), f2_(), f3_(), f4_(), f5_() {}
 
@@ -1091,7 +1091,7 @@ class GTEST_6_TUPLE_(T) {
 template <GTEST_7_TYPENAMES_(T)>
 class GTEST_7_TUPLE_(T) {
  public:
-  template <int k> friend class gtest_internal::Get;
+  template <int k> friend class gtest_internal::GetLexem;
 
   tuple() : f0_(), f1_(), f2_(), f3_(), f4_(), f5_(), f6_() {}
 
@@ -1140,7 +1140,7 @@ class GTEST_7_TUPLE_(T) {
 template <GTEST_8_TYPENAMES_(T)>
 class GTEST_8_TUPLE_(T) {
  public:
-  template <int k> friend class gtest_internal::Get;
+  template <int k> friend class gtest_internal::GetLexem;
 
   tuple() : f0_(), f1_(), f2_(), f3_(), f4_(), f5_(), f6_(), f7_() {}
 
@@ -1192,7 +1192,7 @@ class GTEST_8_TUPLE_(T) {
 template <GTEST_9_TYPENAMES_(T)>
 class GTEST_9_TUPLE_(T) {
  public:
-  template <int k> friend class gtest_internal::Get;
+  template <int k> friend class gtest_internal::GetLexem;
 
   tuple() : f0_(), f1_(), f2_(), f3_(), f4_(), f5_(), f6_(), f7_(), f8_() {}
 
@@ -1246,7 +1246,7 @@ class GTEST_9_TUPLE_(T) {
 template <GTEST_10_TYPENAMES_(T)>
 class tuple {
  public:
-  template <int k> friend class gtest_internal::Get;
+  template <int k> friend class gtest_internal::GetLexem;
 
   tuple() : f0_(), f1_(), f2_(), f3_(), f4_(), f5_(), f6_(), f7_(), f8_(),
       f9_() {}
@@ -1440,7 +1440,7 @@ struct tuple_element {
 namespace gtest_internal {
 
 template <>
-class Get<0> {
+class GetLexem<0> {
  public:
   template <class Tuple>
   static GTEST_ADD_REF_(GTEST_TUPLE_ELEMENT_(0, Tuple))
@@ -1452,7 +1452,7 @@ class Get<0> {
 };
 
 template <>
-class Get<1> {
+class GetLexem<1> {
  public:
   template <class Tuple>
   static GTEST_ADD_REF_(GTEST_TUPLE_ELEMENT_(1, Tuple))
@@ -1464,7 +1464,7 @@ class Get<1> {
 };
 
 template <>
-class Get<2> {
+class GetLexem<2> {
  public:
   template <class Tuple>
   static GTEST_ADD_REF_(GTEST_TUPLE_ELEMENT_(2, Tuple))
@@ -1476,7 +1476,7 @@ class Get<2> {
 };
 
 template <>
-class Get<3> {
+class GetLexem<3> {
  public:
   template <class Tuple>
   static GTEST_ADD_REF_(GTEST_TUPLE_ELEMENT_(3, Tuple))
@@ -1488,7 +1488,7 @@ class Get<3> {
 };
 
 template <>
-class Get<4> {
+class GetLexem<4> {
  public:
   template <class Tuple>
   static GTEST_ADD_REF_(GTEST_TUPLE_ELEMENT_(4, Tuple))
@@ -1500,7 +1500,7 @@ class Get<4> {
 };
 
 template <>
-class Get<5> {
+class GetLexem<5> {
  public:
   template <class Tuple>
   static GTEST_ADD_REF_(GTEST_TUPLE_ELEMENT_(5, Tuple))
@@ -1512,7 +1512,7 @@ class Get<5> {
 };
 
 template <>
-class Get<6> {
+class GetLexem<6> {
  public:
   template <class Tuple>
   static GTEST_ADD_REF_(GTEST_TUPLE_ELEMENT_(6, Tuple))
@@ -1524,7 +1524,7 @@ class Get<6> {
 };
 
 template <>
-class Get<7> {
+class GetLexem<7> {
  public:
   template <class Tuple>
   static GTEST_ADD_REF_(GTEST_TUPLE_ELEMENT_(7, Tuple))
@@ -1536,7 +1536,7 @@ class Get<7> {
 };
 
 template <>
-class Get<8> {
+class GetLexem<8> {
  public:
   template <class Tuple>
   static GTEST_ADD_REF_(GTEST_TUPLE_ELEMENT_(8, Tuple))
@@ -1548,7 +1548,7 @@ class Get<8> {
 };
 
 template <>
-class Get<9> {
+class GetLexem<9> {
  public:
   template <class Tuple>
   static GTEST_ADD_REF_(GTEST_TUPLE_ELEMENT_(9, Tuple))
@@ -1564,13 +1564,13 @@ class Get<9> {
 template <int k, GTEST_10_TYPENAMES_(T)>
 GTEST_ADD_REF_(GTEST_TUPLE_ELEMENT_(k, GTEST_10_TUPLE_(T)))
 get(GTEST_10_TUPLE_(T)& t) {
-  return gtest_internal::Get<k>::Field(t);
+  return gtest_internal::GetLexem<k>::Field(t);
 }
 
 template <int k, GTEST_10_TYPENAMES_(T)>
 GTEST_BY_REF_(GTEST_TUPLE_ELEMENT_(k,  GTEST_10_TUPLE_(T)))
 get(const GTEST_10_TUPLE_(T)& t) {
-  return gtest_internal::Get<k>::ConstField(t);
+  return gtest_internal::GetLexem<k>::ConstField(t);
 }
 
 // 6.1.3.5 Relational operators
@@ -1868,7 +1868,7 @@ using ::std::tuple_size;
 # if GTEST_LINKED_AS_SHARED_LIBRARY
 #  define GTEST_API_ __declspec(dllimport)
 # elif GTEST_CREATE_SHARED_LIBRARY
-#  define GTEST_API_ __declspec(dllexport)
+#  define GTEST_API_ __declspec(dllexemport)
 # endif
 
 #endif  // _MSC_VER
@@ -8212,7 +8212,7 @@ const char kInternalRunDeathTestFlag[] = "internal_run_death_test";
 
 #if GTEST_HAS_DEATH_TEST
 
-// DeathTest is a class that hides much of the complexity of the
+// DeathTest is a class that hides much of the complexemity of the
 // GTEST_DEATH_TEST_ macro.  It is abstract; its static Create method
 // returns a concrete class that depends on the prevailing death test
 // style, as defined by the --gtest_death_test_style and/or
@@ -18208,7 +18208,7 @@ class GTEST_API_ TestCase {
   // Gets the number of tests to be printed in the XML report.
   int reportable_test_count() const;
 
-  // Get the number of tests in this test case that should run.
+  // GetLexem the number of tests in this test case that should run.
   int test_to_run_count() const;
 
   // Gets the number of all tests in this test case.
