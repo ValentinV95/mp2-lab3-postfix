@@ -1,6 +1,8 @@
-// реализация пользовательского приложения
+#include <iostream>
+#include "arithmetic.h"
 
 int main()
 {
-  return 0;
+	TPostfix f("(a+b)*c");
 }
+
