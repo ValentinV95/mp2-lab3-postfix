@@ -128,10 +128,10 @@ TEST(TArithmetic, can_calculate_correct_infix)
 	ASSERT_NO_THROW(try1.Calculate());
 	EXPECT_EQ(try1.Calculate(), 32);
 
-	std::string infix2 = "(1+3)/(2-1)+14-15E+1";
+	std::string infix2 = "14+(1+3)/(2-1)";
 	Arithmetic try2(infix2);
 	ASSERT_NO_THROW(try2.Calculate());
-	EXPECT_EQ(try2.Calculate(), 18-150);
+	EXPECT_EQ(try2.Calculate(), 18);
 }
 
 TEST(TArithmetic, throw_when_incorrect_infix)
