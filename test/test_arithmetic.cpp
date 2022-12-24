@@ -41,6 +41,9 @@ TEST(arithmetic, can_solve_correctly)
 	a.set_infix("-1-2+3*4/5");//works combination of unar,add,sub,mul and div (operations)
 	EXPECT_EQ(fabs(a.CALCULATE()+0.6)<10.e-16, 1);
 
+	a.set_infix("9/3/3");//solve from left to right priority
+	EXPECT_EQ(fabs(a.CALCULATE() - 1) < 10.e-16, 1);
+
 	a.set_infix("(1)");//works with bracket
 	EXPECT_EQ(a.CALCULATE(), 1.0);
 

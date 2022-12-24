@@ -13,7 +13,8 @@ int main()
 	cout << "2)You have operations:'+','-','/','*' and you can use brackets '(',')'." << endl;
 	cout << "3)You can input '-' any times, anythere without end of the string." << endl;
 	cout << "4)You have operands:'a'-'z'." << endl;
-	cout << "5)If you input not logical equation the programm will write exception(empty brackets isnot logical)" << endl << endl;
+	cout << "5)Can multiplicate vars without '*'(Example: ab = a*b)." << endl;
+	cout << "5)If you input not logical equation the programm will write exception(empty brackets isn`t logical)." << endl << endl;
 
 	TPostfix arg(s);
 

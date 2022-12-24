@@ -100,6 +100,31 @@ void TPostfix::infix_check()
 			cmp = infix[i];
 			flg2 = (cmp == '+' || cmp == '/' || cmp == '*');
 			flg = (cmp > 47 && cmp < 58 || cmp == 46) || (cmp >= 97 && cmp <= 122) || flg2 || cmp=='-' || cmp == '(' || cmp == ')';
+			if (cmp >= 97 && cmp <= 122)
+			{
+				if (i>0)
+					if (infix[i - 1] > 47 && infix[i - 1] < 58 || infix[i - 1] == 46)
+					{
+						error = "No valid operation of multiplicate in the ";
+						error += to_string(i);
+						error += " and ";
+						error += to_string(i + 1);
+						error += " elements of the infix!  infix: ";
+						error += infix;
+						throw invalid_argument(error);
+					}
+				if (i + 1 < infix.length())
+					if (infix[i + 1] > 47 && infix[i + 1] < 58 || infix[i + 1] == 46)
+					{
+						error = "No valid operation of multiplicate in the ";
+						error += to_string(i + 1);
+						error += " and ";
+						error += to_string(i + 2);
+						error += " elements of the infix!  infix: ";
+						error += infix;
+						throw invalid_argument(error);
+					}
+			}
 			if (infix.length() > i && cmp == '(')
 			{
 				if (infix[i + 1] == ')')
@@ -203,7 +228,7 @@ void TPostfix::to_postfix()
 
 {
 	infix_check();
-	postfix = new Lexem * [infix.length()];//(_ленивое программирование_) Ћексем точно не может быть больше чем букв
+	postfix = new Lexem * [infix.length()*2];//(_ленивое программирование_) Ћексем точно не может быть больше чем букв(умножаетс€ на 2 на вс€кий случай если будете писать умножение переменных без операции(ab = a*b))
 	size_t j = 0, flg1 = 1, flg2 = 1, flg3 = 1, pi = 0;
 	string dbl;
 	char cmp;
@@ -264,6 +289,14 @@ void TPostfix::to_postfix()
 			size++;
 			postfix[pi] = s;
 			pi++;
+			if (j > 0)
+				if (infix[j - 1] >= 97 && infix[j - 1] <= 122)
+				{
+					Operation* s = new Operation('*');
+					size++;
+					postfix[pi] = s;
+					pi++;
+				}
 
 		}
 		switch (cmp) //ѕроверка на операцию и скобки
