@@ -26,7 +26,7 @@ public:
 		delete[] data;
 	}
 
-	void Clear() // - только очистка стека
+	void Clear()
 	{
 		index = -1;
 	}

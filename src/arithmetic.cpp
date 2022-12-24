@@ -9,30 +9,30 @@
 #include <map>
 
 //BASELEXEM
-std::string BaseLexem::LexemType()
+std::string Arithmetic::BaseLexem::LexemType()
 {
 	return name;
 }
 
-std::string BaseLexem::GetLexem()
+std::string Arithmetic::BaseLexem::GetLexem()
 {
 	return lexem;
 }
 
-double BaseLexem::Value()
+double Arithmetic::BaseLexem::Value()
 {
 	return double_performance;
 }
 
-int BaseLexem::GetSatrtPos()
+int Arithmetic::BaseLexem::GetSatrtPos()
 {
 	return pos_start;
 }
-int BaseLexem::GetEndPos()
+int Arithmetic::BaseLexem::GetEndPos()
 {
 	return pos_end;
 }
-int BaseLexem::GetPriority()
+int Arithmetic::BaseLexem::GetPriority()
 {
 	return priority;
 }
@@ -40,91 +40,35 @@ int BaseLexem::GetPriority()
 
 // OPERATIONS
 
-//BINARY OP
-BinaryOperation::BinaryOperation(char ch, int pos_start, int pos_end)
+Arithmetic::Operation::Operation(char ch, int pos_start, int pos_end)
 {
-	name = "BinaryOperation";
-	lexem = ch;
-	SetPriority(ch);
-	this->pos_start = pos_start;
-	this->pos_end = pos_end;
-}
-
-void BinaryOperation::SetPriority(char operation)
-{
-	if (operation == '+' || operation == '-')
+	if (ch == '+' || ch == '-' || ch == '*' || ch == '/')
 	{
-		priority = 1;
+		name = "BinaryOperation";
+		if (ch == '+' || ch == '-')
+			priority = 1;
+		else
+			priority = 2;
 	}
-	else if (operation == '*' || operation == '/')
+	else if (ch == '~')
 	{
-		priority = 2;
-	}
-	else
-	{
-		std::cout << "some strange!\n";
-	}
-}
-
-
-//UNARY OP
-UnaryOperation::UnaryOperation(char ch, int pos_start, int pos_end)
-{
-	name = "UnaryOperation";
-	lexem = ch;
-	SetPriority(ch);
-	this->pos_start = pos_start;
-	this->pos_end = pos_end;
-}
-
-void UnaryOperation::SetPriority(char operation)
-{
-	if (operation == '~')
-	{
+		name = "UnaryOperation";
 		priority = 3;
 	}
-	else
+	else if (ch == ')' || ch == '(')
 	{
-		std::cout << "some strange!\n";
+		name = "Brackets";
 	}
-}
-
-//BRACKETS
-void Brackets::SetPriority(char operation)
-{
-	if (operation == '(' || operation == ')')
-	{
-		priority = 0;
-	}
-	else
-	{
-		std::cout << "some strange!\n";
-	}
-}
-
-Brackets::Brackets(char ch, int pos_start, int pos_end)
-{
-	name = "Brackets";
 	lexem = ch;
-	SetPriority(ch);
 	this->pos_start = pos_start;
 	this->pos_end = pos_end;
 }
 
 
 
+//OPERAND
 
-
-
-//OPERANDS
-
-void Operand::SetPriority(char operation)
-{
-	priority = 4;
-}
-
-
-Number::Number(std::string lexem, int pos_start, int pos_end)
+Arithmetic::Number::Number(std::string lexem, int pos_start, int pos_end)
 {
 	name = "Number";
 	this->lexem = lexem;
@@ -134,7 +78,7 @@ Number::Number(std::string lexem, int pos_start, int pos_end)
 	this->pos_end = pos_end;
 }
 
-Number::Number(double value, int pos_start, int pos_end)
+Arithmetic::Number::Number(double value, int pos_start, int pos_end)
 {
 	name = "Number";
 	priority = 4;
@@ -143,7 +87,7 @@ Number::Number(double value, int pos_start, int pos_end)
 	this->pos_end = pos_end;
 }
 
-Number::Number()
+Arithmetic::Number::Number()
 {
 	name = "Number";
 	priority = 4;
@@ -152,7 +96,7 @@ Number::Number()
 	this->pos_end = 0;
 }
 
-Var::Var(std::string lexem, int pos_start, int pos_end)
+Arithmetic::Var::Var(std::string lexem, int pos_start, int pos_end)
 {
 	name = "Var";
 	priority = 4;
@@ -172,7 +116,7 @@ double convert(std::string part)
 	return num;
 }
 
-double Operand::ConvertNumber(std::string lexem)
+double Arithmetic::Operand::ConvertNumber(std::string lexem)
 {
 	setlocale(LC_ALL, "Russian");
 	if (lexem.size() == 0)
@@ -291,7 +235,6 @@ Arithmetic::Arithmetic(const std::string& infix)
 
 Arithmetic::~Arithmetic()
 {
-	// std::cout << "start ~";
 	for (int i = 0; i <= last; i++)
 	{
 		if (lexems[i] != nullptr)
@@ -304,16 +247,12 @@ Arithmetic::~Arithmetic()
 }
 
 
-bool Arithmetic::IsBinaryOperation(const char& ch)
+bool Arithmetic::IsOperation(const char& ch)
 {
-	std::string operations = "+-*/";
+	std::string operations = "+-*/()~";
 	return operations.find(ch) != std::string::npos;
 }
 
-bool Arithmetic::IsUnaryOperation(const char& ch)
-{
-	return ch == '~';
-}
 
 bool Arithmetic::IsNumber(const char& ch)
 {
@@ -365,10 +304,7 @@ bool Arithmetic::IsVar(std::string num)
 	return false;
 }
 
-bool Arithmetic::IsBrackets(const char& ch)
-{
-	return ch == '(' || ch == ')';
-}
+
 
 void Arithmetic::resize()
 {
@@ -414,11 +350,11 @@ void Arithmetic::CheckLexemOrder()
 
 	if (lexems[0]->GetLexem() == ")" || lexems[0]->LexemType() == "BinaryOperation")
 	{
-		throw ShowError(0, "В начале арифметичесеого выражения могут находится : унарные операции или '('!");
+		throw ShowError(0, "В начале арифметического выражения могут находится : унарные операции или '('!");
 	}
 	if (lexems[last]->LexemType() != "Number" && lexems[last]->LexemType() != "Var" && lexems[last]->GetLexem() != ")")
 	{
-		throw ShowError(lexems[last]->GetSatrtPos(), "В конце арифметичесеого выражения могут находится : числа, константы или ')'!");
+		throw ShowError(lexems[last]->GetSatrtPos(), "В конце арифметического выражения могут находится : числа, константы или ')'!");
 	}
 	if (lexems[0]->GetLexem() == "(")
 		open++;
@@ -475,9 +411,7 @@ void Arithmetic::FindIncorrectSymbols()
 	for (size_t i = 0; i < infix.size(); i++)
 	{
 		if (infix[i] != ' ' &&
-			!IsBinaryOperation(infix[i]) &&
-			!IsUnaryOperation(infix[i]) &&
-			!IsBrackets(infix[i]) &&
+			!IsOperation(infix[i]) &&
 			!IsNumber(infix[i]) &&
 			!IsVar(infix[i]))
 		{
@@ -510,7 +444,7 @@ void Arithmetic::Parser()
 		if (infix[i] == ' ')
 			continue;
 
-		if (IsBinaryOperation(infix[i]) || IsUnaryOperation(infix[i]) || IsBrackets(infix[i]))
+		if (IsOperation(infix[i]))
 		{
 			std::string str_(1, infix[i]);
 			if (i >= 1 && (infix[i] == '+' || infix[i] == '-') && infix[i - 1] == 'E')
@@ -556,31 +490,11 @@ void Arithmetic::Parser()
 				lex = "";
 			}
 
-			if (IsBinaryOperation(infix[i]))
-			{
-				if (last == size - 1)
-					resize();
-				BinaryOperation op(infix[i], i, i);
-				std::cout << op.GetLexem() << '\t' << op.LexemType() << '\n';
-				lexems[++last] = new BinaryOperation(infix[i], i, i);
-			}
-			else if (IsUnaryOperation(infix[i]))
-			{
-				if (last == size - 1)
-					resize();
-				UnaryOperation op(infix[i], i, i);
-				std::cout << op.GetLexem() << '\t' << op.LexemType() << '\n';
-				lexems[++last] = new UnaryOperation(infix[i], i, i);
-			}
-			else
-			{
-				if (last == size - 1)
-					resize();
-				Brackets op(infix[i], i, i);
-				std::cout << op.GetLexem() << '\t' << op.LexemType() << '\n';
-				lexems[++last] = new Brackets(infix[i], i, i);
-			}
-
+			if (last == size - 1)
+				resize();
+			Operation op(infix[i], i, i);
+			std::cout << op.GetLexem() << '\t' << op.LexemType() << '\n';
+			lexems[++last] = new Operation(infix[i], i, i);
 		}
 		else
 		{
@@ -651,7 +565,7 @@ void Arithmetic::InputVarValue()
 
 	for (size_t i = 0; i <= last; i++)
 	{
-		if (lexems[i]->LexemType() == "Var")
+		if (lexems[i]->LexemType() == "Var") //идём по лексемам т.к. в lexems** и  postfix** храняться одни и те же указатели на BaseLexem*, отличается только порядок
 		{
 			if (!VarValues.count(lexems[i]->GetLexem()))
 			{
@@ -760,7 +674,7 @@ double Arithmetic::Calculate()
 			BaseLexem* operand = postfix[i];
 			// std::cout << '\n' << operand->Value();
 			double num = operand->Value();
-			Number n = Number(num, operand->GetSatrtPos(), operand->GetEndPos());
+			Number n = Number(num, operand->GetSatrtPos(), operand->GetEndPos()); // чтобы был с-шный формат вывода
 			data.Push(n);
 		}
 		else
@@ -829,4 +743,3 @@ double Arithmetic::Calculate()
 	std::cout << "=" << data.Top().Value() << "\n\n";
 	return data.Pop().Value();
 }
-
