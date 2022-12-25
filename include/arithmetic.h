@@ -5,6 +5,9 @@
 #include <vector>
 #include <functional>
 #include <cmath>
+
+#pragma once
+
 // объявление функций и классов для вычисления арифметических выражений
 using  std::string;
 
@@ -54,32 +57,31 @@ public:
     };
 };
 
-//Перечисляемый тип, хранящий приоритет операций
-  enum Priority{ foo,power, mult_div,add_sub, brack};
-
-//Карта переменных. На начало выполнения пустая  
-  std::map <string, double> variables;
-
-/*Карта для функций и операций.Ставит во взаимное соответствие строковое
+/*Структура карт для функций и операций.Ставит во взаимное соответствие строковое
 *представление операции и лябда функцию, вычисляющюю значение
 */
-  std::map<string, std::function<double(double)>> function ={ 
-      {"~",[](double a)          {return (-1 * a); }},
-      {"sin",[](double a)        {return sin(a); }},
-      {"cos",[](double a)        {return cos(a); }},
-      {"sqrt",[](double a)       {return sqrt(a); }},
-      {"log",[](double a)        {return log(a); }},
-      {"lg",[](double a)         {return log10(a); }},
-      {"ln",[](double a)         {return log(a); }},
-  };
-  std::map<string, std::function<double(double, double)>> inf_op = {
-      {"+",[](double a,double b) {return a + b; }},
-      {"-",[](double a,double b) {return a - b; }}, 
-      {"*",[](double a,double b) {return a * b; }},
-      {"/",[](double a,double b) {return a / b; }},
-      {"^",[](double a,double b) {return pow(a,b); }}
-  };
-  
+struct Instr {
+    std::map<string, std::function<double(double)>> function = {
+    {"~", [](double a)         {return (-1 * a); }},
+    {"sin", [](double a)       {return sin(a); }},
+    {"cos", [](double a)       {return cos(a); }},
+    {"sqrt",[](double a)       {return sqrt(a); }},
+    {"log", [](double a)       {return log(a); }},
+    {"lg", [](double a)        {return log10(a); }},
+    {"ln", [](double a)        {return log(a); }},
+    };
+    std::map<string, std::function<double(double, double)>> inf_op = {
+    {"+",[](double a,double b) {return a + b; }},
+    {"-",[](double a,double b) {return a - b; }},
+    {"*",[](double a,double b) {return a * b; }},
+    {"/",[](double a,double b) {return a / b; }},
+    {"^",[](double a,double b) {return pow(a,b); }}
+    };
+};
+
+//Перечисляемый тип, хранящий приоритет операций
+enum Priority { foo, power, mult_div, add_sub, brack };
+
 //Класс, реализующий вычисления выражений.
   class TPostfix {
   private:
@@ -116,7 +118,7 @@ public:
       void Set(const string input) override;
   };
 
-    std::vector <Lexem *> out; //постфиксная форма выражения, разбитая на лексемы
+   std::vector <Lexem *> out; //постфиксная форма выражения, разбитая на лексемы
 public:
     TPostfix(const string input);
     ~TPostfix() = default;

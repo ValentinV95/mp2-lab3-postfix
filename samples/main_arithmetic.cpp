@@ -1,6 +1,5 @@
-#include "../include/arithmetic.h"
-#include "../src/arithmetic.cpp"// реализация пользовательского приложения
-
+#include "../include/arithmetic.h"// реализация пользовательского приложения
+#include "../src/arithmetic.cpp"
 int main()
 {
 	std::setlocale(LC_ALL,"Russian");
