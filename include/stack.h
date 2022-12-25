@@ -13,7 +13,17 @@ private:
 	int size;
 	T* pMem;
 public:
-	TStack(int _size) : top(-1), size(_size), pMem(new T[size]) { }
+	TStack(int _size)  
+	{ 
+		if (_size > 0) {
+			top = -1;
+			size = _size;
+			pMem = new T[size];
+		}
+		else {
+			throw exception("wrong stack size");
+		}
+	}
 
 	const bool IsEmpty()
 	{
@@ -43,15 +53,23 @@ public:
 
 	T get_top()
 	{
-
-		return pMem[top];
+		if (!IsEmpty()) {
+			return pMem[top];
+		}
+		else {
+			throw exception("stack is empty");
+		}
 	}
 
 
 	T pop()
 	{
-
-		return pMem[top--];
+		if (!IsEmpty()) {
+			return pMem[top--];
+		}
+		else {
+			throw exception("stack is empty");
+		}
 	}
 
 	void push(const T& element)

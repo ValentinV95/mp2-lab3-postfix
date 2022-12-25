@@ -21,6 +21,7 @@ public:
 	const double GetNum() const;
 	virtual void SetPriority(const string& s) = 0;
 	void SetNum(const double d);
+	~Lexem() = default;
 };
 
 
@@ -31,7 +32,7 @@ private:
 
 public:
 	Operation(const string& s);
-
+	~Operation() = default;
 };
 
 
@@ -43,7 +44,7 @@ private:
 
 public:
 	Num(const string& s);
-
+	~Num() = default;
 };
 
 
@@ -56,7 +57,7 @@ private:
 public:
 
 	Var(const string& s);
-
+	~Var() = default;
 };
 
 
@@ -70,12 +71,10 @@ private:
 	string postfix;
 	vector<Lexem*> infix_lexems;
 	vector<Lexem*> postfix_lexems;
-
-	int postfix_lexem_count;
+	double result;
 	int op_count = 0;
 	int lex_count = 0;
 
-	int error_pointer;
 
 	void parse();
 	void InfixToPostfix();
@@ -90,7 +89,7 @@ private:
 
 public:
 	TPostfix(string inf);
-	const string GetPostfix() const;
+	const double GetResult() const;
 
 	~TPostfix();
 

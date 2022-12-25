@@ -185,7 +185,7 @@ void TPostfix::parse()
 void TPostfix::InfixToPostfix()
 {
 	TStack<Lexem*> stack(op_count);
-	Lexem* garbage;
+	
 
 	for (int i = 0; i < infix_lexems.size(); i++) {
 		if (infix_lexems[i]->GetType() == "Num") {
@@ -213,7 +213,7 @@ void TPostfix::InfixToPostfix()
 
 			}
 
-			garbage = stack.pop();
+			stack.pop();
 
 		}
 		else if ((infix_lexems[i]->GetType() == "Operation") && (infix_lexems[i]->GetData() != "(") && (infix_lexems[i]->GetData() != ")")) {
@@ -240,8 +240,8 @@ void TPostfix::InfixToPostfix()
 		postfix_lexems.push_back(stack.pop());
 
 	}
-	cout << infix << endl;
-	cout << postfix << endl;
+
+	cout <<"postfix form: " << postfix << endl;
 
 }
 
@@ -266,13 +266,12 @@ void TPostfix::check()
 		}
 		else if (IsOperation(infix[i]) && (infix[i] != '(') && (infix[i] != ')') && (infix[i + 1] != ')') && (infix[i - 1] != ')') && (infix[i + 1] != '(') && (infix[i - 1] != '(')) {
 			if (((IsNum(infix[i + 1]) && IsNum(infix[i - 1])) || (IsVar(infix[i + 1]) && IsVar(infix[i - 1])) || (IsVar(infix[i - 1]) && IsNum(infix[i + 1])) || (IsNum(infix[i - 1]) && IsVar(infix[i + 1]))) == 0) {
-				cout << i << endl;
-				cout << "wrong input" << endl;
+				throw exception("wrong binary operation enter");
 			}
 		}
 	}
 	if (closing_bracket_count != open_bracket_count) {
-		cout << "wrong brackets" << endl;
+		throw exception("wrong count of brackets");
 	}
 }
 
@@ -304,38 +303,37 @@ const double TPostfix::Calculate()
 			else if (postfix_lexems[i]->GetData() == "-") {
 				second = stack.pop();
 				first = stack.pop();
-				cout << first << " " << second << endl;
 				stack.push(first - second);
 
 			}
 			else if (postfix_lexems[i]->GetData() == "*") {
 				second = stack.pop();
 				first = stack.pop();
-				cout << first << " " << second << endl;
 				stack.push(first * second);
 			}
 			else if (postfix_lexems[i]->GetData() == "/") {
 				second = stack.pop();
 				first = stack.pop();
-				cout << first << " " << second << endl;
 				if (second == 0) {
-					cout << "division by zero" << endl;
 					throw exception("division by zero");
 				}
 				stack.push(first / second);
 			}
 		}
 	}
+	result = stack.get_top();
 	return stack.pop();
+}
+
+const double TPostfix::GetResult() const
+{
+	return result;
 }
 
 TPostfix::~TPostfix()
 {
 	for (int i = 0; i < infix_lexems.size(); i++) {
-		delete[] infix_lexems[i];
-	}
-	for (int i = 0; i < postfix_lexems.size(); i++) {
-		delete[] postfix_lexems[i];
+		delete infix_lexems[i];
 	}
 }
 
