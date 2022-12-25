@@ -115,33 +115,3 @@ public:
 	}
 }; 
 // при вставке в полный стек должна перевыделяться память
-
-template <typename T>
-class TQueue 
-{
-private:
-	Tstack<T> s1;
-	Tstack<T> s2;
-public:
-	TQueue(int len = 10) :s1(len), s2(len) {};
-	~TQueue() 
-	{
-		delete s1;
-		delete s2;
-	}
-	void push(T el) //добавление в начало очереди 
-	{
-		s1.push(el);
-	}
-	T pop(void) // взятие из конца очереди
-	{
-		if (s2.isEmpty()) 
-		{
-			while (!s1.isEmpty()) 
-			{
-				s2.push(s1.pop());
-			}
-		}
-		return s2.pop();
-	}
-};
