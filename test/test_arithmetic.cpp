@@ -1,6 +1,7 @@
 // тесты для вычисления арифметических выражений
-#pragma once
+
 #include "../gtest/gtest.h"
+#include "../include/arithmetic.h"
 #include "../src/arithmetic.cpp"
 
 TEST(arithmetic, cant_solve_empty_expression_1)

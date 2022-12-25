@@ -1,3 +1,4 @@
+#include "../include/arithmetic.h"
 #include "../src/arithmetic.cpp"// реализация пользовательского приложения
 
 int main()
