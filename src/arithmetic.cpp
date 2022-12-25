@@ -2,12 +2,12 @@
 
 #include "arithmetic.h"
 
-TPostfix::TPostfix(): infix(""), size(0), postfix(""), result(0.0), errornumber(-1)
+TPostfix::TPostfix(): infix(""), size(0), postfix(""), result(0.0), errornumber(-1), errorstring(infix)
 {
 	data = new string[size]();
 }
 
-TPostfix::TPostfix(string _infix) : infix(_infix), size(_infix.size()), postfix(""), result(0.0), errornumber(-1)
+TPostfix::TPostfix(string _infix) : infix(_infix), size(_infix.size()), postfix(""), result(0.0), errornumber(-1), errorstring(infix)
 {
 	data = new string[size]();
 
@@ -28,7 +28,7 @@ void TPostfix::setTPostfix(string _infix) // Set some string
 	postfix = "";
 	result = 0.0;
 	errornumber = -1;
-
+	errorstring = infix;
 	data = new string[size]();
 
 	toLexem();
@@ -44,8 +44,7 @@ void TPostfix::toLexem() // Converting an expression into lexem array
 		switch (infix[i]) {
 		case '(':
 		{
-			if (i + 1 == size 
-				|| i != 0 && (infix[i - 1] > '0' || infix[i - 1] == ')') && infix[i - 1] != '~')
+			if (i + 1 == size || i != 0 && (infix[i - 1] > '0' || infix[i - 1] == ')'))
 			{
 				errornumber = i;
 				throw "Opening bracket was installed in wrong position";
@@ -57,9 +56,7 @@ void TPostfix::toLexem() // Converting an expression into lexem array
 		}
 		case ')':
 		{
-			if (i == 0 
-				|| infix[i - 1] < '0' && infix[i - 1] != ')'
-				|| infix[i - 1] == '~')
+			if (i == 0 || (infix[i - 1] < '0' && infix[i - 1] != ')'))
 			{
 				errornumber = i;
 				throw "Closing bracket was installed in wrong position";
@@ -71,10 +68,7 @@ void TPostfix::toLexem() // Converting an expression into lexem array
 		}
 		case '+': case '*': case '/':
 		{
-			if (i == 0 
-				|| (i + 1) == size 
-				|| infix[i - 1] < '0' && infix[i - 1] != ')' 
-				|| infix[i - 1] == '~')
+			if (i == 0 || (i + 1) == size || (infix[i - 1] < '0' && infix[i - 1] != ')'))
 			{
 				errornumber = i;
 				throw "Operation was installed in wrong position";
@@ -91,9 +85,7 @@ void TPostfix::toLexem() // Converting an expression into lexem array
 				throw "Operation was installed in wrong position";
 			}
 
-			if (i == 0
-				|| infix[i - 1] < '0' && infix[i - 1] != ')'
-				|| infix[i - 1] == '~') data[lexemnumber++] = '~';
+			if (i == 0 || (infix[i - 1] < '0' && infix[i - 1] != ')')) data[lexemnumber++] = '~';
 
 			else if (infix[i - 1] == 'E') data[lexemnumber] += '~';
 
@@ -111,7 +103,7 @@ void TPostfix::toLexem() // Converting an expression into lexem array
 
 			if (infix[i] >= 'a' && infix[i] <= 'z')
 			{
-				if (i != 0 && infix[i - 1] >= '0' && infix[i - 1] != '~')
+				if (i != 0 && infix[i - 1] >= '0' || i + 1 != size && infix[i + 1] == '.')
 				{
 					errornumber = i;
 					throw "Variables must be latin lowercase letter";
@@ -124,28 +116,39 @@ void TPostfix::toLexem() // Converting an expression into lexem array
 			{
 				if (infix[i] == 'E')
 				{
-					if ((i + 1) != size && infix[i + 1] < '0' && infix[i + 1] != '-')
+					if ((i + 1) == size 
+						|| i == 0 
+						|| infix[i - 1] < '0' && infix[i - 1] != '.'
+						|| infix[i + 1] < '0' && infix[i + 1] != '-')
 					{
-						errornumber = i + 1;
-						throw "Wrong exponent notation";
+						if (i + 1 == size || i == 0 || infix[i - 1] < '0') errornumber = i;
+						else errornumber = i + 1;
+
+						throw "Wrong exponentional notation";
 					}
 
 					else data[lexemnumber] += infix[i];
 				}
 
-				else if (i + 1 == size 
-					|| (infix[i + 1] < '0' && infix[i + 1] != '.')) data[lexemnumber++] += infix[i];
+				else if (i != 0 && infix[i - 1] >= 'a' && infix[i - 1] <= 'z')
+				{
+					errornumber = i;
+					throw "You forgot operation";
+				}
+
+				else if (i + 1 == size || (infix[i + 1] < '0' && infix[i + 1] != '.')) data[lexemnumber++] += infix[i];
 
 				else data[lexemnumber] += infix[i];
 			}
 
 			else if (infix[i] == '.')
 			{
-				if (i == 0
-					|| (i + 1) == size
+				if (i == 0 
 					|| infix[i - 1] < '0'
-					|| infix[i - 1] == '~'
-					|| infix[i + 1] < '0')
+					|| infix[i - 1] > '9'
+					|| (i + 1) == size 
+					|| infix[i + 1] < '0' 
+					|| infix[i + 1] > '9' && infix[i + 1] != 'E')
 				{
 					errornumber = i;
 					throw "Number must be in math form";
@@ -173,27 +176,58 @@ void TPostfix::toLexem() // Converting an expression into lexem array
 	size = lexemnumber;
 }
 
-void TPostfix::stringCheck(string it) // Ñhecking operand input correctness
+void TPostfix::stringCheck(string it) // Checking operand input correctness
 {
-	size_t size = it.size();
-	for (size_t i = 0; i < size; i++)
+	size_t tsize = it.size();
+	for (size_t i = 0; i < tsize; i++)
 	{
 		if (it[i] >= '0' && it[i] <= '9' 
 			|| it[i] == 'E' 
 			|| it[i] == '.' 
 			|| it[i] == '-')
 		{
-			if (it[i] == '-' && size == 1)
+			if (it[i] == '-' && tsize == 1)
 			{
-				cout << it[i] << " ";
+				errorstring = it;
+				errornumber = i;
 				throw "it isn't number";
+			}
+
+			if (it[i] == 'E')
+			{
+				if (i == 0
+					|| it[i - 1] < '0' && it[i - 1] != '.'
+					|| it[i - 1] > '9'
+					|| (i + 1) == size
+					|| it[i + 1] < '0' && it[i + 1] != '-'
+					|| it[i + 1] > '9')
+				{
+					errorstring = it;
+					errornumber = i;
+					throw "Wrong exponational notation";
+				}
+			}
+
+			if (it[i] == '.')
+			{
+				if (i == 0
+					|| it[i - 1] < '0'
+					|| it[i - 1] > '9'
+					|| (i + 1) == tsize
+					|| it[i + 1] < '0'
+					|| it[i + 1] > '9' && it[i + 1] != 'E')
+				{
+					errorstring = it;
+					errornumber = i;
+					throw "Wrong math form";
+				}
 			}
 		}
 
 		else
 		{
-			for (size_t j = 0; j <= i; j++)
-				cout << it[j] << " ";
+			errorstring = it;
+			errornumber = i;
 			throw "Wrong symbol";
 		}
 	}
@@ -289,7 +323,8 @@ double TPostfix::toNumber(string number) // Converting string into double
 	{
 		if (dot > 1)
 		{
-			cout << number << " ";
+			errorstring = number;
+			errornumber = i - 1;
 			throw "More than 1 dot";
 		}
 
@@ -297,8 +332,8 @@ double TPostfix::toNumber(string number) // Converting string into double
 		{
 			if (i != 0)
 			{
-				for (size_t j = 0; j <= i; j++)
-					cout << number[j] << " ";
+				errorstring = number;
+				errornumber = i;
 				throw "Minus can't stay in this place";
 			}
 
@@ -321,7 +356,8 @@ double TPostfix::toNumber(string number) // Converting string into double
 					e_num += number[j];
 				else
 				{
-					cout << number << " ";
+					errorstring = number;
+					errornumber = j; 
 					throw "Exponentional notation can be only integer number and cann't have other symbol";
 				}
 			}
@@ -333,7 +369,8 @@ double TPostfix::toNumber(string number) // Converting string into double
 
 		if ((number[i] < '0') || (number[i] > '9'))
 		{
-			cout << number << " ";
+			errorstring = number;
+			errornumber = i;
 			throw "inccorect symbol";
 		}
 
@@ -355,7 +392,6 @@ void TPostfix::toCalculate() // Calculating
 {
 	toVariable();
 
-	int t = 0;
 	double temp;
 
 	for (size_t i = 0; i < size; i++)
@@ -383,9 +419,15 @@ void TPostfix::toCalculate() // Calculating
 
 		else if (data[i] == "/")
 		{
-			if (fabs(numbers.top()) < 0.0000001)
+			if (fabs(numbers.top()) < 1e-15)
 			{
-				errornumber = i;
+				errorstring = "";
+				for (size_t j = 0; j < size; j++)
+				{
+					if (i == j) errornumber = errorstring.size();
+					errorstring += data[j];
+				}
+
 				throw "Division by zero";
 			}
 
@@ -424,20 +466,16 @@ string TPostfix::getInfix() // Get infix form in string
 	return infix;
 }
 
-string TPostfix::getLexem(int n) // Output lexem
+string TPostfix::getLexem(int n) // Output lexem for test
 {
-	if (n >= this->size) throw out_of_range("Out of range");
+	if (n < 0 || n >= this->size) throw out_of_range("Out of range");
 	return data[n];
 }
 
 void TPostfix::getError() // Output all symbols to symbol with error
 {
-	if (errornumber > -1)
-	{
-		cout << infix << endl;
-		for (size_t i = 0; i < errornumber; i++)
-			cout << " ";
-		cout << "^" << endl;
-
-	}
+	cout << errorstring << endl;
+	for (size_t i = 0; i < errornumber; i++)
+		cout << " ";
+	cout << "^" << endl;
 }

@@ -21,8 +21,8 @@ TEST(TPostfix, can_set_other_infix)
 
 TEST(TPostfix, can_convert_to_lexem_array)
 {
-    TPostfix test("5+5");
-    string array[3] = {"5", "+", "5"};
+    TPostfix test("56.2+576.E89");
+    string array[3] = {"56.2", "+", "576.E89"};
     for (size_t i = 0; i < 3; i++)
         EXPECT_EQ(test.getLexem(i), array[i]);
 }

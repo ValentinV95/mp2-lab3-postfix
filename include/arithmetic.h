@@ -18,6 +18,7 @@ private:
 	Stack<double> numbers;
 	double result;
 	int errornumber;
+	string errorstring;
 
 public:
 
@@ -27,19 +28,19 @@ public:
 
 	~TPostfix(); // Destructor clears data memory
 
-	void stringCheck(string it); // Ñhecking operand input correctness
-
-	size_t operation_priority(string operation); // Get operation priority in size_t
-
-	double toNumber(string number); // Converting string into double
+	void setTPostfix(string _infix); // Set some string
 
 	void toLexem(); // Converting an expression into lexem array
 
-	void setTPostfix(string _infix); // Set some string
+	void stringCheck(string it); // Checking operand input correctness
 
 	void toVariable(); // Enter variable
 
+	size_t operation_priority(string operation); // Get operation priority in size_t
+
 	void toPostfix(); // Converting infix form  into postfix one
+
+	double toNumber(string number); // Converting string into double
 
 	void toCalculate(); // Calculating
 

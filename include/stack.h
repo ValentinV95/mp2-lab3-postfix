@@ -87,8 +87,6 @@ public:
 	void clear() //Delete all elements in stack without change his data size
 	{
 		index = -1;
-		delete[] data;
-		data = new T[dataSize];
 	}
 
 };
