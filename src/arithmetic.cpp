@@ -19,11 +19,6 @@ std::string Arithmetic::BaseLexem::GetLexem()
 	return lexem;
 }
 
-double Arithmetic::BaseLexem::Value()
-{
-	return double_performance;
-}
-
 int Arithmetic::BaseLexem::GetSatrtPos()
 {
 	return pos_start;
@@ -65,9 +60,20 @@ Arithmetic::Operation::Operation(char ch, int pos_start, int pos_end)
 	this->pos_end = pos_end;
 }
 
-
+double Arithmetic::Operation::Value()
+{
+	std::string err = "Value Error!";
+	throw err;
+	// return double_performance;
+}
 
 //OPERAND
+
+
+double Arithmetic::Operand::Value()
+{
+	return double_performance;
+}
 
 Arithmetic::Number::Number(std::string lexem, int pos_start, int pos_end)
 {

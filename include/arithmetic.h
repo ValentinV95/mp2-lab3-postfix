@@ -20,7 +20,7 @@ private:
 	public:
 		std::string LexemType();
 		std::string GetLexem();
-		double Value();
+		virtual double Value() = 0;
 		int GetSatrtPos();
 		int GetEndPos();
 		int GetPriority();
@@ -29,6 +29,7 @@ private:
 	class Operation : public BaseLexem //  + - * / ~ ( )
 	{
 	public:
+		double Value();
 		Operation(char data, int pos1, int pos2);
 	};
 
@@ -37,6 +38,8 @@ private:
 	{
 	protected:
 		double ConvertNumber(std::string strlex);
+	public:
+		double Value();
 	};
 
 	class Number : public Operand
