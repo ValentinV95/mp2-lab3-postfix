@@ -9,22 +9,21 @@
 std::map<std::string, double> valueVar;
 std::map<std::string, double>* valueVarPtr = &valueVar;
 
-Lexems::Lexems() { }
+Lexems::Lexems(std::string _lex) { lex = _lex; }
 
 Lexems::~Lexems() { }
 
 /*-----------------------------------------------------------------------*/
 
-Operator::Operator(char _lex) : Lexems()
+Operator::Operator(char _lex) : Lexems(&_lex)
 {
-	lex = _lex;
-	if (_lex == '~')
+	if (lex == "~")
 		this->priority = 1;
-	else if (_lex == '*' || _lex == '/')
+	else if (lex == "*" || lex == "/")
 		this->priority = 2;
-	else if (_lex == '+' || _lex == '-')
+	else if (lex == "+" || lex == "-")
 		this->priority = 3;
-	else if (_lex == '(' || _lex == ')')
+	else if (lex == "(" || lex == ")")
 		this->priority = 0;
 	else
 		throw std::exception("error");
@@ -67,7 +66,7 @@ void Operator::ToDo(Stack<double>& S)
 	}
 	else
 	{
-		throw std::exception("error");
+		throw std::exception("unknown_operation");
 	}
 }
 
@@ -85,10 +84,7 @@ Operator::~Operator() { }
 
 /*-----------------------------------------------------------------------*/
 
-Operand::Operand(std::string _lex) : Lexems()
-{
-	lex = _lex;
-}
+Operand::Operand(std::string _lex) : Lexems(_lex) { }
 
 std::string Operand::whatis()
 {
@@ -114,10 +110,7 @@ Operand::~Operand() { }
 
 /*-----------------------------------------------------------------------*/
 
-Var::Var(char _lex) : Lexems()
-{
-	lex = _lex;
-}
+Var::Var(char _lex) : Lexems(&_lex) { }
 
 std::string Var::whatis()
 {
@@ -298,7 +291,6 @@ double TPostfix::resolve()
 
 std::string TPostfix::get_infixLexem()
 {
-	std::cout << "your infix form:" << std::endl;
 	std::string out;
 	for (size_t i = 0; i < infix_size; i++)
 		out += infix_form[i]->show();
@@ -308,7 +300,6 @@ std::string TPostfix::get_infixLexem()
 
 std::string TPostfix::get_postfixLexem()
 {
-	std::cout << "your postfixfix form:" << std::endl;
 	std::string out;
 	for (size_t i = 0; i < postfix_size; i++)
 		out += postfix_form[i]->show();
@@ -369,10 +360,10 @@ double convert(const std::string strOperand)
 		}
 	}
 
-	if ((i + 2) >= strOperand.size() && strOperand[i] == ',' && strOperand[i + 1] == 'e')
-		throw lexException("no correct number", strOperand, i + 1);
+	if ((i+2) >= strOperand.size() && strOperand[i] == ',' && strOperand[i+1] == 'e')
+		throw lexException("no correct number", strOperand, i+1);
 
-	if ((i+1) >= strOperand.size() && strOperand[i] == ',')
+	if ((i+1) >= strOperand.size() && (strOperand[i] == ','))
 		throw lexException("no correct number", strOperand, i);
 
 	i++;

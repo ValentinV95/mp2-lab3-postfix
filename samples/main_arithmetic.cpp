@@ -15,7 +15,9 @@ int main()
 	try
 	{
 		TPostfix Equation(Eq);
+		std::cout << "your infix form:" << std::endl;
 		std::cout << Equation.get_infixLexem() << std::endl;
+		std::cout << "your postfixfix form:" << std::endl;
 		std::cout << Equation.get_postfixLexem() << std::endl;
 		std::cout << "result:  " << Equation.resolve();
 	}
