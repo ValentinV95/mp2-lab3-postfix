@@ -1,60 +1,92 @@
+#ifndef __STACK_H__
+#define __STACK_H__
+#include <iostream>
+using namespace std;
+
+
+
 template <class T>
-class Stack
+class TStack
 {
 private:
-	T* data;
-	int Index = -1;
-	int r_size = 2;
+	int top;
+	int size;
+	T* pMem;
 public:
-	Stack()
-	{
-		data = new T[r_size];
-	}
-
-	void Clear() 
-	{
-		Index = -1;
-	}
-
-	bool IsEmpty()  
-	{
-		return Index < 0;
-	}
-
-	void Push(T elem) 
-	{
-		if (++Index == r_size)  
-		{
-			T* tmp = new T[r_size * 2];
-			for (size_t i = 0; i < r_size; i++)
-				tmp[i] = data[i];
-			delete[] data;
-			data = tmp;
-			r_size *= 2;
+	TStack(int _size)  
+	{ 
+		if (_size > 0) {
+			top = -1;
+			size = _size;
+			pMem = new T[size];
 		}
-		data[Index] = elem;
+		else {
+			throw exception("wrong stack size");
+		}
 	}
 
-	T Pop() 
+	const bool IsEmpty()
 	{
-		if (IsEmpty())
-			throw std::exception("Stack is empty.");
-		return data[Index--];
+		if (top != -1) {
+			return 0;
+		}
+		return 1;
 	}
 
-	int GetSize() 
+	const bool IsFull()
 	{
-		return Index + 1;
+		if (top != size - 1) {
+			return 0;
+		}
+		return 1;
 	}
 
-	T Top() 
+	void clean()
 	{
-		if (IsEmpty())
-			throw std::exception("Stack is empty.");
-		return data[Index];
+		top = -1;
 	}
-	~Stack()
+
+	int Size()
 	{
-		delete[] data;
+		return top + 1;
+	}
+
+	T get_top()
+	{
+		if (!IsEmpty()) {
+			return pMem[top];
+		}
+		else {
+			throw exception("stack is empty");
+		}
+	}
+
+
+	T pop()
+	{
+		if (!IsEmpty()) {
+			return pMem[top--];
+		}
+		else {
+			throw exception("stack is empty");
+		}
+	}
+
+	void push(const T& element)
+	{
+		if (top == size - 1) {
+			T* tmpMem = new T[size * 2];
+			copy(pMem, pMem + size, tmpMem);
+			delete[] pMem;
+			pMem = tmpMem;
+			size *= 2;
+		}
+		pMem[++top] = element;
+	}
+
+	~TStack()
+	{
+		delete[] pMem;
 	}
 };
+#endif  
