@@ -1,83 +1,60 @@
-#pragma once
-
-template<class T>
+template <class T>
 class Stack
 {
 private:
-	int index = -1;
-	size_t dataSize;
 	T* data;
+	int Index = -1;
+	int r_size = 2;
 public:
-	Stack() 
+	Stack()
 	{
-		dataSize = 5;
-		data = new T[dataSize];
+		data = new T[r_size];
 	}
 
-	Stack(const Stack& temp) // Copy constructor
+	void Clear() 
 	{
-		this->index = temp.index;
-		this->dataSize = temp.dataSize;
-		this->data = new T[this->dataSize];
-
-		for (int i = 0; i < this->dataSize; i++)
-			this->data[i] = temp.data[i];
+		Index = -1;
 	}
 
+	bool IsEmpty()  
+	{
+		return Index < 0;
+	}
+
+	void Push(T elem) 
+	{
+		if (++Index == r_size)  
+		{
+			T* tmp = new T[r_size * 2];
+			for (size_t i = 0; i < r_size; i++)
+				tmp[i] = data[i];
+			delete[] data;
+			data = tmp;
+			r_size *= 2;
+		}
+		data[Index] = elem;
+	}
+
+	T Pop() 
+	{
+		if (IsEmpty())
+			throw std::exception("Stack is empty.");
+		return data[Index--];
+	}
+
+	int GetSize() 
+	{
+		return Index + 1;
+	}
+
+	T Top() 
+	{
+		if (IsEmpty())
+			throw std::exception("Stack is empty.");
+		return data[Index];
+	}
 	~Stack()
 	{
 		delete[] data;
 	}
-
-	bool isEmpty() // Empty check
-	{
-		return index == -1;
-	}
-
-	void push(T temp) // Add element on stack top
-	{
-		if ((index + 1) == dataSize)
-		{
-			size_t tempSize = this->dataSize;
-			T* temp = new T[tempSize];
-			for (size_t i = 0; i < tempSize; i++)
-				temp[i] = this->data[i];
-
-			delete[] this->data;
-
-			dataSize *= 2;
-			this->data = new T[dataSize];
-			for (int i = 0; i < tempSize; i++)
-				data[i] = temp[i];
-
-			delete[] temp;
-		}
-
-		data[++index] = temp;
-	}
-
-	T pop() // Get top element with delete one in stack
-	{
-		if (!isEmpty())
-			return data[index--];
-		throw std::out_of_range("Stack is empty");
-	}
-
-	T top() // Get top element without delete one in stack
-	{
-		if (!isEmpty())
-			return data[index];
-		throw std::out_of_range("Stack is empty");
-	}
-
-	int size() // Get number of elements
-	{
-		return index + 1;
-	}
-
-	void clear() //Delete all elements in stack without change his data size
-	{
-		index = -1;
-	}
-
 };
