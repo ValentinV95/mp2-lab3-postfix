@@ -33,7 +33,7 @@ public:
 class operations :public Lex
 {
 protected:
-	void SetPrior(char op) override;//prioretet operaciy + - prior 1; * / prior =2 ;~ prior 3
+	void SetPrior(char op) override;
 public:
 	operations(char op);
 };
@@ -78,7 +78,7 @@ private:
 	bool IsVariable(std::string num);
 	void CheckBrackets();
 	bool IsBrackets(const char& ch);
-	//void CorrectOrder();
+	
 
 	void resize();
 
