@@ -1,138 +1,375 @@
-//Объявление начальных библиотек
+#include "arithmetic.h"
 #include <gtest.h>
-#include <arithmetic.h>
 
-
-//Начало работы тестов
-TEST(TPostfix, can_create_tpostfix_without_infix)
+TEST(TArithmetic, can_create_postfix_from_correct_infix)
 {
-    ASSERT_NO_THROW(TPostfix test);
+	string infix = "x+5";
+	ASSERT_NO_THROW(TArithmetic post(infix));
 }
 
-TEST(TPostfix, can_create_tpostfix_with_infix)
+TEST(TArithmetic, can_create_postfix_from_one_size_correct_infix)
 {
-    ASSERT_NO_THROW(TPostfix test("5+5"));
+	string infix = "x";
+	ASSERT_NO_THROW(TArithmetic post_1(infix));
+	infix = "1";
+	ASSERT_NO_THROW(TArithmetic post_2(infix));
 }
 
-TEST(TPostfix, can_set_other_infix)
+TEST(TArithmetic, throws_when_use_space)
 {
-    TPostfix test("5+5");
-    ASSERT_NO_THROW(test.setTPostfix("5"));
+	string infix = "x +5";
+	ASSERT_ANY_THROW(TArithmetic post_1(infix));
+	infix = "x+ 5";
+	ASSERT_ANY_THROW(TArithmetic post_2(infix));
+	infix = " x+5";
+	ASSERT_ANY_THROW(TArithmetic post_3(infix));
+	infix = "x+5 ";
+	ASSERT_ANY_THROW(TArithmetic post_4(infix));
+	infix = "(x+y) +1";
+	ASSERT_ANY_THROW(TArithmetic post_5(infix));
+	infix = "1+ (x+y)";
+	ASSERT_ANY_THROW(TArithmetic post_6(infix));
 }
 
-TEST(TPostfix, can_convert_to_lexem_array)
+TEST(TArithmetic, can_use_brackets)
 {
-    TPostfix test("56.2+576.E89");
-    string array[3] = { "56.2", "+", "576.E89" };
-    for (size_t i = 0; i < 3; i++)
-        EXPECT_EQ(test.getLexem(i), array[i]);
+	string infix = "(x+5)";
+	ASSERT_NO_THROW(TArithmetic post_1(infix));
+	infix = "-(x+5)*2";
+	ASSERT_NO_THROW(TArithmetic post_2(infix));
+	infix = "-((x+5)*2)-1";
+	ASSERT_NO_THROW(TArithmetic post_3(infix));
 }
 
-TEST(TPostfix, throw_if_opening_bracket_in_wrong_position)
+TEST(TArithmetic, throws_when_number_of_opening_and_closing_brackets_does_not_match)
 {
-    ASSERT_ANY_THROW(TPostfix test("9("));
+	string infix = "(x+1";
+	ASSERT_ANY_THROW(TArithmetic post_1(infix));
+	infix = "x+1)";
+	ASSERT_ANY_THROW(TArithmetic post_2(infix));
+	infix = "((x+1)";
+	ASSERT_ANY_THROW(TArithmetic post_3(infix));
+	infix = "(x+1))";
+	ASSERT_ANY_THROW(TArithmetic post_4(infix));
 }
 
-TEST(TPostfix, throw_if_closing_bracket_in_wrong_position)
+TEST(TArithmetic, can_use_exponential_form_without_sign)
 {
-    ASSERT_ANY_THROW(TPostfix test("-)*9"));
+	string infix = "x+1e1";
+	ASSERT_NO_THROW(TArithmetic post(infix));
 }
 
-TEST(TPostfix, throw_if_operation_in_wrong_position)
+TEST(TArithmetic, can_use_exponential_form_with_plus)
 {
-    ASSERT_ANY_THROW(TPostfix test("++9"));
+	string infix = "x+1e+1";
+	ASSERT_NO_THROW(TArithmetic post(infix));
 }
 
-TEST(TPostfix, throw_if_minus_in_wrong_position)
+TEST(TArithmetic, can_use_exponential_form_with_minus)
 {
-    ASSERT_ANY_THROW(TPostfix test("(9)-"));
+	string infix = "x+1e-1";
+	ASSERT_NO_THROW(TArithmetic post(infix));
 }
 
-TEST(TPostfix, throw_if_name_variables_incorrect)
+TEST(TArithmetic, throws_when_use_e_in_variable_name)
 {
-    ASSERT_ANY_THROW(TPostfix test("T"));
-    ASSERT_ANY_THROW(TPostfix test("aa"));
+	string infix = "x+e";
+	ASSERT_ANY_THROW(TArithmetic post_1(infix));
+	infix = "x+xex";
+	ASSERT_ANY_THROW(TArithmetic post_2(infix));
 }
 
-TEST(TPostfix, throw_if_exponential_notation_is_wrong)
+TEST(TArithmetic, throws_when_lexem_before_e_is_wrong)
 {
-    TPostfix test;
-    ASSERT_ANY_THROW(test.setTPostfix("9E+6"));
+	string infix = "x+e-1";
+	ASSERT_ANY_THROW(TArithmetic post(infix));
 }
 
-TEST(TPostfix, throw_if_number_notation_is_wrong)
+TEST(TArithmetic, throws_when_lexem_after_e_is_wrong)
 {
-    TPostfix test;
-    ASSERT_ANY_THROW(test.setTPostfix(".6"));
-    ASSERT_ANY_THROW(test.setTPostfix("6."));
+	string infix = "x+1e*1";
+	ASSERT_ANY_THROW(TArithmetic post_1(infix));
+	infix = "x+1ea1";
+	ASSERT_ANY_THROW(TArithmetic post_2(infix));
+	infix = "x+1e#1";
+	ASSERT_ANY_THROW(TArithmetic post_3(infix));
+	infix = "x+1e 1";
+	ASSERT_ANY_THROW(TArithmetic post_4(infix));
 }
 
-TEST(TPostfix, throw_if_bracket_number_isnt_equal)
+TEST(TArithmetic, throws_when_first_lexem_is_wrong)
 {
-    TPostfix test;
-    ASSERT_ANY_THROW(test.setTPostfix("((9+6)"));
+	string infix = "*x";
+	ASSERT_ANY_THROW(TArithmetic post_1(infix));
+	infix = "&x";
+	ASSERT_ANY_THROW(TArithmetic post_2(infix));
+	infix = ")x";
+	ASSERT_ANY_THROW(TArithmetic post_3(infix));
+	infix = "e5";
+	ASSERT_ANY_THROW(TArithmetic post_4(infix));
+	infix = ".3";
+	ASSERT_ANY_THROW(TArithmetic post_5(infix));
 }
 
-TEST(TPostfix, correct_operation_priority)
+TEST(TArithmetic, can_create_postfix_with_correct_first_lexem)
 {
-    TPostfix test;
-    EXPECT_EQ(test.operation_priority("+"), 1);
-    EXPECT_EQ(test.operation_priority("-"), 1);
-    EXPECT_EQ(test.operation_priority("*"), 2);
-    EXPECT_EQ(test.operation_priority("/"), 2);
-    EXPECT_EQ(test.operation_priority("~"), 3);
-    EXPECT_EQ(test.operation_priority("("), 0);
+	string infix = "10";
+	ASSERT_NO_THROW(TArithmetic post_1(infix));
+	infix = "abc";
+	ASSERT_NO_THROW(TArithmetic post_2(infix));
+	infix = "-x";
+	ASSERT_NO_THROW(TArithmetic post_3(infix));
+	infix = "(x+1)";
+	ASSERT_NO_THROW(TArithmetic post_4(infix));
 }
 
-TEST(TPostfix, correct_converting_string_to_number)
+TEST(TArithmetic, can_create_postfix_with_correct_last_lexem)
 {
-    TPostfix test;
-    EXPECT_EQ(test.toNumber("96.678"), 96.678);
-    EXPECT_EQ(test.toNumber("-96"), -96);
-    double temp;
-    temp = floor(test.toNumber("-96.45") * pow(10.0, 16)) / pow(10.0, 16);
-    EXPECT_EQ(temp, -96.45);
-    temp = floor(test.toNumber("-9.456E2") * pow(10.0, 16)) / pow(10.0, 16);
-    EXPECT_EQ(temp, -945.6);
+	string infix = "10";
+	ASSERT_NO_THROW(TArithmetic post_1(infix));
+	infix = "abc";
+	ASSERT_NO_THROW(TArithmetic post_2(infix));
+	infix = "(x+1)";
+	ASSERT_NO_THROW(TArithmetic post_3(infix));
 }
 
-TEST(TPostfix, correct_converting_to_postfix_form)
+TEST(TArithmetic, throws_when_last_lexem_is_wrong)
 {
-    string temp = "6989+";
-    TPostfix test("69+89");
-    test.toPostfix();
-    EXPECT_EQ(test.getPostfix(), temp);
-
-    temp = "896978+8989~*-*9+";
-    test.setTPostfix("89*(69+78-89*-89)+9");
-    test.toPostfix();
-    EXPECT_EQ(test.getPostfix(), temp);
+	string infix = "10+";
+	ASSERT_ANY_THROW(TArithmetic post_1(infix));
+	infix = "10(";
+	ASSERT_ANY_THROW(TArithmetic post_2(infix));
+	infix = "10e";
+	ASSERT_ANY_THROW(TArithmetic post_3(infix));
+	infix = "10#";
+	ASSERT_ANY_THROW(TArithmetic post_4(infix));
 }
 
-TEST(TPostfix, correct_calculating)
+TEST(TArithmetic, can_create_postfix_with_correct_next_lexem_after_opening_brackets)
 {
-    double temp = 69.0 + 89.0;
-    TPostfix test("69+89");
-    test.toPostfix();
-    test.toCalculate();
-    EXPECT_EQ(test.getResult(), temp);
-
-    temp = 89 * (69 + 78 - 89 * (-89)) + 9;
-    test.setTPostfix("89*(69+78-89*-89)+9");
-    test.toPostfix();
-    test.toCalculate();
-    EXPECT_EQ(test.getResult(), temp);
-
-    temp = 5 - (-(-(-(4))));
-    test.setTPostfix("5----4");
-    test.toPostfix();
-    test.toCalculate();
-    EXPECT_EQ(test.getResult(), temp);
+	string infix = "(-10)";
+	ASSERT_NO_THROW(TArithmetic post_1(infix));
+	infix = "(a+1)";
+	ASSERT_NO_THROW(TArithmetic post_2(infix));
+	infix = "(1+a)";
+	ASSERT_NO_THROW(TArithmetic post_3(infix));
+	infix = "((1+a)+1)";
+	ASSERT_NO_THROW(TArithmetic post_3(infix));
 }
 
-TEST(TPostfix, throw_if_division_by_zero)
+TEST(TArithmetic, throws_when_next_lexem_after_opening_brackets_is_wrong)
 {
-    TPostfix test("8/0");
-    test.toPostfix();
-    EXPECT_ANY_THROW(test.toCalculate(););
+	string infix = "(*10)";
+	ASSERT_ANY_THROW(TArithmetic post_1(infix));
+	infix = "(e-1)";
+	ASSERT_ANY_THROW(TArithmetic post_2(infix));
+	infix = "()";
+	ASSERT_ANY_THROW(TArithmetic post_3(infix));
+	infix = "(#+9)";
+	ASSERT_ANY_THROW(TArithmetic post_4(infix));
+}
+
+TEST(TArithmetic, can_create_postfix_with_correct_next_lexem_after_closing_brackets)
+{
+	string infix = "(-10)*x";
+	ASSERT_NO_THROW(TArithmetic post_1(infix));
+	infix = "(-(-10))";
+	ASSERT_NO_THROW(TArithmetic post_2(infix));
+}
+
+TEST(TArithmetic, throws_when_next_lexem_after_closing_brackets_is_wrong)
+{
+	string infix = "(-10)(-10)";
+	ASSERT_ANY_THROW(TArithmetic post_1(infix));
+	infix = "(-1)x";
+	ASSERT_ANY_THROW(TArithmetic post_2(infix));
+	infix = "(-1)1";
+	ASSERT_ANY_THROW(TArithmetic post_3(infix));
+	infix = "(-1)e-1";
+	ASSERT_ANY_THROW(TArithmetic post_4(infix));
+	infix = "(-1)#";
+	ASSERT_ANY_THROW(TArithmetic post_5(infix));
+}
+
+TEST(TArithmetic, can_create_postfix_with_correct_next_lexem_after_operation)
+{
+	string infix = "x/y";
+	ASSERT_NO_THROW(TArithmetic post_1(infix));
+	infix = "x+-y";
+	ASSERT_NO_THROW(TArithmetic post_2(infix));
+	infix = "x-1";
+	ASSERT_NO_THROW(TArithmetic post_3(infix));
+	infix = "x*(-y)";
+	ASSERT_NO_THROW(TArithmetic post_4(infix));
+}
+
+TEST(TArithmetic, throws_when_next_lexem_after_operation_is_wrong)
+{
+	string infix = "x+*y";
+	ASSERT_ANY_THROW(TArithmetic post_1(infix));
+	infix = "x/e-1";
+	ASSERT_ANY_THROW(TArithmetic post_2(infix));
+	infix = "x*)";
+	ASSERT_ANY_THROW(TArithmetic post_3(infix));
+	infix = "x-#";
+	ASSERT_ANY_THROW(TArithmetic post_4(infix));
+}
+
+TEST(TArithmetic, can_create_postfix_with_correct_next_lexem_after_latin_character)
+{
+	string infix = "x/y";
+	ASSERT_NO_THROW(TArithmetic post_1(infix));
+	infix = "xy";
+	ASSERT_NO_THROW(TArithmetic post_2(infix));
+	infix = "(-x)";
+	ASSERT_NO_THROW(TArithmetic post_3(infix));
+}
+
+TEST(TArithmetic, throws_when_next_lexem_after_latin_character_is_wrong)
+{
+	string infix = "xe-1";
+	ASSERT_ANY_THROW(TArithmetic post_1(infix));
+	infix = "x(-1)";
+	ASSERT_ANY_THROW(TArithmetic post_2(infix));
+	infix = "x1";
+	ASSERT_ANY_THROW(TArithmetic post_3(infix));
+	infix = "x#";
+	ASSERT_ANY_THROW(TArithmetic post_4(infix));
+}
+
+TEST(TArithmetic, can_create_postfix_with_correct_next_lexem_after_digit)
+{
+	string infix = "1/5";
+	ASSERT_NO_THROW(TArithmetic post_1(infix));
+	infix = "(-1)";
+	ASSERT_NO_THROW(TArithmetic post_2(infix));
+	infix = "15";
+	ASSERT_NO_THROW(TArithmetic post_3(infix));
+	infix = "1e-1";
+	ASSERT_NO_THROW(TArithmetic post_4(infix));
+}
+
+TEST(TArithmetic, throws_when_next_lexem_after_digit_is_wrong)
+{
+	string infix = "1(-1)";
+	ASSERT_ANY_THROW(TArithmetic post_1(infix));
+	infix = "1x";
+	ASSERT_ANY_THROW(TArithmetic post_2(infix));
+	infix = "1#";
+	ASSERT_ANY_THROW(TArithmetic post_3(infix));
+}
+
+TEST(TArithmetic, can_create_postfix_with_correct_use_of_point)
+{
+	string infix = "1.5";
+	ASSERT_NO_THROW(TArithmetic post_1(infix));
+	infix = "-(1.1+1.1)-1.1";
+	ASSERT_NO_THROW(TArithmetic post_2(infix));
+}
+
+TEST(TArithmetic, throws_when_next_lexem_after_point_is_wrong)
+{
+	string infix = "1.x";
+	ASSERT_ANY_THROW(TArithmetic post_1(infix));
+	infix = "1.#";
+	ASSERT_ANY_THROW(TArithmetic post_2(infix));
+	infix = "1.(";
+	ASSERT_ANY_THROW(TArithmetic post_3(infix));
+}
+
+TEST(TArithmetic, throws_when_number_of_points_or_e_is_violated)
+{
+	string infix = "1.1.1";
+	ASSERT_ANY_THROW(TArithmetic post_1(infix));
+	infix = "1e-1.1";
+	ASSERT_ANY_THROW(TArithmetic post_2(infix));
+	infix = "1e-1e-1";
+	ASSERT_ANY_THROW(TArithmetic post_3(infix));
+}
+
+TEST(TArithmetic, can_get_postfix)
+{
+	string infix = "1+5";
+	TArithmetic post(infix);
+	EXPECT_EQ("1 5 +", post.GetPostfix());
+}
+
+TEST(TArithmetic, can_create_correct_postfix_with_many_unary_minuses)
+{
+	string infix = "1---5";
+	TArithmetic post(infix);
+	EXPECT_EQ("1 5 - - -", post.GetPostfix());
+}
+
+TEST(TArithmetic, can_create_correct_postfix_with_brackets)
+{
+	string infix = "1/(1+5)";
+	TArithmetic post(infix);
+	EXPECT_EQ("1 1 5 + /", post.GetPostfix());
+}
+
+TEST(TArithmetic, can_create_correct_postfix_with_many_brackets)
+{
+	string infix = "-(1/(1+5))";
+	TArithmetic post(infix);
+	EXPECT_EQ("1 1 5 + / -", post.GetPostfix());
+}
+
+TEST(TArithmetic, can_create_correct_postfix_with_exponential_form_constant)
+{
+	string infix = "1e+10+1e-10";
+	TArithmetic post(infix);
+	EXPECT_EQ("1e+10 1e-10 +", post.GetPostfix());
+}
+
+TEST(TArithmetic, can_create_correct_postfix_with_increasing_priority)
+{
+	string infix = "1+5*6";
+	TArithmetic post(infix);
+	EXPECT_EQ("1 5 6 * +", post.GetPostfix());
+}
+
+TEST(TArithmetic, can_create_correct_postfix_with_decreasing_priority)
+{
+	string infix = "1*5-6";
+	TArithmetic post(infix);
+	EXPECT_EQ("1 5 * 6 -", post.GetPostfix());
+}
+
+TEST(TArithmetic, can_create_correct_postfix_with_same_priority)
+{
+	string infix = "1-5+6";
+	TArithmetic post(infix);
+	EXPECT_EQ("1 5 - 6 +", post.GetPostfix());
+}
+
+TEST(TArithmetic, can_calculate_postfix)
+{
+	string infix = "1-5+6";
+	TArithmetic post(infix);
+	EXPECT_EQ(true, abs(2.0 - post.Calculate()) < 0.000000001);
+}
+
+TEST(TArithmetic, can_calculate_postfix_with_real_constants)
+{
+	string infix = "1.2-0.1";
+	TArithmetic post(infix);
+	EXPECT_EQ(true, abs(1.1 - post.Calculate()) < 0.000000001);
+}
+
+TEST(TArithmetic, can_calculate_postfix_with_exponential_form_of_constants)
+{
+	string infix = "0.2e1+1e-1";
+	TArithmetic post(infix);
+	EXPECT_EQ(true, abs(2.1 - post.Calculate()) < 0.000000001);
+}
+
+TEST(TArithmetic, throws_when_there_is_division_by_zero)
+{
+	string infix = "1/0";
+	TArithmetic post_1(infix);
+	ASSERT_ANY_THROW(post_1.Calculate());
+	infix = "1/(1-1)";
+	TArithmetic post_2(infix);
+	ASSERT_ANY_THROW(post_2.Calculate());
 }
