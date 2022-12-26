@@ -1,9 +1,26 @@
+//Объявление  библиотек
+
 #include <string>
 #include <iostream>
 #include <math.h>
 #include <locale>
 #include <map>
 #include <ostream>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//Реализуемые классы
 
 class Lex
 {
@@ -14,8 +31,8 @@ protected:
 	int pr;
 
 public:
-	std::string LexType();//vozvrashaet tip lexem
-	std::string GetLex();//vozvrashaet lexem
+	std::string LexType();
+	std::string GetLex();
 	virtual void SetPrior(char op) = 0;
 	int GetPrior();
 	double value();
@@ -53,9 +70,9 @@ class Arithmetic
 {
 private:
 	std::string infix;
-	int size;//videlyaemaya pamyat'
-	int postfix_size;//kol-vo elem v postfix'e
-	int lex_size = -1;//kol-vo elem v lexem 
+	int size;
+	int postfix_size;
+	int lex_size = -1;
 	Lex** lexem = nullptr;
 	Lex** postfix = nullptr;
 
