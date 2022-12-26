@@ -1,112 +1,101 @@
-//Начальные библиотеки
 #include "stack.h"
 #include <gtest.h>
 
+TEST(Stack, can_create_stack_with_positive_length)
+{
+	ASSERT_NO_THROW(Stack<int> st(3));
+}
 
+TEST(Stack, throws_when_create_stack_with_negative_length)
+{
+	ASSERT_ANY_THROW(Stack<int> st(-3));
+}
 
+TEST(Stack, throws_when_create_stack_with_zero_length)
+{
+	ASSERT_ANY_THROW(Stack<int> st(0));
+}
 
+TEST(Stack, can_show_stack_top)
+{
+	Stack<int> st(3);
+	st.push(5);
+	EXPECT_EQ(5, st.show_top());
+	EXPECT_EQ(false, st.isEmpty());
+}
 
+TEST(Stack, can_not_show_empty_stack_top)
+{
+	Stack<int> st(3);
+	int this_top;
+	EXPECT_EQ(true, st.isEmpty());
+	ASSERT_ANY_THROW(this_top = st.show_top());
+}
 
+TEST(Stack, can_push_element_to_stack)
+{
+	Stack<int> st(3);
+	st.push(5);
+	EXPECT_EQ(5, st.show_top());
+}
 
+TEST(Stack, can_push_element_to_full_stack)
+{
+	Stack<int> st(1);
+	st.push(1);
+	EXPECT_EQ(true, st.isFull());
+	st.push(2);
+	EXPECT_EQ(2, st.show_top());
+}
 
-// Тесты для стека
-TEST(Stack, can_create_stack)
+TEST(Stack, can_pop_element_from_stack)
 {
-    ASSERT_NO_THROW(Stack<int> stack);
+	Stack<int> st(2);
+	st.push(1);
+	st.push(2);
+	EXPECT_EQ(2, st.pop());
+	EXPECT_EQ(1, st.show_top());
+	EXPECT_EQ(1, st.pop());
+	EXPECT_EQ(true, st.isEmpty());
 }
-TEST(Stack, can_create_copied_stack)
+
+TEST(Stack, can_not_pop_element_from_empty_stack)
 {
-    Stack<int> stack1;
-    for (int i = 0; i < stack1.size(); i++)
-        stack1.push(i);
-    ASSERT_NO_THROW(Stack<int> stack2(stack1));
-    Stack<int> stack2(stack1);
-    for (int i = 0; i < stack2.size(); i++)
-        EXPECT_EQ(stack1.pop(), stack2.pop());
+	Stack<int> st(3);
+	int this_top;
+	EXPECT_EQ(true, st.isEmpty());
+	ASSERT_ANY_THROW(this_top = st.pop());
 }
-TEST(Stack, copied_stack_is_equal_to_source_one)
+
+TEST(Stack, can_check_stack_is_empty)
 {
-    Stack<int> stack1;
-    for (int i = 0; i < stack1.size(); i++)
-        stack1.push(i);
-    Stack<int> stack2(stack1);
-    for (int i = 0; i < stack2.size(); i++)
-        EXPECT_EQ(stack1.pop(), stack2.pop());
+	Stack<int> st(3);
+	EXPECT_EQ(true, st.isEmpty());
+	st.push(1);
+	EXPECT_EQ(false, st.isEmpty());
 }
-TEST(Stack, copied_stack_has_its_own_memory)
+
+TEST(Stack, can_check_stack_is_full)
 {
-    Stack<int> stack1;
-    Stack<int> stack2(stack1);
-    for (int i = 0; i < stack1.size(); i++)
-        stack2.push(i);
-    for (int i = 0; i < stack1.size(); i++)
-        EXPECT_NE(stack1.pop(), stack2.pop());
+	Stack<int> st(1);
+	EXPECT_EQ(false, st.isFull());
+	st.push(1);
+	EXPECT_EQ(true, st.isFull());
 }
-TEST(Stack, can_get_stack_element_number)
+
+TEST(Stack, can_get_current_stack_size)
 {
-    Stack<int> stack;
-    ASSERT_NO_THROW(stack.size());
-    EXPECT_EQ(0, stack.size());
+	Stack<int> st(3);
+	EXPECT_EQ(0, st.current_size());
+	st.push(1);
+	EXPECT_EQ(1, st.current_size());
 }
-TEST(Stack, true_when_stack_is_empty)
+
+TEST(Stack, can_clear_stack)
 {
-    Stack<int> stack;
-    EXPECT_EQ(true, stack.isEmpty());
-}
-TEST(Stack, false_when_stack_isnt_empty)
-{
-    Stack<int> stack;
-    stack.push(1);
-    EXPECT_EQ(false, stack.isEmpty());
-}
-TEST(Stack, can_set_and_get_element)
-{
-    Stack<int> stack;
-    ASSERT_NO_THROW(stack.push(4));
-    stack.push(4);
-    ASSERT_NO_THROW(stack.pop());
-    EXPECT_EQ(4, stack.pop());
-}
-TEST(Stack, throws_when_get_element_in_empty_stack)
-{
-    Stack<int> stack;
-    ASSERT_ANY_THROW(stack.pop());
-}
-TEST(Stack, other_index_after_push)
-{
-    Stack<int> stack;
-    stack.push(1);
-    EXPECT_EQ(0, stack.size() - 1);
-}
-TEST(Stack, more_memory_after_push)
-{
-    Stack<int> stack;
-    for (int i = 0; i < 5; i++)
-        stack.push(i);
-    ASSERT_NO_THROW(stack.push(1));
-}
-TEST(Stack, get_top_element)
-{
-    Stack<int> stack;
-    stack.push(1);
-    EXPECT_EQ(1, stack.top());
-}
-TEST(Stack, method_top_dont_change_stack_index)
-{
-    Stack<int> stack;
-    stack.push(1);
-    stack.top();
-    EXPECT_EQ(0, stack.size() - 1);
-}
-TEST(Stack, throws_when_get_top_element_in_empty_stack)
-{
-    Stack<int> stack;
-    ASSERT_ANY_THROW(stack.top());
-}
-TEST(Stack, can_clean_stack)
-{
-    Stack<int> stack;
-    stack.push(1);
-    ASSERT_NO_THROW(stack.clear());
-    ASSERT_ANY_THROW(stack.pop());
+	Stack<int> st(3);
+	st.push(1);
+	EXPECT_EQ(false, st.isEmpty());
+	st.clear();
+	EXPECT_EQ(true, st.isEmpty());
 }
