@@ -2,7 +2,7 @@
 
 #include "../gtest/gtest.h"
 
-#include "../src/arithmetic.cpp"
+#include "../include/arithmetic.h"
 
 TEST(arithmetic, cant_solve_empty_expression_1)
 {

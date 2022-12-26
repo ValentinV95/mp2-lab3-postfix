@@ -57,27 +57,13 @@ public:
     };
 };
 
-/*Структура карт для функций и операций.Ставит во взаимное соответствие строковое
+/*Карты для функций и операций.Ставит во взаимное соответствие строковое
 *представление операции и лябда функцию, вычисляющюю значение
 */
-struct Instr {
-    std::map<string, std::function<double(double)>> function = {
-    {"~", [](double a)         {return (-1 * a); }},
-    {"sin", [](double a)       {return sin(a); }},
-    {"cos", [](double a)       {return cos(a); }},
-    {"sqrt",[](double a)       {return sqrt(a); }},
-    {"log", [](double a)       {return log(a); }},
-    {"lg", [](double a)        {return log10(a); }},
-    {"ln", [](double a)        {return log(a); }},
-    };
-    std::map<string, std::function<double(double, double)>> inf_op = {
-    {"+",[](double a,double b) {return a + b; }},
-    {"-",[](double a,double b) {return a - b; }},
-    {"*",[](double a,double b) {return a * b; }},
-    {"/",[](double a,double b) {return a / b; }},
-    {"^",[](double a,double b) {return pow(a,b); }}
-    };
-};
+   extern std::map<string, std::function<double(double)>> function;
+   extern std::map<string, std::function<double(double, double)>> inf_op;
+//Карта переменных. Изначально пустая
+   extern std::map<string, double> variables;
 
 //Перечисляемый тип, хранящий приоритет операций
 enum Priority { foo, power, mult_div, add_sub, brack };

@@ -1,9 +1,24 @@
 #include "arithmetic.h"// реализация функций и классов для вычисления арифметических выражений
 
-//Карта переменных. На начало выполнения пустая  
+std::map<string, std::function<double(double)>> function = {
+    {"~", [](double a) {return (-1 * a); }},
+    {"sin", [](double a) {return sin(a); }},
+    {"cos", [](double a) {return cos(a); }},
+    {"sqrt",[](double a) {return sqrt(a); }},
+    {"log", [](double a) {return log(a); }},
+    {"lg", [](double a) {return log10(a); }},
+    {"ln", [](double a) {return log(a); }},
+};
+std::map<string, std::function<double(double, double)>> inf_op = {
+    {"+",[](double a,double b) {return a + b; }},
+    {"-",[](double a,double b) {return a - b; }},
+    {"*",[](double a,double b) {return a * b; }},
+    {"/",[](double a,double b) {return a / b; }},
+    {"^",[](double a,double b) {return pow(a,b); }}
+};
+
 std::map <string, double> variables;
 
-Instr instr;
 /*Функция присваивания значения операнду.Если операнд инициализируется числом (1),
 * то значение операнда берётся из этого числа. Если на вход подаётся слово, то 
 * запрашивается значение соответствующей переменной(2). Если такой нет, её
@@ -62,7 +77,7 @@ void TPostfix::operators::Set(const string input)
         priority = add_sub;
         break;
     default:
-        if (instr.function.count(input) == 1) { priority = foo; } /*1*/
+        if (function.count(input) == 1) { priority = foo; } /*1*/
         else { throw MyException("undefined operation on:",left,right); }
         break;
     }
@@ -160,7 +175,7 @@ TPostfix::TPostfix(const string input)
             if (!(isdigit(tmp) || isalpha(tmp) || tmp == '.')) { cur--; };
             string other(input, head, cur - head);
 
-            if (instr.function.count(other) == 1)                          /*2*/
+            if (function.count(other) == 1)                          /*2*/
             {
                 op.push(new operators(other, head, cur));
                 continue;
@@ -282,7 +297,7 @@ double solve(const TPostfix& obj)
             continue;
         }
 
-        if (instr.inf_op.count(lex->data) != 0)                            /*2*/
+        if (inf_op.count(lex->data) != 0)                            /*2*/
         {
             if (op_st.isEmpty()) {
                 string exception = "Missing right operands in operation:" + lex->data + " on positnion:";
@@ -294,18 +309,18 @@ double solve(const TPostfix& obj)
                 throw MyException(exception.c_str(), lex->left, right->right);
             }
             TPostfix::operands* left = (TPostfix::operands*)(op_st.pop());
-            op_st.push(new TPostfix::operands(instr.inf_op[lex->data](left->value, right->value), left->left, right->right));
+            op_st.push(new TPostfix::operands(inf_op[lex->data](left->value, right->value), left->left, right->right));
             continue;
         }
 
-        if (instr.function.count(lex->data) != 0)                          /*3*/
+        if (function.count(lex->data) != 0)                          /*3*/
         {
             if (op_st.isEmpty()) {
                 string exception = "Missing operand in function:" + lex->data + " on positnion:";
                 throw MyException(exception.c_str(), lex->left, lex->right);
             }
             TPostfix::operands* op = (TPostfix::operands*)(op_st.pop());
-            op_st.push(new TPostfix::operands(instr.function[lex->data](op->value), lex->left, op->right));
+            op_st.push(new TPostfix::operands(function[lex->data](op->value), lex->left, op->right));
             continue;
         }
     }

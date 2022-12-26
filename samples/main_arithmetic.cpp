@@ -1,5 +1,5 @@
 #include "../include/arithmetic.h"// реализация пользовательского приложения
-#include "../src/arithmetic.cpp"
+
 int main()
 {
 	std::setlocale(LC_ALL,"Russian");
@@ -8,7 +8,11 @@ int main()
 		std::endl << "add(+),sub(-),mult(*),div(/),square root(sqrt),exp(^),logarithm(log)" <<
 		std::endl <<
 		std::endl << "Trigonomethric function:" <<
-		std::endl << "sin,cos" << std::endl << std::endl;
+		std::endl << "sin,cos" << std::endl <<
+		std::endl <<
+		std::endl <<
+		std::endl << "multi-letter variebles" <<
+		std::endl << std::endl;
 	std::cout << "Enter an expression:" << std::endl;
 	string s;
 	getline(std::cin, s);
