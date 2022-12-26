@@ -13,63 +13,59 @@
 template <class T>
 class Stack
 {
-
-//Приватный класс
 private:
 	T* data;
-	int ID = -1;
-	int Razmer = 2;
-	
-	
-	
-//Открытый класс	
+	int Index = -1;
+	int r_size = 2;
 public:
 	Stack()
 	{
-		data = new T[Razmer];
+		data = new T[r_size];
 	}
+
 	void Clear() 
 	{
-		ID = -1;
+		Index = -1;
 	}
+
 	bool IsEmpty()  
 	{
-		return ID < 0;
+		return Index < 0;
 	}
+
 	void Push(T elem) 
 	{
-		if (++ID == Razmer)  
+		if (++Index == r_size)  
 		{
-			T* tmp = new T[Razmer * 2];
-			for (Razmer i = 0; i < Razmer; i++)
+			T* tmp = new T[r_size * 2];
+			for (size_t i = 0; i < r_size; i++)
 				tmp[i] = data[i];
 			delete[] data;
 			data = tmp;
-			Razmer *= 2;
+			r_size *= 2;
 		}
-		data[ID] = elem;
+		data[Index] = elem;
 	}
+
 	T Pop() 
 	{
 		if (IsEmpty())
-			throw std::exception("Nothing on the stack");
-		return data[ID--];
+			throw std::exception("Stack is empty.");
+		return data[Index--];
 	}
-	
-	//Возвращение индекса
-	
+
 	int GetSize() 
 	{
-		return ID + 1;
+		return Index + 1;
 	}
+
 	T Top() 
 	{
 		if (IsEmpty())
-			throw std::exception("Nothing on the stack");
-		return data[ID];
+			throw std::exception("Stack is empty.");
+		return data[Index];
 	}
 	~Stack()
-	//Очистка
 	{
 		delete[] data;
 	}
