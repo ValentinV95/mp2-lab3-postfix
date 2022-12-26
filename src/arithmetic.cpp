@@ -8,7 +8,7 @@
 
 
 
-//Classes
+//Classes 
 std::string Lex::LexType()
 {
 	return name;
@@ -268,7 +268,7 @@ bool Arithmetic::CheckOp()
 			if (i == infix.size())
 				break;
 		}
-
+//Operation
 		if (infix[i] == '-' || infix[i] == '+' || infix[i] == '/' || infix[i] == '*' || infix[i] == '^')
 			Operations++;
 
@@ -425,7 +425,7 @@ void Arithmetic::VarValue()
 
 void Arithmetic::Postfix()
 {
-	postfix = new Lex * [size];//Videlyaemaya pamyat'
+	postfix = new Lex * [size];
 	int index = 0;
 	Stack<Lex*> stack;
 	Lex* elem;
@@ -526,7 +526,7 @@ void Arithmetic::Parser()
 					}
 					if (!IsNumber(lex) && (!IsVariable(lex)))
 					{
-						std::string error="incorrect form";
+						std::string error="False";
 						throw error;
 					}
 					lex = "";
@@ -564,7 +564,7 @@ void Arithmetic::Parser()
 		}
 		if (!IsNumber(lex) && (!IsVariable(lex)))
 		{
-			std::string error = "incorrect form";
+			std::string error = "False";
 			throw error;
 		}
 
@@ -650,6 +650,7 @@ Arithmetic::~Arithmetic()
 			delete lexem[i];
 
 	}
+	//Clear 
 	if (lexem != nullptr)
 		delete[] lexem;
 	if (postfix != nullptr)
