@@ -1,11 +1,5 @@
-//Объявление начальных библиотек
 #pragma once
 
-
-
-
-
-//Начало работы класса
 template<class T>
 class Stack
 {
@@ -14,13 +8,13 @@ private:
 	size_t dataSize;
 	T* data;
 public:
-	Stack()
+	Stack() 
 	{
 		dataSize = 5;
 		data = new T[dataSize];
 	}
 
-	Stack(const Stack& temp)
+	Stack(const Stack& temp) // Copy constructor
 	{
 		this->index = temp.index;
 		this->dataSize = temp.dataSize;
@@ -35,12 +29,12 @@ public:
 		delete[] data;
 	}
 
-	bool isEmpty() 
+	bool isEmpty() // Empty check
 	{
 		return index == -1;
 	}
 
-	void push(T temp) 
+	void push(T temp) // Add element on stack top
 	{
 		if ((index + 1) == dataSize)
 		{
@@ -62,32 +56,26 @@ public:
 		data[++index] = temp;
 	}
 
-
-
-	//Просмотр верхнего элемента
-	T pop() 
+	T pop() // Get top element with delete one in stack
 	{
 		if (!isEmpty())
 			return data[index--];
 		throw std::out_of_range("Stack is empty");
 	}
 
-	T top() 
+	T top() // Get top element without delete one in stack
 	{
 		if (!isEmpty())
 			return data[index];
 		throw std::out_of_range("Stack is empty");
 	}
 
-
-
-	int size() 
+	int size() // Get number of elements
 	{
 		return index + 1;
 	}
 
-	//Очистка стека
-	void clear() 
+	void clear() //Delete all elements in stack without change his data size
 	{
 		index = -1;
 	}
