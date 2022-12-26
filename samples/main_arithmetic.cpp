@@ -1,33 +1,23 @@
-#include <iomanip>
-#include "arithmetic.h"
-
-using std::cout;
-using std::endl;
-
-int main()
+// реализация пользовательского приложения
+#include<Arithmetic.h>
+#include<string>
+#include<iostream>
+int main()//Пользовательское приложение
 {
-	cout << "The program supports:" << endl;
-	cout << "- Unary ('-') and binary ('+', '-', '*', '/') operations" << endl;
-	cout << "- Brackets" << endl;
-	cout << "- Integer and real constants" << endl;
-	cout << "- Decimal separator only as a point: '.'" << endl;
-	cout << "- Exponential form of any signed ('-' or '+') or unsigned numbers" << endl;
-	cout << "- Variable names of any length using only lowercase Latin characters, excluding 'e'" << endl;
-	cout << "- Prohibition of spaces" << endl;
-
-	string source;
-	cout << endl << "Infix form: ";
-	std::getline(std::cin, source);  // space-controlled input
+	std::string str;
+	std::cout << "Input Infix form"<<'\n';
+	std::cin >> str;
+	std::cout <<"This is your infix form" <<'\n'<< str;
 	try
 	{
-		TArithmetic expression(source);
-		cout << endl << "Postfix form: " << expression.GetPostfix() << endl;
-		cout << endl << "Expression value: " << expression.Calculate() << endl;
+		Arithmetic ar(str);
+		double res = ar.Calculate();
+		std::cout <<"\n\n"<<"This is your answer"<<'\n' << res;
 	}
-	catch (const string message)
+	catch (const std::string& error)
 	{
-		cout << endl << message << endl;
+		std::cout << error;
 	}
 
-	return 0;
+
 }
