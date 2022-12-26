@@ -1,24 +1,14 @@
-// Объявление функций и классов для вычисления арифметических выражений
-
-
-//Объявление начальных библиотек
-
-
-using namespace std;
 #pragma once
+
 #include <iostream>
 #include <iomanip>
 #include "stack.h"
 #include <string>
 
-
-
-
-//Начало работы класса
+using namespace std;
 
 class TPostfix
 {
-// Используваемые   класса для работы программы (Закрытые)
 private:
 	size_t size;
 	string infix, postfix;
@@ -29,41 +19,38 @@ private:
 	int errornumber;
 	string errorstring;
 
-
-
-// Используваемые  класса для работы программы (Открытые)
-
 public:
 
-	TPostfix();
+	TPostfix(); // Create empty class object
 
-	TPostfix(string _infix); 
+	TPostfix(string _infix); // Create string arithmetic expression
 
-	~TPostfix(); 
-	void setTPostfix(string _infix); 
+	~TPostfix(); // Destructor clears data memory
 
-	void toLexem();
+	void setTPostfix(string _infix); // Set some string
 
-	void stringCheck(string it); 
+	void toLexem(); // Converting an expression into lexem array
 
-	void toVariable(); 
+	void stringCheck(string it); // Checking operand input correctness
 
-	size_t operation_priority(string operation); 
+	void toVariable(); // Enter variable
 
-	void toPostfix(); 
+	size_t operation_priority(string operation); // Get operation priority in size_t
 
-	double toNumber(string number); 
+	void toPostfix(); // Converting infix form  into postfix one
 
-	void toCalculate(); 
+	double toNumber(string number); // Converting string into double
 
-	string getPostfix(); 
+	void toCalculate(); // Calculating
 
-	double getResult(); 
+	string getPostfix(); // Get postfix form in string
 
-	string getInfix(); /
+	double getResult(); // Get result of calculating in double
 
-	string getLexem(int n); 
+	string getInfix(); // Get infix form in string
 
-	void getError(); 
+	string getLexem(int n); // Output lexem
+
+	void getError(); // Output all symbols to symbol with error
 
 };
