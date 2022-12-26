@@ -1,95 +1,73 @@
-//Объявление начальных библиотек
-#pragma once
 
-
-
-
-
-//Начало работы класса
 template<class T>
 class Stack
 {
 private:
-	int index = -1;
-	size_t dataSize;
-	T* data;
-public:
-	Stack()
+	int top;
+	T* pMem;
+	size_t size;
+
+	void oversize()
 	{
-		dataSize = 5;
-		data = new T[dataSize];
+		T* tmpMem = new T[size * 2];
+		std::copy(pMem, pMem + size, tmpMem);
+		delete[] pMem;
+		this->pMem = tmpMem;
+		size *= 2;
+	}
+public:
+	Stack(size_t sz = 1) : size(sz), top(-1)
+	{
+		if (sz <= 0)
+		{
+			throw std::exception("Stack size should be greater than zero");
+		}
+		else
+		{
+			pMem = new T[size];
+		}
 	}
 
-	Stack(const Stack& temp)
+	size_t current_size() const
 	{
-		this->index = temp.index;
-		this->dataSize = temp.dataSize;
-		this->data = new T[this->dataSize];
+		return top + 1;
+	}
 
-		for (int i = 0; i < this->dataSize; i++)
-			this->data[i] = temp.data[i];
+	void clear()
+	{
+		top = -1;
+	}
+
+	bool isEmpty() const
+	{
+		return top == -1;
+	}
+
+	bool isFull() const
+	{
+		return top == size - 1;
+	}
+
+	void push(const T& value)
+	{
+		if (isFull()) oversize();
+		pMem[++top] = value;
+	}
+
+	T pop()
+	{
+		if (isEmpty()) throw std::exception("Stack is empty");
+		return pMem[top--];
+	}
+
+	T show_top() const
+	{
+		if (isEmpty()) throw std::exception("Stack is empty");
+		return pMem[top];
 	}
 
 	~Stack()
 	{
-		delete[] data;
+		delete[] pMem;
 	}
-
-	bool isEmpty() 
-	{
-		return index == -1;
-	}
-
-	void push(T temp) 
-	{
-		if ((index + 1) == dataSize)
-		{
-			size_t tempSize = this->dataSize;
-			T* temp = new T[tempSize];
-			for (size_t i = 0; i < tempSize; i++)
-				temp[i] = this->data[i];
-
-			delete[] this->data;
-
-			dataSize *= 2;
-			this->data = new T[dataSize];
-			for (int i = 0; i < tempSize; i++)
-				data[i] = temp[i];
-
-			delete[] temp;
-		}
-
-		data[++index] = temp;
-	}
-
-
-
-	//Просмотр верхнего элемента
-	T pop() 
-	{
-		if (!isEmpty())
-			return data[index--];
-		throw std::out_of_range("Stack is empty");
-	}
-
-	T top() 
-	{
-		if (!isEmpty())
-			return data[index];
-		throw std::out_of_range("Stack is empty");
-	}
-
-
-
-	int size() 
-	{
-		return index + 1;
-	}
-
-	//Очистка стека
-	void clear() 
-	{
-		index = -1;
-	}
-
 };
