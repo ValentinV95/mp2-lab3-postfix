@@ -17,8 +17,8 @@ class Stack
 //Приватный класс
 private:
 	T* data;
-	int Index = -1;
-	int r_size = 2;
+	int ID = -1;
+	int Razmer = 2;
 	
 	
 	
@@ -26,7 +26,7 @@ private:
 public:
 	Stack()
 	{
-		data = new T[r_size];
+		data = new T[Razmer];
 	}
 	void Clear() 
 	{
@@ -38,14 +38,14 @@ public:
 	}
 	void Push(T elem) 
 	{
-		if (++ID == r_size)  
+		if (++ID == Razmer)  
 		{
-			T* tmp = new T[r_size * 2];
-			for (size_t i = 0; i < r_size; i++)
+			T* tmp = new T[Razmer * 2];
+			for (Razmer i = 0; i < Razmer; i++)
 				tmp[i] = data[i];
 			delete[] data;
 			data = tmp;
-			r_size *= 2;
+			Razmer *= 2;
 		}
 		data[ID] = elem;
 	}
