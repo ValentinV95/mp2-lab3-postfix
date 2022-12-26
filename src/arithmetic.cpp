@@ -1,6 +1,14 @@
+//Liblary
 #include <arithmetic.h>
 #include <stack.h>
 
+
+
+
+
+
+
+//Classes
 std::string Lex::LexType()
 {
 	return name;
@@ -37,6 +45,15 @@ operations::operations(char op)
 	lexem = op;
 	SetPrior(op);
 }
+
+
+
+
+
+
+
+
+//Сlass of arithmetic operations
 void operations::SetPrior(char op)
 {
 	if (op == '+' || op == '-')
@@ -347,18 +364,6 @@ bool Arithmetic::IsBrackets(const char& ch)
 {
 	return ch == '(' || ch == ')';
 }
-//void Arithmetic::CorrectOrder()
-//{
-//	if (lexem[0]->GetLex() == ")" || lexem[0]->LexType() == "binary")
-//	{
-//		std::string error = "At the beginning of an arithmetic expression can be: unary operations or '('!");
-//		throw error;
-//	}
-//	if (lexem[0]->LexType() == "unary")
-//	{
-//	
-//	}
-//}
 
 
 void Arithmetic::resize()//new mass data*2| 
@@ -580,16 +585,7 @@ double Arithmetic::Calculate()
 	{
 		throw er;
 	}
-	//Èäåøü öèêëîì ïî ïîñòôèêñ(è)
-	//Åñëè âñòðå÷àåòñÿ ÷èñëî çàêèäûâàåì â ñòåê
-	//Åñëè âñòðå÷àåòñÿ ïåðåìåííàÿ, òî äåëàåì ñðàâíåíèÿ 
-	//Åñëè ýòî óíàðíàÿ îïåðàöèÿ(~) òîãäà èçûìàåì èç ñòåêà 1 ýëåìåíò *-1 çàêèäûâàåì â ñòåê íîâîå ÷èñëî 
-	//Åñëè ýòî áèíàðíàÿ îïåðàöèÿ èç ñòåêà äîñòàåì ñíà÷àëà ïðàâûé îïåðàíä ïîòîì ëåâûé îïåðàíä 
-	//right = steck.pop() - óêàçàòåëü íà áàçîâóþ ëåêñåìó Lex*
-	//Ïîñëå âåðõíåé çàïèñè left = stack.pop() 
-	//Ïîñòôèêñíàÿ ôîðìà íå ìåíÿåò ïîðÿäîê ÷èñåë îíà ìåíÿåò ïîðÿäîê çíàêîâ
-	//×åì ðàíüøå ïîïàë òåì ðàíüøå óøåë
-	//Â êîíöå â ñòåêå îñòàíåòñÿ 1 ýëåìåíò - ýòî îòâåò , àðèôìåòè÷åñêîå âûðàæåíèå 
+	
 	Stack<double> stack;
 
 	for (size_t i = 0; i < postfix_size; i++)
