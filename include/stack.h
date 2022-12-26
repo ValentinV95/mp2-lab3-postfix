@@ -1,26 +1,41 @@
+//Объявление билиотек
+#include <string>
+#include <iostream>
+#include <math.h>
+#include <locale>
+#include <map>
+#include <ostream>
+
+
+
+
+
 template <class T>
 class Stack
 {
+
+//Приватный класс
 private:
 	T* data;
 	int Index = -1;
 	int r_size = 2;
+	
+	
+	
+//Открытый класс	
 public:
 	Stack()
 	{
 		data = new T[r_size];
 	}
-
 	void Clear() 
 	{
 		Index = -1;
 	}
-
 	bool IsEmpty()  
 	{
 		return Index < 0;
 	}
-
 	void Push(T elem) 
 	{
 		if (++Index == r_size)  
@@ -34,26 +49,27 @@ public:
 		}
 		data[Index] = elem;
 	}
-
 	T Pop() 
 	{
 		if (IsEmpty())
-			throw std::exception("Stack is empty.");
+			throw std::exception("Nothing on the stack");
 		return data[Index--];
 	}
-
+	
+	//Возвращение индекса
+	
 	int GetSize() 
 	{
 		return Index + 1;
 	}
-
 	T Top() 
 	{
 		if (IsEmpty())
-			throw std::exception("Stack is empty.");
+			throw std::exception("Nothing on the stack");
 		return data[Index];
 	}
 	~Stack()
+	//Очистка
 	{
 		delete[] data;
 	}
