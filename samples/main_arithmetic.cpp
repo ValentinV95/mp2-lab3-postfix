@@ -6,22 +6,21 @@
 
 
 
-//Меню пользователья
-int main()//Пользовательское приложение
+int main()
 {
 	std::string str;
-	std::cout << "Send Infix form"<<'\n';
+	std::cout << "Input Infix form"<<'\n';
 	std::cin >> str;
-	std::cout <<"Infix form" <<'\n'<< str;
+	std::cout <<"This is your infix form" <<'\n'<< str;
 	try
 	{
 		Arithmetic ar(str);
 		double res = ar.Calculate();
-		std::cout <<"\n\n"<<"Result:"<<'\n' << res;
+		std::cout <<"\n\n"<<"This is your answer"<<'\n' << res;
 	}
 	catch (const std::string& error)
 	{
-		std::cout << Wrong record of an arithmetic expression or something else;
+		std::cout << error;
 	}
 
 
