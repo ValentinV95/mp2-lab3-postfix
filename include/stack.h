@@ -1,92 +1,72 @@
-#ifndef __STACK_H__
-#define __STACK_H__
+//Объявление билиотек
+#include <string>
 #include <iostream>
-using namespace std;
+#include <math.h>
+#include <locale>
+#include <map>
+#include <ostream>
+
+
 
 
 
 template <class T>
-class TStack
+class Stack
 {
 private:
-	int top;
-	int size;
-	T* pMem;
+	T* data;
+	int Index = -1;
+	int r_size = 2;
 public:
-	TStack(int _size)  
-	{ 
-		if (_size > 0) {
-			top = -1;
-			size = _size;
-			pMem = new T[size];
-		}
-		else {
-			throw exception("wrong stack size");
-		}
+	Stack()
+	{
+		data = new T[r_size];
 	}
 
-	const bool IsEmpty()
+	void Clear() 
 	{
-		if (top != -1) {
-			return 0;
-		}
-		return 1;
+		Index = -1;
 	}
 
-	const bool IsFull()
+	bool IsEmpty()  
 	{
-		if (top != size - 1) {
-			return 0;
-		}
-		return 1;
+		return Index < 0;
 	}
 
-	void clean()
+	void Push(T elem) 
 	{
-		top = -1;
+		if (++Index == r_size)  
+		{
+			T* tmp = new T[r_size * 2];
+			for (size_t i = 0; i < r_size; i++)
+				tmp[i] = data[i];
+			delete[] data;
+			data = tmp;
+			r_size *= 2;
+		}
+		data[Index] = elem;
 	}
 
-	int Size()
+	T Pop() 
 	{
-		return top + 1;
+		if (IsEmpty())
+			throw std::exception("Error");
+		return data[Index--];
 	}
 
-	T get_top()
+	int GetSize() 
 	{
-		if (!IsEmpty()) {
-			return pMem[top];
-		}
-		else {
-			throw exception("stack is empty");
-		}
+		return Index + 1;
 	}
 
-
-	T pop()
+	T Top() 
 	{
-		if (!IsEmpty()) {
-			return pMem[top--];
-		}
-		else {
-			throw exception("stack is empty");
-		}
+		if (IsEmpty())
+			throw std::exception("Error");
+		return data[Index];
 	}
-
-	void push(const T& element)
+	~Stack()
 	{
-		if (top == size - 1) {
-			T* tmpMem = new T[size * 2];
-			copy(pMem, pMem + size, tmpMem);
-			delete[] pMem;
-			pMem = tmpMem;
-			size *= 2;
-		}
-		pMem[++top] = element;
-	}
-
-	~TStack()
-	{
-		delete[] pMem;
+		delete[] data;
 	}
 };
-#endif  
