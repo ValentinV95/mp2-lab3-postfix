@@ -1,85 +1,100 @@
+ifndef __ARITHMETIC_H__
+#define __ARITHMETIC_H__
+#include <vector>
+#include "stack.h"
 #include <string>
-#include <iostream>
-#include <math.h>
-#include <locale>
-#include <map>
-#include <ostream>
+using namespace std;
 
-class Lex
+class Lexem
 {
 protected:
-	std::string name;
-	std::string lexem;
-	double double_spot;
-	int pr;
+	string type;
+	string data;
+	int priority;
+	double num;
+
 
 public:
-	std::string LexType();//vozvrashaet tip lexem
-	std::string GetLex();//vozvrashaet lexem
-	virtual void SetPrior(char op) = 0;
-	int GetPrior();
-	double value();
+	const string GetData() const;
+	const string GetType() const;
+	const int GetPriority() const;
+	const double GetNum() const;
+	virtual void SetPriority(const string& s) = 0;
+	void SetNum(const double d);
+	~Lexem() = default;
 };
 
-class operations :public Lex
-{
-protected:
-	void SetPrior(char op) override;//prioretet operaciy + - prior 1; * / prior =2 ;~ prior 3
-public:
-	operations(char op);
-};
 
-class operands : public Lex
-{
-protected:
-	double NumConv(std::string strlex);
-public:
-	void SetPrior(char op);
-};
-class Num : public operands
-{
-public:
-	Num(std::string lex);
-	Num(double value);
-	Num();
-};
-class Var : public operands
-{
-public:
-	Var(std::string lex);
-};
-
-class Arithmetic
+class Operation : public Lexem
 {
 private:
-	std::string infix;
-	int size;//videlyaemaya pamyat'
-	int postfix_size;//kol-vo elem v postfix'e
-	int lex_size = -1;//kol-vo elem v lexem 
-	Lex** lexem = nullptr;
-	Lex** postfix = nullptr;
-
-	bool IsOperation(char v);
-	bool CheckOp();
-	bool IsOperand(const char& lexem);
-	bool IsDigit(const char& ch);
-	bool IsNumber(std::string num);
-	bool IsVar(const char& ch);
-	bool IsVariable(std::string num);
-	void CheckBrackets();
-	bool IsBrackets(const char& ch);
-	//void CorrectOrder();
-
-	void resize();
-
-	void IncorrectSymbols();
-	void VarValue();
-
-	void Postfix();
-	void Parser();
+	void SetPriority(const string& s) override;
 
 public:
-	Arithmetic(std::string arithmetic);
-	double Calculate();
-	~Arithmetic();
+	Operation(const string& s);
+	~Operation() = default;
 };
+
+
+class Num : public Lexem
+{
+private:
+	void StrToNum(const string& s);
+	void SetPriority(const string& s) override;
+
+public:
+	Num(const string& s);
+	~Num() = default;
+};
+
+
+class Var :public Lexem
+{
+private:
+	void SetPriority(const string& s) override;
+
+
+public:
+
+	Var(const string& s);
+	~Var() = default;
+};
+
+
+
+
+
+class TPostfix
+{
+private:
+	string infix;
+	string postfix;
+	vector<Lexem*> infix_lexems;
+	vector<Lexem*> postfix_lexems;
+	double result;
+	int op_count = 0;
+	int lex_count = 0;
+
+
+	void parse();
+	void InfixToPostfix();
+	void check();
+	const double Calculate();
+
+	bool IsOperation(const char& c);
+	bool IsNum(const char& c);
+	bool IsVar(const char& c);
+
+
+
+public:
+	TPostfix(string inf);
+	const double GetResult() const;
+
+	~TPostfix();
+
+};
+
+
+
+#endif 
