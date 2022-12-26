@@ -6,78 +6,103 @@
 #include <string>
 #include "stack.h"
 
-using std::string;
-
-class TArithmetic
+class lexException : 
+public std::exception 
 {
-private:
-	class Lexem
+    private:
+	std::string error_message;
+    public:
+	lexException(std::string err_msg, std::string eq, size_t err_id) : error_message(err_msg)
 	{
-	protected:
-		string label;
-		string lex;
-		double value;
+		error_message += '\n' + eq + '\n';
+		for (size_t i = 0; i < err_id; i++)
+			error_message += " ";
+		error_message += '^';
+	}
 
-	public:
-		const string Get() const;
-		const double Value() const;
-		const string what() const;
-		virtual void SetValue(const string& val) = 0;
-		virtual ~Lexem();
-	};
-
-	class Operation : public Lexem
+	const char* what() const noexcept
 	{
-	private:
-		void SetValue(const string& val) override;
-
-	public:
-		Operation(const char& data);
-	};
-
-	class Operand : public Lexem
-	{
-	protected:
-		double toNumeric(const string& strlex);
-	};
-
-	class Constant : public Operand
-	{
-	private:
-		void SetValue(const string& val) override;
-
-	public:
-		Constant(const string& data);
-	};
-
-	class Variable : public Operand
-	{
-	public:
-		Variable(const string& data);
-		void SetValue(const string& val) override;
-	};
-
-	string infix;
-	Lexem** lexems;
-	Lexem** postfix;
-
-	bool find_operation(const char& tmplex);
-	bool isDigit(const char& tmplex);
-	bool isAlpha(const char& tmplex);
-
-	const string find_error();
-	void parser();
-	void toPostfix();
-	bool check_input(const string& inp);
-
-	int lexems_count = 0;
-	int operations_count = 0;
-	int postfix_count = 0;
-
-public:
-	TArithmetic(const string& inf);
-	const string GetPostfix() const;
-	const double Calculate();
-	~TArithmetic();
-
+		return error_message.c_str();
+	}
 };
+
+class Lexem 
+{
+public:
+	Lexem();
+	virtual std::string whatis() = 0;
+	virtual size_t prioritet() = 0;
+	virtual void ToDo(Stack<double>& S) = 0;
+	virtual std::string show() = 0;
+	virtual ~Lexem();
+};
+
+class Operator : 
+	public Lexems 
+    {
+    private:
+	std::string lex;
+	size_t priority;
+    public:
+	Operator(char _lex);
+	size_t prioritet() override;
+	std::string whatis() override;
+	void ToDo(Stack<double>& S) override;
+	std::string show() override;
+	~Operator();
+    };
+
+class Operand : 
+	public Lexems {
+    private:
+	std::string lex;
+    public:
+	Operand(std::string _lex);
+	size_t prioritet();
+	std::string whatis() override;
+	void ToDo(Stack<double>& S) override;
+	std::string show() override;
+	~Operand();
+    };
+
+class Var : 
+	public Lexems 
+    {
+    private:
+	std::string lex;
+    public:
+	Var(char _lex);
+	size_t prioritet();
+	std::string whatis() override;
+	void ToDo(Stack<double>& S) override;
+	std::string show() override;
+	~Var();
+    };
+
+
+class TPostfix
+{
+    public:
+	std::string start_eq;
+	std::map<std::string, std::string> nameValue_var;
+	Lexems** infix_form;
+	Lexems** postfix_form;
+	size_t infix_size;
+	size_t postfix_size;
+    public:
+	TPostfix(std::string eq);
+	void init_infix();
+	void init_postfix();
+	void correctChecker(const size_t& i, const size_t index);
+	double resolve();
+	std::string get_infixLexem();
+	std::string get_postfixLexem();
+	~TPostfix();
+};
+
+	
+bool isOperand(const char& lexema) noexcept;
+bool isOperator(const char& lexema) noexcept;
+bool isVar(const char& lexema) noexcept;
+
+double convert(std::string lexema);
