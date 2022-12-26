@@ -1,83 +1,85 @@
-#pragma once
-
-#include <iostream>
-#include <map>
-#include <cmath>
 #include <string>
-#include "stack.h"
+#include <iostream>
+#include <math.h>
+#include <locale>
+#include <map>
+#include <ostream>
 
-using std::string;
-
-class TArithmetic
+class Lex
 {
-private:
-	class Lexem
-	{
-	protected:
-		string label;
-		string lex;
-		double value;
-
-	public:
-		const string Get() const;
-		const double Value() const;
-		const string what() const;
-		virtual void SetValue(const string& val) = 0;
-		virtual ~Lexem();
-	};
-
-	class Operation : public Lexem
-	{
-	private:
-		void SetValue(const string& val) override;
-
-	public:
-		Operation(const char& data);
-	};
-
-	class Operand : public Lexem
-	{
-	protected:
-		double toNumeric(const string& strlex);
-	};
-
-	class Constant : public Operand
-	{
-	private:
-		void SetValue(const string& val) override;
-
-	public:
-		Constant(const string& data);
-	};
-
-	class Variable : public Operand
-	{
-	public:
-		Variable(const string& data);
-		void SetValue(const string& val) override;
-	};
-
-	string infix;
-	Lexem** lexems;
-	Lexem** postfix;
-
-	bool find_operation(const char& tmplex);
-	bool isDigit(const char& tmplex);
-	bool isAlpha(const char& tmplex);
-
-	const string find_error();
-	void parser();
-	void toPostfix();
-	bool check_input(const string& inp);
-
-	int lexems_count = 0;
-	int operations_count = 0;
-	int postfix_count = 0;
+protected:
+	std::string name;
+	std::string lexem;
+	double double_spot;
+	int pr;
 
 public:
-	TArithmetic(const string& inf);
-	const string GetPostfix() const;
-	const double Calculate();
-	~TArithmetic();
+	std::string LexType();//vozvrashaet tip lexem
+	std::string GetLex();//vozvrashaet lexem
+	virtual void SetPrior(char op) = 0;
+	int GetPrior();
+	double value();
+};
 
+class operations :public Lex
+{
+protected:
+	void SetPrior(char op) override;//prioretet operaciy + - prior 1; * / prior =2 ;~ prior 3
+public:
+	operations(char op);
+};
+
+class operands : public Lex
+{
+protected:
+	double NumConv(std::string strlex);
+public:
+	void SetPrior(char op);
+};
+class Num : public operands
+{
+public:
+	Num(std::string lex);
+	Num(double value);
+	Num();
+};
+class Var : public operands
+{
+public:
+	Var(std::string lex);
+};
+
+class Arithmetic
+{
+private:
+	std::string infix;
+	int size;//videlyaemaya pamyat'
+	int postfix_size;//kol-vo elem v postfix'e
+	int lex_size = -1;//kol-vo elem v lexem 
+	Lex** lexem = nullptr;
+	Lex** postfix = nullptr;
+
+	bool IsOperation(char v);
+	bool CheckOp();
+	bool IsOperand(const char& lexem);
+	bool IsDigit(const char& ch);
+	bool IsNumber(std::string num);
+	bool IsVar(const char& ch);
+	bool IsVariable(std::string num);
+	void CheckBrackets();
+	bool IsBrackets(const char& ch);
+	//void CorrectOrder();
+
+	void resize();
+
+	void IncorrectSymbols();
+	void VarValue();
+
+	void Postfix();
+	void Parser();
+
+public:
+	Arithmetic(std::string arithmetic);
+	double Calculate();
+	~Arithmetic();
 };
