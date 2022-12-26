@@ -170,6 +170,8 @@ void TPostfix::init_infix()
 			{
 				if (start_eq[i] == 'e')
 					e_index = true;
+				if (e_index && start_eq[i + 2] == '-')
+					e_index = false;
 				operand += start_eq[i];
 				i++;
 			}
@@ -185,7 +187,7 @@ void TPostfix::init_infix()
 				error_index = i;
 			}
 
-			if (start_eq[i] == '-' && (i == 0 || (!isOperand(start_eq[i - 1]) && !isVar(start_eq[i - 1]) && start_eq[i-1] != ')')))
+			if (start_eq[i] == '-' && (i == 0 || (!isOperand(start_eq[i - 1]) && !isVar(start_eq[i - 1]))))
 				infix_form[index] = new Operator('~');
 			else
 				infix_form[index] = new Operator(start_eq[i]);
@@ -224,7 +226,7 @@ void TPostfix::correctChecker(const size_t& i, const size_t index)
 		throw lexException("no correct set bracket", start_eq, i);
 	if (start_eq[i] == ')' && !isOperand(start_eq[i - 1]) && !isVar(start_eq[i - 1]) && start_eq[i - 1] != ')')
 		throw lexException("no correct set bracket", start_eq, i);
-	if (infix_form[index]->prioritet() == 1 && !isOperand(start_eq[i + 1]) && !isVar(start_eq[i + 1]) && start_eq[i + 1] != '(')
+	if (infix_form[index]->prioritet() == 1 && !isOperand(start_eq[i + 1]) && !isVar(start_eq[i + 1]) && start_eq[i + 1] != '(' && start_eq[i + 1] != '-')
 		throw lexException("no correct unary operator", start_eq, i + 1);
 	if ((infix_form[index]->prioritet() == 2 || infix_form[index]->prioritet() == 3) && (index == 0 || index == start_eq.size()))
 		throw lexException("no correct binary operator", start_eq, i);
@@ -340,12 +342,6 @@ double convert(const std::string strOperand)
 {
 	size_t i = 0;
 	double result = 0;
-	int sign = 1;
-	if (strOperand[i] == '-')
-	{
-		sign *= -1;
-		i++;
-	}
 
 	size_t power = 10;
 	for ( ; strOperand[i] != ',' && i < strOperand.size(); i++)     //integer part
@@ -380,11 +376,11 @@ double convert(const std::string strOperand)
 			throw lexException("no correct number", strOperand, i-1);
 	}
 
-	if (i >= strOperand.size() && strOperand[i-1] == 'e')
-		throw lexException("no correct number", strOperand, i);
+	if (i >= strOperand.size() - 1)
+		return result;
 
-	if (i >= strOperand.size())
-		return result * sign;
+	if (i >= strOperand.size()-1 && strOperand[i] == 'e')
+		throw lexException("no correct number", strOperand, i);
 
 	i++;
 
@@ -410,5 +406,5 @@ double convert(const std::string strOperand)
 	}
 	result *= std::pow(10, power_num*sign_num);
 
-	return result * sign;
+	return result;
 }
