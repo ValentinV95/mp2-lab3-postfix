@@ -106,11 +106,14 @@ TEST(TPostfix, no_throw_when_simple_expression_with_exponential_form_is_correct)
 }
 
 //Calculation chek
-TEST(TPostfix, exponential_form_chek)
+TEST(TPostfix, minus_exponential_form_chek)
 {
 	TPostfix p1("9e-2");
 	EXPECT_EQ(p1.Calculate(),0.09);
+}
 
+TEST(TPostfix, plus_exponential_form_chek)
+{
 	TPostfix p2("9e+2");
 	EXPECT_EQ(p2.Calculate(), 900);
 }
@@ -121,15 +124,18 @@ TEST(TPostfix,can_get_simple_integer_number)
 	EXPECT_EQ(p.Calculate(),1);
 }
 
-TEST(TPostfix, can_get_simple_floating_point_number)
+TEST(TPostfix, can_get_simple_floating_point_number_1)
 {
 	TPostfix p1("1.903");
 	EXPECT_EQ(p1.Calculate(), 1.903);
 
-	TPostfix p2("0100.93");
-	EXPECT_EQ(p2.Calculate(),100.93);
 }
 
+TEST(TPostfix, can_get_simple_floating_point_number_2)
+{
+	TPostfix p2("0100.93");
+	EXPECT_EQ(p2.Calculate(), 100.93);
+}
 TEST(TPostfix, double_exponential_form_chek)
 {
 
@@ -157,11 +163,14 @@ TEST(TPostfix, can_calculate_simple_correct_expression_with_two_unary_minus_in_b
 
 TEST(TPostfix, can_calculate_simple_correct_expression_with_few_unary_minus_in_a_row)
 {
-	TPostfix p1("1--2");
-	EXPECT_EQ(p1.Calculate(),3.0);
-
 	TPostfix p2("---2");
 	EXPECT_EQ(p2.Calculate(),-2.0);
+}
+
+TEST(TPostfix, can_calculate_simple_correct_expression_with_few_unary_minus_after_operation)
+{
+	TPostfix p1("1--2");
+	EXPECT_EQ(p1.Calculate(), 3.0);
 }
 
 TEST(TPostfix, can_calculate_simple_correct_expression_with_double_unary_minus_in_start_of_row)
@@ -182,10 +191,22 @@ TEST(TPostfix, can_calculate_simple_correct_expression_with_unary_minus_in_start
 	EXPECT_EQ(p.Calculate(),-2);
 }
 
+TEST(TPostfix, can_calculate_hard_correct_expression_with_unary_minus)
+{
+	TPostfix p("10.0-(-10.0)");
+	EXPECT_EQ(p.Calculate(),20.0);
+}
+
 TEST(TPostfix, can_calculate_simple_correct_expression_with_function)
 {
 	TPostfix p("sin(3)");
 	EXPECT_EQ(p.Calculate(), sin(3));
+}
+
+TEST(TPostfix, can_calculate_simple_correct_expression_with_unary_minus_in_function)
+{
+	TPostfix p("sin(-3)");
+	EXPECT_EQ(p.Calculate(), sin(-3));
 }
 
 TEST(TPostfix, can_calculate_simple_correct_expression_with_expression_in_function)
@@ -194,11 +215,6 @@ TEST(TPostfix, can_calculate_simple_correct_expression_with_expression_in_functi
 	EXPECT_EQ(p.Calculate(), sin(3 + 11.9 / 2.01));
 }
 
-TEST(TPostfix, can_calculate_simple_correct_expression_with_unary_minus_in_function)
-{
-	TPostfix p("sin(-3)");
-	EXPECT_EQ(p.Calculate(), sin(-3));
-}
 
 TEST(TPostfix, can_get_e_constant)
 {

@@ -15,6 +15,9 @@ string TPostfix::GetPostfixStr() const
 void TPostfix::SetInfix(const string &str)
 {
 	infix = str;
+	for (int i = 0; i < postfix.size(); i++)
+		delete[] postfix[i];
+	postfix.clear();
 	Parse();
 	ToPostfix();
 }
@@ -339,7 +342,9 @@ double TPostfix::Calculate()
 void TPostfix::ShowInfo()
 {
 	cout << "\n------------INFO---------------------------\n";
-	cout << "You may use  a-z letter and 0-9 numbers\n";
+	cout << "You may use a-z letter and 0-9 numbers,math constant e and pi\n";
+	cout << "The number can be represented in exponential form\n";
+	cout << "You may use your own variables. \nVasriables name start with a-z letter and must not match the name of the available functions.\n";
 	cout << "Functions: cos(), sin(), ln()";
 	cout << "\nOperations: +, -, /, - ,unary -";
 	cout << "\n------------INFO----------------------------\n";

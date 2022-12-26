@@ -5,8 +5,8 @@
 
 int main()
 {
-	char choise='N';
-	string eq="";
+	char choise = 'N';
+	string eq = "";
 
 	TPostfix postfix("1");
 	TPostfix::ShowInfo();
@@ -27,7 +27,7 @@ int main()
 			else if (choise == 'N' || choise == 'n' || eq == "")
 			{
 				cout << "For end enter ;\n";
-				cout << "Enter the expression:\n";
+				cout << "Enter the expression: ";
 				cin >> eq;
 				if (eq != ";")
 				{
@@ -49,5 +49,4 @@ int main()
 			std::cout << exc.what();
 		}
 	}
-
 }
