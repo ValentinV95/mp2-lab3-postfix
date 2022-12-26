@@ -12,14 +12,6 @@
 
 
 
-
-
-
-
-
-
-
-
 //Реализуемые классы
 
 class Lex
@@ -29,7 +21,7 @@ protected:
 	std::string lexem;
 	double double_spot;
 	int pr;
-
+//Открытые классы
 public:
 	std::string LexType();
 	std::string GetLex();
@@ -68,6 +60,7 @@ public:
 
 class Arithmetic
 {
+//Приватные классы
 private:
 	std::string infix;
 	int size;
@@ -95,6 +88,7 @@ private:
 	void Postfix();
 	void Parser();
 
+//Открытые классы
 public:
 	Arithmetic(std::string arithmetic);
 	double Calculate();
