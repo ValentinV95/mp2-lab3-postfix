@@ -226,7 +226,7 @@ void TPostfix::correctChecker(const size_t& i, const size_t index)
 		throw lexException("no correct set bracket", start_eq, i);
 	if (start_eq[i] == ')' && !isOperand(start_eq[i - 1]) && !isVar(start_eq[i - 1]) && start_eq[i - 1] != ')')
 		throw lexException("no correct set bracket", start_eq, i);
-	if (infix_form[index]->prioritet() == 1 && !isOperand(start_eq[i + 1]) && !isVar(start_eq[i + 1]) && start_eq[i + 1] != '(' && start_eq[i + 1] != '-')
+	if (infix_form[index]->prioritet() == 1 && !isOperand(start_eq[i + 1]) && !isVar(start_eq[i + 1]) && start_eq[i + 1] != '(')
 		throw lexException("no correct unary operator", start_eq, i + 1);
 	if ((infix_form[index]->prioritet() == 2 || infix_form[index]->prioritet() == 3) && (index == 0 || index == start_eq.size()))
 		throw lexException("no correct binary operator", start_eq, i);
@@ -376,11 +376,11 @@ double convert(const std::string strOperand)
 			throw lexException("no correct number", strOperand, i-1);
 	}
 
+	if (i >= strOperand.size() - 1 && strOperand[i] == 'e')
+		throw lexException("no correct number", strOperand, i);
+
 	if (i >= strOperand.size() - 1)
 		return result;
-
-	if (i >= strOperand.size()-1 && strOperand[i] == 'e')
-		throw lexException("no correct number", strOperand, i);
 
 	i++;
 

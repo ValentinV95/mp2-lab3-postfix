@@ -111,7 +111,14 @@ TEST(Postfix, correct_convert_unary_minus_instart)
 	EXPECT_EQ("~56*x", A.get_infixLexem());
 }
 
-TEST(Postfix, correct_convert_unary_minus_afteroperation)
+TEST(Postfix, correct_convert_unary_minus_alotof)
+{
+	TPostfix A("5------4");
+	EXPECT_EQ("5-~~~~~4", A.get_infixLexem());
+	EXPECT_EQ("54~~~~~-", A.get_postfixLexem());
+}
+
+TEST(Postfix, correct_convert_unary_minus_after_operation)
 {
 	TPostfix A("56*-x");
 	EXPECT_EQ("56*~x", A.get_infixLexem());
