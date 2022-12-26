@@ -369,6 +369,9 @@ double convert(const std::string strOperand)
 		}
 	}
 
+	if ((i + 2) >= strOperand.size() && strOperand[i] == ',' && strOperand[i + 1] == 'e')
+		throw lexException("no correct number", strOperand, i + 1);
+
 	if ((i+1) >= strOperand.size() && strOperand[i] == ',')
 		throw lexException("no correct number", strOperand, i);
 

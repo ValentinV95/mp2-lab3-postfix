@@ -203,6 +203,11 @@ TEST(Global_function, throw_when_no_correct_number_with_point)
 	ASSERT_ANY_THROW(convert("3,42e-2,0"));
 }
 
+TEST(Global_function, throw_when_no_correct_number_with_e_after_point)
+{
+	ASSERT_ANY_THROW(convert(",e"));
+}
+
 TEST(Global_function, is_operand)
 {
 	EXPECT_TRUE(isOperand('4'));

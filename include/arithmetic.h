@@ -49,7 +49,7 @@ private:
 	std::string lex;
 public:
 	Operand(std::string _lex);
-	size_t prioritet();
+	size_t prioritet() override;
 	std::string whatis() override;
 	void ToDo(Stack<double>& S) override;
 	std::string show() override;
@@ -61,7 +61,7 @@ private:
 	std::string lex;
 public:
 	Var(char _lex);
-	size_t prioritet();
+	size_t prioritet() override;
 	std::string whatis() override;
 	void ToDo(Stack<double>& S) override;
 	std::string show() override;
