@@ -1,100 +1,102 @@
-ifndef __ARITHMETIC_H__
-#define __ARITHMETIC_H__
-#include <vector>
-#include "stack.h"
-#include <string>
-using namespace std;
+//Объявление  библиотек
 
-class Lexem
+#include <string>
+#include <iostream>
+#include <math.h>
+#include <locale>
+#include <map>
+#include <ostream>
+
+
+
+
+
+
+//Реализуемые классы
+
+class Lex
 {
 protected:
-	string type;
-	string data;
-	int priority;
-	double num;
-
-
+	std::string name;
+	std::string lexem;
+	double double_spot;
+	int pr;
+//Открытые классы
 public:
-	const string GetData() const;
-	const string GetType() const;
-	const int GetPriority() const;
-	const double GetNum() const;
-	virtual void SetPriority(const string& s) = 0;
-	void SetNum(const double d);
-	~Lexem() = default;
+	std::string LexType();
+	std::string GetLex();
+	virtual void SetPrior(char op) = 0;
+	int GetPrior();
+	double value();
 };
 
-
-class Operation : public Lexem
+class operations :public Lex
 {
-private:
-	void SetPriority(const string& s) override;
-
+protected:
+	void SetPrior(char op) override;
 public:
-	Operation(const string& s);
-	~Operation() = default;
+	operations(char op);
 };
 
-
-class Num : public Lexem
+class operands : public Lex
 {
-private:
-	void StrToNum(const string& s);
-	void SetPriority(const string& s) override;
-
+protected:
+	double NumConv(std::string strlex);
 public:
-	Num(const string& s);
-	~Num() = default;
+	void SetPrior(char op);
 };
-
-
-class Var :public Lexem
+class Num : public operands
 {
-private:
-	void SetPriority(const string& s) override;
-
-
 public:
-
-	Var(const string& s);
-	~Var() = default;
+	Num(std::string lex);
+	Num(double value);
+	Num();
 };
-
-
-
-
-
-class TPostfix
+class Var : public operands
 {
-private:
-	string infix;
-	string postfix;
-	vector<Lexem*> infix_lexems;
-	vector<Lexem*> postfix_lexems;
-	double result;
-	int op_count = 0;
-	int lex_count = 0;
-
-
-	void parse();
-	void InfixToPostfix();
-	void check();
-	const double Calculate();
-
-	bool IsOperation(const char& c);
-	bool IsNum(const char& c);
-	bool IsVar(const char& c);
-
-
-
 public:
-	TPostfix(string inf);
-	const double GetResult() const;
+	Var(std::string lex);
+};
 
-	~TPostfix();
+class Arithmetic
+{
+//Приватные классы
+private:
+	std::string infix;
+	int size;
+	int postfix_size;
+	int lex_size = -1;
+	Lex** lexem = nullptr;
+	Lex** postfix = nullptr;
 
+	bool IsOperation(char v);
+	bool CheckOp();
+	bool IsOperand(const char& lexem);
+	bool IsDigit(const char& ch);
+	bool IsNumber(std::string num);
+	bool IsVar(const char& ch);
+	bool IsVariable(std::string num);
+	void CheckBrackets();
+	bool IsBrackets(const char& ch);
+
+
+	void resize();
+
+	void IncorrectSymbols();
+	void VarValue();
+
+	void Postfix();
+	void Parser();
+
+//Открытые классы
+public:
+	Arithmetic(std::string arithmetic);
+	double Calculate();
+	~Arithmetic();
 };
 
 
 
-#endif 
+
+
+
