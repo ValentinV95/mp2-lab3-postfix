@@ -17,13 +17,13 @@ Lexems::~Lexems() { }
 
 Operator::Operator(char _lex) : Lexems(&_lex)
 {
-	if (_lex == '~')
+	if (lex == "~")
 		this->priority = 1;
-	else if (_lex == '*' || _lex == '/')
+	else if (lex == "*" || lex == "/")
 		this->priority = 2;
-	else if (_lex == '+' || _lex == '-')
+	else if (lex == "+" || lex == "-")
 		this->priority = 3;
-	else if (_lex == '(' || _lex == ')')
+	else if (lex == "(" || lex == ")")
 		this->priority = 0;
 	else
 		throw std::exception("error");
@@ -66,7 +66,7 @@ void Operator::ToDo(Stack<double>& S)
 	}
 	else
 	{
-		throw std::exception("error");
+		throw std::exception("unknown_operation");
 	}
 }
 
