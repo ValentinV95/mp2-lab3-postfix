@@ -50,7 +50,7 @@ public:
 	T Pop() 
 	{
 		if (IsEmpty())
-			throw std::exception("Stack is empty.");
+			throw std::exception("Error");
 		return data[Index--];
 	}
 
@@ -62,7 +62,7 @@ public:
 	T Top() 
 	{
 		if (IsEmpty())
-			throw std::exception("Stack is empty.");
+			throw std::exception("Error");
 		return data[Index];
 	}
 	~Stack()
