@@ -111,7 +111,7 @@ double operands::NumConv(std::string strlex)
 {
 	if (strlex.size() == 0)
 	{
-		std::string lng = "incorrect digit form";
+		std::string lng = "\nincorrect digit form";
 		throw(lng);
 	}
 	if (strlex[0] == '+')
@@ -126,7 +126,7 @@ double operands::NumConv(std::string strlex)
 			std::count(strlex.begin(), strlex.end(), '-') +
 			std::count(strlex.begin(), strlex.end(), '~') > 1))
 	{
-		std::string lng = "incorrect digit form";
+		std::string lng = "\nincorrect digit form";
 		throw(lng);
 	}
 	int eps_ind = strlex.find('E');
@@ -144,7 +144,6 @@ double operands::NumConv(std::string strlex)
 		if (dot_ind== std::string::npos)
 		{	
 			digit = conv(strlex);
-			//std::cout << digit << '\n';
 		}
 		else
 		{
@@ -152,7 +151,7 @@ double operands::NumConv(std::string strlex)
 			right_of_dot = lexem.substr(dot_ind + 1, lexem.size());
 			if (left_of_dot.size() == 0 && right_of_dot.size() == 0)
 			{
-				std::string s = "incorrect digit form";
+				std::string s = "\nincorrect digit form";
 				throw (s);
 			}
 			int pow = -1 * right_of_dot.size();
@@ -175,7 +174,7 @@ double operands::NumConv(std::string strlex)
 				right_of_eps = lexem.substr(eps_ind + 1, lexem.size());
 			if (right_of_eps.size() == 0 || left_of_eps.size() == 0)
 			{
-				std::string s = "incorrect digit form";
+				std::string s = "\nincorrect digit form";
 				throw (s);
 			}
 			double pow = sign * conv(right_of_eps);
@@ -221,6 +220,7 @@ Arithmetic::Arithmetic(std::string infix)
 	{
 		IncorrectSymbols();
 		CheckBrackets();
+		Parser();
 	}
 	catch (const std::string& error)
 	{
@@ -329,7 +329,7 @@ void Arithmetic::CheckBrackets()
 	}
 	if (LeftBrackets != RightBrackets)
 	{
-		std::string err = "Incorrect brackets";
+		std::string err = "\nIncorrect brackets";
 		throw err;
 	}
 }
@@ -348,18 +348,30 @@ bool Arithmetic::IsBrackets(const char& ch)
 {
 	return ch == '(' || ch == ')';
 }
-//void Arithmetic::CorrectOrder()
-//{
-//	if (lexem[0]->GetLex() == ")" || lexem[0]->LexType() == "binary")
-//	{
-//		std::string error = "At the beginning of an arithmetic expression can be: unary operations or '('!");
-//		throw error;
-//	}
-//	if (lexem[0]->LexType() == "unary")
-//	{
-//	
-//	}
-//}
+void Arithmetic::CorrectOrder()
+{
+
+	std::string error = "\nLexemOrder error";
+	if (lexem[0]->GetLex() == ")" || lexem[0]->LexType() == "binary")
+	{
+		throw error;
+	}
+	for (int i = 0; i < lex_size - 1; ++i)
+	{
+		std::string left_lexem = lexem[i]->GetLex();
+		std::string right_lexem = lexem[i+1]->GetLex();
+		std::string left_type = lexem[i]->LexType();
+		std::string right_type = lexem[i + 1]->LexType();
+		if ((right_lexem == "(" ||right_type == "unary") && (left_type == "digit" || left_type == "Var" || left_lexem == ")"))
+			throw error;
+		if ((right_type == "digit" || right_type == "Var") && left_lexem == ")")
+			throw error;
+		if ((right_type == "binary"||right_lexem == ")") && !(left_type == "digit" || left_type == "Var" || left_lexem == ")"))
+			throw error;
+	}
+	if (lexem[lex_size - 1]->GetLex() == "(" || lexem[lex_size - 1]->LexType() == "binary" || lexem[lex_size - 1]->LexType() == "unary")
+		throw error;
+}
 
 
 void Arithmetic::resize()//new mass data*2| 
@@ -400,7 +412,7 @@ void Arithmetic::VarValue()
 				VarValues.insert({ lexem[i]->GetLex(), str });
 				if (!IsNumber(str))
 				{
-					std::string err = "Incorrect variable value ";
+					std::string err = "\nIncorrect variable value ";
 					throw err;
 				}
 			}
@@ -499,7 +511,7 @@ void Arithmetic::Parser()
 	{
 		if (IsOperation(infix[i]))
 		{
-			if ((infix[i] == '+' || infix[i] == '-') && infix[i - 1] == 'E')
+			if ((infix[i] == '+' || infix[i] == '-') && i > 0 && infix[i - 1] == 'E')
 			{
 				lex += infix[i];
 
@@ -522,7 +534,7 @@ void Arithmetic::Parser()
 					}
 					if (!IsNumber(lex) && (!IsVariable(lex)))
 					{
-						std::string error="incorrect form";
+						std::string error="\nincorrect form";
 						throw error;
 					}
 					lex = "";
@@ -560,10 +572,19 @@ void Arithmetic::Parser()
 		}
 		if (!IsNumber(lex) && (!IsVariable(lex)))
 		{
-			std::string error = "incorrect form";
+			std::string error = "\nincorrect form";
 			throw error;
 		}
 
+	}
+	try
+	{
+		CorrectOrder();
+
+	}
+	catch (const std::string& err)
+	{
+		throw err;
 	}
 
 }
@@ -572,25 +593,13 @@ double Arithmetic::Calculate()
 {
 	try
 	{
-		Parser();
 		VarValue();
 		Postfix();
-
 	}
 	catch (const std::string& er)
 	{
 		throw er;
 	}
-	//Идешь циклом по постфикс(и)
-	//Если встречается число закидываем в стек
-	//Если встречается переменная, то делаем сравнения 
-	//Если это унарная операция(~) тогда изымаем из стека 1 элемент *-1 закидываем в стек новое число 
-	//Если это бинарная операция из стека достаем сначала правый операнд потом левый операнд 
-	//right = steck.pop() - указатель на базовую лексему Lex*
-	//После верхней записи left = stack.pop() 
-	//Постфиксная форма не меняет порядок чисел она меняет порядок знаков
-	//Чем раньше попал тем раньше ушел
-	//В конце в стеке останется 1 элемент - это ответ , арифметическое выражение 
 	Stack<double> stack;
 
 	for (size_t i = 0; i < postfix_size; i++)

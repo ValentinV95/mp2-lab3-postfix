@@ -68,7 +68,7 @@ private:
 	bool IsVariable(std::string num);
 	void CheckBrackets();
 	bool IsBrackets(const char& ch);
-	//void CorrectOrder();
+	void CorrectOrder();
 
 	void resize();
 
