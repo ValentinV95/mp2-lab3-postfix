@@ -5,18 +5,19 @@
 
 
 
+//Menu rule:
 
 int main()
 {
 	std::string str;
-	std::cout << "Input Infix form"<<'\n';
+	std::cout << "Enter an arithmetic expression"<<'\n';
 	std::cin >> str;
-	std::cout <<"This is your infix form" <<'\n'<< str;
+	std::cout <<"Infix form:" <<'\n'<< str;
 	try
 	{
 		Arithmetic ar(str);
 		double res = ar.Calculate();
-		std::cout <<"\n\n"<<"This is your answer"<<'\n' << res;
+		std::cout <<"\n\n"<<"Result:"<<'\n' << res;
 	}
 	catch (const std::string& error)
 	{
