@@ -1,138 +1,661 @@
-//Объявление начальных библиотек
-#include <gtest.h>
 #include <arithmetic.h>
+#include <stack.h>
 
-
-//Начало работы тестов
-TEST(TPostfix, can_create_tpostfix_without_infix)
+std::string Lex::LexType()
 {
-    ASSERT_NO_THROW(TPostfix test);
+	return name;
+}
+std::string Lex::GetLex()
+{
+	return lexem;
 }
 
-TEST(TPostfix, can_create_tpostfix_with_infix)
+int Lex::GetPrior()
 {
-    ASSERT_NO_THROW(TPostfix test("5+5"));
+	return pr;
 }
 
-TEST(TPostfix, can_set_other_infix)
+double Lex::value()
 {
-    TPostfix test("5+5");
-    ASSERT_NO_THROW(test.setTPostfix("5"));
+	return double_spot;
 }
 
-TEST(TPostfix, can_convert_to_lexem_array)
+operations::operations(char op)
 {
-    TPostfix test("56.2+576.E89");
-    string array[3] = { "56.2", "+", "576.E89" };
-    for (size_t i = 0; i < 3; i++)
-        EXPECT_EQ(test.getLexem(i), array[i]);
+	if (op == '(' || op == ')') {
+		name = "brackets";
+
+	}
+	if (op == '+' || op == '-' || op == '*' || op == '/') {
+		name = "binary";
+
+	}
+	if (op == '~') {
+		name = "unary";
+
+	}
+	lexem = op;
+	SetPrior(op);
+}
+void operations::SetPrior(char op)
+{
+	if (op == '+' || op == '-')
+	{
+		pr = 1;
+	}
+	else if (op == '*' || op == '/')
+	{
+		pr = 2;
+	}
+	else if (op == '~')
+	{
+		pr = 3;
+	}
+	else if (op == '(' || op == ')')
+	{
+		pr = 0;
+	}
+	else
+	{
+		std::cout << "unacceptable symbols";
+	}
 }
 
-TEST(TPostfix, throw_if_opening_bracket_in_wrong_position)
+void operands::SetPrior(char op)
 {
-    ASSERT_ANY_THROW(TPostfix test("9("));
+	pr = 2;
 }
 
-TEST(TPostfix, throw_if_closing_bracket_in_wrong_position)
+Num::Num(std::string lex)
 {
-    ASSERT_ANY_THROW(TPostfix test("-)*9"));
+	name = "digit";
+	lexem = lex;
+	double_spot = NumConv(lex);
+	pr = 2;
 }
 
-TEST(TPostfix, throw_if_operation_in_wrong_position)
+Num::Num(double value)
 {
-    ASSERT_ANY_THROW(TPostfix test("++9"));
+	name = "digit";
+	pr = 2;
+	double_spot = value;
 }
 
-TEST(TPostfix, throw_if_minus_in_wrong_position)
+Num::Num()
 {
-    ASSERT_ANY_THROW(TPostfix test("(9)-"));
+	name = "digit";
+	double_spot = 0.;
+
 }
 
-TEST(TPostfix, throw_if_name_variables_incorrect)
+Var::Var(std::string lex)
 {
-    ASSERT_ANY_THROW(TPostfix test("T"));
-    ASSERT_ANY_THROW(TPostfix test("aa"));
+	name = "Var";
+	pr = 2;
+	lexem = lex;
 }
 
-TEST(TPostfix, throw_if_exponential_notation_is_wrong)
+double conv(std::string place)
 {
-    TPostfix test;
-    ASSERT_ANY_THROW(test.setTPostfix("9E+6"));
+	double res = 0.0;
+	double pow = 0;
+	for (int i = place.size()-1; i>=0; i--,pow+=1)
+	{
+		res += (place[i] - '0') * std::pow(10.0, pow);
+	}
+	return res;
 }
 
-TEST(TPostfix, throw_if_number_notation_is_wrong)
+double operands::NumConv(std::string strlex)
 {
-    TPostfix test;
-    ASSERT_ANY_THROW(test.setTPostfix(".6"));
-    ASSERT_ANY_THROW(test.setTPostfix("6."));
+	if (strlex.size() == 0)
+	{
+		std::string lng = "incorrect digit form";
+		throw(lng);
+	}
+	if (strlex[0] == '+')
+		return NumConv(strlex.substr(1, strlex.size()));
+	if (strlex[0] == '-')
+	{
+		return -1. * NumConv(strlex.substr(1, strlex.size()));
+	}
+	if (std::count(strlex.begin(), strlex.end(), '.') > 1 ||
+		std::count(strlex.begin(), strlex.end(), 'E') > 1 ||
+		(std::count(strlex.begin(), strlex.end(), '+') +
+			std::count(strlex.begin(), strlex.end(), '-') +
+			std::count(strlex.begin(), strlex.end(), '~') > 1))
+	{
+		std::string lng = "incorrect digit form";
+		throw(lng);
+	}
+	int eps_ind = strlex.find('E');
+	int dot_ind = strlex.find('.');
+
+	double flag = 1.0;
+	double digit = 0.0;
+	std::string left_of_dot;
+	std::string right_of_dot;
+	std::string left_of_eps;
+	std::string right_of_eps;
+
+	if (eps_ind == std::string::npos)
+	{
+		if (dot_ind== std::string::npos)
+		{	
+			digit = conv(strlex);
+			//std::cout << digit << '\n';
+		}
+		else
+		{
+			left_of_dot = lexem.substr(0, dot_ind);
+			right_of_dot = lexem.substr(dot_ind + 1, lexem.size());
+			if (left_of_dot.size() == 0 && right_of_dot.size() == 0)
+			{
+				std::string s = "incorrect digit form";
+				throw (s);
+			}
+			int pow = -1 * right_of_dot.size();
+			digit = conv(left_of_dot) + std::pow(10, pow) * conv(right_of_dot);
+		}
+	}
+	else
+	{
+		if (dot_ind == std::string::npos) 
+		{
+			double sign = 1.;
+			left_of_eps = lexem.substr(0, eps_ind);
+			if (eps_ind != lexem.size() - 1 && (lexem[eps_ind + 1] == '+' || lexem[eps_ind + 1] == '-'))
+			{
+				if (lexem[eps_ind + 1] == '-')
+					sign = -1.;
+				right_of_eps = lexem.substr(eps_ind + 2, lexem.size());
+			}
+			else
+				right_of_eps = lexem.substr(eps_ind + 1, lexem.size());
+			if (right_of_eps.size() == 0 || left_of_eps.size() == 0)
+			{
+				std::string s = "incorrect digit form";
+				throw (s);
+			}
+			double pow = sign * conv(right_of_eps);
+			digit = conv(left_of_eps) * std::pow(10, pow);
+		}
+		else
+		{
+			left_of_eps = lexem.substr(0, eps_ind);
+			right_of_eps = "1" + lexem.substr(eps_ind, lexem.size());
+			digit = NumConv(left_of_eps) * NumConv(right_of_eps);
+		}
+	}
+	return digit;
 }
 
-TEST(TPostfix, throw_if_bracket_number_isnt_equal)
+
+Arithmetic::Arithmetic(std::string infix)
 {
-    TPostfix test;
-    ASSERT_ANY_THROW(test.setTPostfix("((9+6)"));
+	std::string symbols = infix;
+	int index = symbols.find(' ');
+	if (index != std::string::npos) {
+		std::string error = "Space was found";
+		throw error;
+
+	}
+
+	size = 6;
+	lexem = new Lex * [size];
+	if (symbols[0] == '-')
+	{
+		symbols[0] = '~';
+	}
+	for (size_t i = 1; i < symbols.size(); i++)
+	{
+		if ((symbols[i - 1] == '~'|| symbols[i - 1] == '-' || symbols[i - 1] == '*' || symbols[i - 1] == '/' || symbols[i - 1] == '+' || symbols[i - 1] == '(') && symbols[i] == '-')
+		{
+			symbols[i] = '~';
+		}
+
+	}
+	this->infix = symbols;
+	try
+	{
+		IncorrectSymbols();
+		CheckBrackets();
+	}
+	catch (const std::string& error)
+	{
+		throw error;
+	}
+
+
 }
 
-TEST(TPostfix, correct_operation_priority)
+bool Arithmetic::IsOperation(char ch)
 {
-    TPostfix test;
-    EXPECT_EQ(test.operation_priority("+"), 1);
-    EXPECT_EQ(test.operation_priority("-"), 1);
-    EXPECT_EQ(test.operation_priority("*"), 2);
-    EXPECT_EQ(test.operation_priority("/"), 2);
-    EXPECT_EQ(test.operation_priority("~"), 3);
-    EXPECT_EQ(test.operation_priority("("), 0);
+	if (ch == '~' || ch == '-' || ch == '+' || ch == '/' || ch == '*' || ch == '^' || ch == '(' || ch == ')')
+		return true;
+	else
+		return false;
 }
 
-TEST(TPostfix, correct_converting_string_to_number)
+bool Arithmetic::CheckOp()
 {
-    TPostfix test;
-    EXPECT_EQ(test.toNumber("96.678"), 96.678);
-    EXPECT_EQ(test.toNumber("-96"), -96);
-    double temp;
-    temp = floor(test.toNumber("-96.45") * pow(10.0, 16)) / pow(10.0, 16);
-    EXPECT_EQ(temp, -96.45);
-    temp = floor(test.toNumber("-9.456E2") * pow(10.0, 16)) / pow(10.0, 16);
-    EXPECT_EQ(temp, -945.6);
+	for (int i = 0; i < infix.size(); i++)
+		if (!IsDigit(infix[i]) && !IsOperation(infix[i]))
+			return false;
+	int Operands = 0, Operations = 0;
+	for (int i = 0; i < infix.size(); i++)
+	{
+		if (infix[i] == '(' || infix[i] == ')')
+		{
+			i++;
+			if (i == infix.size())
+				break;
+		}
+
+		if (infix[i] == '-' || infix[i] == '+' || infix[i] == '/' || infix[i] == '*' || infix[i] == '^')
+			Operations++;
+
+		if (!IsOperation(infix[i]))
+		{
+			while (!IsOperation(infix[i]))
+			{
+				i++;
+				if (i == infix.size())
+					break;
+			}
+			i--;
+			Operands++;
+		}
+	}
+	if (Operands == Operations + 1)
+		return true;
+	else 
+		return false;
 }
 
-TEST(TPostfix, correct_converting_to_postfix_form)
+bool Arithmetic::IsDigit(const char& dig)
 {
-    string temp = "6989+";
-    TPostfix test("69+89");
-    test.toPostfix();
-    EXPECT_EQ(test.getPostfix(), temp);
-
-    temp = "896978+8989~*-*9+";
-    test.setTPostfix("89*(69+78-89*-89)+9");
-    test.toPostfix();
-    EXPECT_EQ(test.getPostfix(), temp);
+	return (dig >= '0' && dig <= '9') || dig == '.' || dig == 'E';
 }
 
-TEST(TPostfix, correct_calculating)
+bool Arithmetic::IsOperand(const char& lexem)
 {
-    double temp = 69.0 + 89.0;
-    TPostfix test("69+89");
-    test.toPostfix();
-    test.toCalculate();
-    EXPECT_EQ(test.getResult(), temp);
-
-    temp = 89 * (69 + 78 - 89 * (-89)) + 9;
-    test.setTPostfix("89*(69+78-89*-89)+9");
-    test.toPostfix();
-    test.toCalculate();
-    EXPECT_EQ(test.getResult(), temp);
-
-    temp = 5 - (-(-(-(4))));
-    test.setTPostfix("5----4");
-    test.toPostfix();
-    test.toCalculate();
-    EXPECT_EQ(test.getResult(), temp);
+	if (int(lexem) >= 48 && int(lexem) <= 57)
+		return true;
+	else
+		return false;
 }
 
-TEST(TPostfix, throw_if_division_by_zero)
+bool Arithmetic::IsNumber(std::string num)
 {
-    TPostfix test("8/0");
-    test.toPostfix();
-    EXPECT_ANY_THROW(test.toCalculate(););
+	int pos_str = 0;
+	if (num.size() != 0)
+	{
+		if (num[0] == '+' || num[0] == '-' || num[0] == '~')
+		{
+			pos_str = 1;
+		}
+		for (int i = pos_str; i < num.size(); i++)
+		{
+			if (!IsDigit(num[i]))
+			{
+				if ((num[i] == '+' || num[i] == '-') && num[i - 1] == 'E')
+				{
+					continue;
+				}
+				return false;
+			}
+		}
+		return true;
+	}
+	return false;
+}
+
+bool Arithmetic::IsVar(const char& ch)
+{
+	return ch >= 'a' && ch <= 'z';
+}
+
+void Arithmetic::CheckBrackets()
+{
+	int LeftBrackets = 0, RightBrackets = 0;
+	for (int i = 0; i < infix.size(); i++)
+	{
+		if (infix[i] == '(')
+			LeftBrackets++;
+		else if (infix[i] == ')')
+			RightBrackets++;
+	}
+	if (LeftBrackets != RightBrackets)
+	{
+		std::string err = "Incorrect brackets";
+		throw err;
+	}
+}
+
+bool Arithmetic::IsVariable(std::string num)
+{
+	for (size_t i = 0; i < num.size(); i++)
+	{
+		if (!IsVar(num[i]))
+			return false;		
+	}
+	return true;
+}
+
+bool Arithmetic::IsBrackets(const char& ch)
+{
+	return ch == '(' || ch == ')';
+}
+//void Arithmetic::CorrectOrder()
+//{
+//	if (lexem[0]->GetLex() == ")" || lexem[0]->LexType() == "binary")
+//	{
+//		std::string error = "At the beginning of an arithmetic expression can be: unary operations or '('!");
+//		throw error;
+//	}
+//	if (lexem[0]->LexType() == "unary")
+//	{
+//	
+//	}
+//}
+
+
+void Arithmetic::resize()//new mass data*2| 
+{
+	Lex** data = new Lex * [size * 2];
+	for (size_t j = 0; j < size; j++)
+	{
+		data[j] = lexem[j];
+	}
+	if (lexem != nullptr)
+		delete[] lexem;
+	size *= 2;
+	lexem = data;
+}
+
+void Arithmetic::IncorrectSymbols()
+{
+	for (size_t i = 0; i < infix.size(); i++)
+	{
+		if (!IsVar(infix[i]) && !IsDigit(infix[i]) && !IsBrackets(infix[i]) && !IsOperation(infix[i]) && infix[i] != ' ');
+	}
+}
+
+void Arithmetic::VarValue()
+{
+	std::cout << '\n';
+	std::map<std::string, std::string> VarValues;
+
+	for (size_t i = 0; i < lex_size; i++)
+	{
+		if (lexem[i]->LexType() == "Var")
+		{
+			if (!VarValues.count(lexem[i]->GetLex()))
+			{
+				std::string str;
+				std::cout << "\n    " << lexem[i]->GetLex() << " : ";
+				std::cin >> str;
+				VarValues.insert({ lexem[i]->GetLex(), str });
+				if (!IsNumber(str))
+				{
+					std::string err = "Incorrect variable value ";
+					throw err;
+				}
+			}
+			try
+			{
+				Lex* n = new Num(VarValues[lexem[i]->GetLex()]);
+				delete lexem[i];
+				lexem[i] = n;
+			}
+			catch (const std::string& er)
+			{
+				throw er;
+			}
+
+		}
+	}
+}
+
+void Arithmetic::Postfix()
+{
+	postfix = new Lex * [size];//Videlyaemaya pamyat'
+	int index = 0;
+	Stack<Lex*> stack;
+	Lex* elem;
+	for (size_t i = 0; i < lex_size; i++)
+	{
+		if (lexem[i]->LexType() == "brackets")
+		{
+			if (lexem[i]->GetLex() == "(")
+			{
+				stack.Push(lexem[i]);
+			}
+			else
+			{
+				elem = stack.Pop();
+				while (elem->GetLex() != "(")
+				{
+					postfix[index] = elem;
+					index++;
+					elem = stack.Pop();
+				}
+			}
+		}
+		else if (lexem[i]->LexType() == "binary")
+		{
+			while (!stack.IsEmpty())
+			{
+				elem = stack.Pop();
+				if (lexem[i]->GetPrior() <= elem->GetPrior())
+				{
+					postfix[index] = elem;
+					index++;
+				}
+				else
+				{
+					stack.Push(elem);
+					break;
+				}
+			}
+			Lex* e = lexem[i];
+			stack.Push(e);
+		}
+		else if (lexem[i]->LexType() == "unary")
+		{
+			Lex* e = lexem[i];
+			stack.Push(e);
+		}
+		else
+		{
+			postfix[index] = lexem[i];
+			index++;
+		}
+
+	}
+	while (!stack.IsEmpty())
+	{
+		elem = stack.Pop();
+		postfix[index] = elem;
+		index++;
+	}
+	std::cout << "\n\n Postfix form : \n";
+	for (size_t i = 0; i < index; i++)
+	{
+		std::cout << postfix[i]->GetLex() << ' ';
+	}
+	postfix_size = index;
+
+}
+
+
+void Arithmetic::Parser()
+{
+	std::string lex = "";
+	lex_size = 0;
+	for (size_t i = 0; i < infix.size(); i++)
+	{
+		if (IsOperation(infix[i]))
+		{
+			if ((infix[i] == '+' || infix[i] == '-') && infix[i - 1] == 'E')
+			{
+				lex += infix[i];
+
+			}
+			else
+			{
+				if (lex != "")
+				{
+					if (size == lex_size)
+						resize();
+					if (IsNumber(lex))
+					{
+						lexem[lex_size] = new Num(lex);
+						lex_size++;
+					}
+					if (IsVariable(lex))
+					{
+						lexem[lex_size] = new Var(lex);
+						lex_size++;
+					}
+					if (!IsNumber(lex) && (!IsVariable(lex)))
+					{
+						std::string error="incorrect form";
+						throw error;
+					}
+					lex = "";
+				}
+				if (size == lex_size)
+					resize();
+				lexem[lex_size] = new operations(infix[i]);
+				lex_size++;
+			}
+
+		}
+		else
+		{
+			lex += infix[i];
+		}
+	}
+	if (lex != "")
+	{
+		if (size == lex_size)
+			resize();
+	}
+	if (lex != "")
+	{
+		if (size == lex_size)
+			resize();
+		if (IsNumber(lex))
+		{
+			lexem[lex_size] = new Num(lex);
+			lex_size++;
+		}
+		if (IsVariable(lex))
+		{
+			lexem[lex_size] = new Var(lex);
+			lex_size++;
+		}
+		if (!IsNumber(lex) && (!IsVariable(lex)))
+		{
+			std::string error = "incorrect form";
+			throw error;
+		}
+
+	}
+
+}
+
+double Arithmetic::Calculate()
+{
+	try
+	{
+		Parser();
+		VarValue();
+		Postfix();
+
+	}
+	catch (const std::string& er)
+	{
+		throw er;
+	}
+	//Èäåøü öèêëîì ïî ïîñòôèêñ(è)
+	//Åñëè âñòðå÷àåòñÿ ÷èñëî çàêèäûâàåì â ñòåê
+	//Åñëè âñòðå÷àåòñÿ ïåðåìåííàÿ, òî äåëàåì ñðàâíåíèÿ 
+	//Åñëè ýòî óíàðíàÿ îïåðàöèÿ(~) òîãäà èçûìàåì èç ñòåêà 1 ýëåìåíò *-1 çàêèäûâàåì â ñòåê íîâîå ÷èñëî 
+	//Åñëè ýòî áèíàðíàÿ îïåðàöèÿ èç ñòåêà äîñòàåì ñíà÷àëà ïðàâûé îïåðàíä ïîòîì ëåâûé îïåðàíä 
+	//right = steck.pop() - óêàçàòåëü íà áàçîâóþ ëåêñåìó Lex*
+	//Ïîñëå âåðõíåé çàïèñè left = stack.pop() 
+	//Ïîñòôèêñíàÿ ôîðìà íå ìåíÿåò ïîðÿäîê ÷èñåë îíà ìåíÿåò ïîðÿäîê çíàêîâ
+	//×åì ðàíüøå ïîïàë òåì ðàíüøå óøåë
+	//Â êîíöå â ñòåêå îñòàíåòñÿ 1 ýëåìåíò - ýòî îòâåò , àðèôìåòè÷åñêîå âûðàæåíèå 
+	Stack<double> stack;
+
+	for (size_t i = 0; i < postfix_size; i++)
+	{
+		if (postfix[i]->LexType() == "digit")
+		{
+			Lex* op = postfix[i];
+			double smth = op->value();
+			stack.Push(smth);
+		}
+		else
+		{
+			std::string oper = postfix[i]->GetLex();
+			if (oper == "+")
+			{
+				double right_op = stack.Pop();
+				double left_op = stack.Pop();
+				stack.Push(right_op + left_op);
+			}
+			else if (oper == "-")
+			{
+				double right_op = stack.Pop();
+				double left_op = stack.Pop();
+				stack.Push(left_op - right_op);
+			}
+			else if (oper == "*")
+			{
+				double right_op = stack.Pop();
+				double left_op = stack.Pop();
+				stack.Push(left_op * right_op);
+			}
+			else if (oper == "/")
+			{
+				double right_op = stack.Pop();
+				double left_op = stack.Pop();
+				if(right_op<=1e-5&&right_op>=-1e-5)
+				{
+					std::string lng = "0 div";
+					throw(lng);
+				}
+				stack.Push(left_op / right_op);
+			}
+			else if (oper == "~")
+			{	
+				double right_op = stack.Pop();
+				stack.Push(-1*right_op);
+			}
+		}	
+
+
+	}
+	return stack.Pop();
+}
+
+
+
+Arithmetic::~Arithmetic()
+{
+	for (int i = 0; i < lex_size; i++)
+	{
+		if(lexem[i] != nullptr)
+			delete lexem[i];
+
+	}
+	if (lexem != nullptr)
+		delete[] lexem;
+	if (postfix != nullptr)
+		delete[] postfix;
 }
