@@ -2,10 +2,7 @@
 #include<Arithmetic.h>
 #include<string>
 #include<iostream>
-#include <math.h>
-#include <locale>
-#include <map>
-#include <ostream>
+
 
 
 
