@@ -30,15 +30,15 @@ public:
 	}
 	void Clear() 
 	{
-		Index = -1;
+		ID = -1;
 	}
 	bool IsEmpty()  
 	{
-		return Index < 0;
+		return ID < 0;
 	}
 	void Push(T elem) 
 	{
-		if (++Index == r_size)  
+		if (++ID == r_size)  
 		{
 			T* tmp = new T[r_size * 2];
 			for (size_t i = 0; i < r_size; i++)
@@ -47,26 +47,26 @@ public:
 			data = tmp;
 			r_size *= 2;
 		}
-		data[Index] = elem;
+		data[ID] = elem;
 	}
 	T Pop() 
 	{
 		if (IsEmpty())
 			throw std::exception("Nothing on the stack");
-		return data[Index--];
+		return data[ID--];
 	}
 	
 	//Возвращение индекса
 	
 	int GetSize() 
 	{
-		return Index + 1;
+		return ID + 1;
 	}
 	T Top() 
 	{
 		if (IsEmpty())
 			throw std::exception("Nothing on the stack");
-		return data[Index];
+		return data[ID];
 	}
 	~Stack()
 	//Очистка
