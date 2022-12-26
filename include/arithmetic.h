@@ -22,10 +22,8 @@ public:
 };
 
 class Lexems {
-protected:
-	std::string lex;
 public:
-	Lexems(std::string _lex);
+	Lexems();
 	virtual std::string whatis() = 0;
 	virtual size_t prioritet() = 0;
 	virtual void ToDo(Stack<double>& S) = 0;
@@ -35,6 +33,7 @@ public:
 
 class Operator : public Lexems {
 private:
+	std::string lex;
 	size_t priority;
 public:
 	Operator(char _lex);
@@ -46,6 +45,8 @@ public:
 };
 
 class Operand : public Lexems {
+private:
+	std::string lex;
 public:
 	Operand(std::string _lex);
 	size_t prioritet() override;
@@ -56,6 +57,8 @@ public:
 };
 
 class Var : public Lexems {
+private:
+	std::string lex;
 public:
 	Var(char _lex);
 	size_t prioritet() override;
