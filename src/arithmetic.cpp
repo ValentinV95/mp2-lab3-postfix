@@ -163,7 +163,7 @@ TPostfix::TPostfix(string infix)
 		}
 
 	}
-
+	cout << infix << endl;
 
 	//__________________CHECKING STRING____________________________//
 
@@ -173,10 +173,10 @@ TPostfix::TPostfix(string infix)
 	for (int i = 0; i < _size; i++)
 	{
 		if (!is_Oper(infix[i]) && !is_Digit(infix[i]) && !is_Var(infix[i]) && infix[i]!= '(' && infix[i] != ')' && infix[i] != '.' && infix[i] != '~') throw invalid_argument("invalid input, unknown symbol");
+		if (infix[i] == '(')brackets++;
+		if (infix[i] == ')')brackets--;
 		if(i != _size-1)
 		{
-			if (infix[i] == '(')brackets++;
-			if (infix[i] == ')')brackets--;
 			if (is_Oper(infix[i]) && is_Oper(infix[i + 1]))throw invalid_argument("invalid input. Two operations.");
 			if ((is_Digit(infix[i]) && is_Var(infix[i + 1])) || (is_Var(infix[i]) && is_Digit(infix[i + 1]))) invalid_argument("Invalid input. Variable and constant is near");
 			if ((infix[i] == ')') && (is_Digit(infix[i + 1]) || is_Var(infix[i + 1]))) throw invalid_argument("invalid input ) near to variable or constant. If you want to multiply, please write epression_1 * (expression_2)");
@@ -184,6 +184,8 @@ TPostfix::TPostfix(string infix)
 		}
 		if ((i > 0) && infix[i] == '(' && !is_Oper(infix[i - 1])) throw invalid_argument("invalid argument. variable or constant near to (. If you want to multiply, please write epression_1 * (expression_2)");
 	}
+
+	cout << brackets << endl;
 	if (brackets != 0) throw invalid_argument("Too many / too few brackets");
 
 	//__________________GETTING POSTFIX____________________________//
@@ -353,30 +355,41 @@ double TPostfix::Calculate()
 	{
 		if (postfix[i]->GetType() == "variable")
 		{
+			cout << postfix[i]->GetOperation() << endl;
 			if (!vars.empty())
 			{
-				for (int j = 0; j < vars.size(); i++)
+				for (int j = 0; j < vars.size(); j++)
 				{
+					cout << "size:" << vars.size() << " indx : " << j << endl;
 					if (vars[j] == postfix[i]->GetOperation())
 					{
+						//cout << i << " : " << postfix[i]->GetOperation() << endl;
 						break;
 					}
-					vars[j] = postfix[i]->GetOperation();
+					vars.push(postfix[i]->GetOperation());
+
 				}
 			}
 			else
 			{
 				vars.push( postfix[i]->GetOperation());
+				cout << vars.size() << endl;
+				cout << vars.empty() << endl;
 			}
 		}
 	}
+
+	cout << vars.size() << " : size of variables stack" << endl;
+
 	if (!vars.empty())
 	{
 		cout << "Input variable's values: " << endl;
 		for (int j = 0; j < vars.size(); j++)
 		{
 			double value;
+			cout << "Enter value of variable " << vars[j]<<": ";
 			cin >> value;
+			cout << endl;
 			vbs.push( value);
 			cout << vars[j] <<"="<<vbs[j] << endl;
 		}

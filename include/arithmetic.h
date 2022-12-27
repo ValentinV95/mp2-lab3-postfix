@@ -79,7 +79,7 @@ protected:
 public:
 	_Variable();
 	_Variable(char var, int sign);
-	char _GetOperation() { return _Var; }
+	char GetOperation() { return _Var; }
 };
 
 class TPostfix
