@@ -3,5 +3,6 @@
 
 int main()
 {
-  return 0;
+	Arithmetic_expression exp("5-x*9");
+	exp.show();
 }

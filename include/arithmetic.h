@@ -1,32 +1,31 @@
 // объ€вление функций и классов дл€ вычислени€ арифметических выражений
-#include <iostream>
-#include <string>
 #include "stack.h"
 #include <map>
+#include <string>
+#include <iostream>
 using std::map;
 using std::string;
 
 class Lexema {
-private:
+protected:
 	string lexema;
 public:
 	Lexema(string _str);
 	~Lexema();
-	virtual bool IsOperand() = 0;
+	virtual void show() = 0;
 };
 class Operand : public Lexema {
 public:
 	Operand(string _str);
-	bool IsOperand();
+	void show() override;
 	~Operand();
 };
 class Operation : public Lexema {
 private:
 	int priority;
-	char name;
 public:
-	Operation(string _str, char _name);
-	bool IsOperand();
+	Operation(string _str);
+	void show() override;
 	~Operation();
 };
 class Const : public Operand {
@@ -39,10 +38,9 @@ public:
 class Variable : public Operand {
 private:
 	char var;
-	map <char,double> valOfvar;
+	map <char, double> valOfvar;
 public:
-	Variable(string _str, char _var, map <char,double> _valOfvar);
-
+	Variable(string _str);
 	~Variable();
 };
 class Arithmetic_expression {
@@ -50,9 +48,12 @@ private:
 	string infix;
 	Lexema** lexems;
 	Lexema** postfix;
+	size_t size;
 	void Parse();
 	void ToPostfix();
 public:
 	Arithmetic_expression(string expr);
 	~Arithmetic_expression();
+	bool IsOperation(char symb);
+	void show();
 };
