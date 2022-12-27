@@ -14,17 +14,38 @@ private:
 	size_t MemSize;
 	T* pMem;
 public:
-	TStack(_memsize = 10) :top(-1); MemSize(_memsize), pMem(new T[MemSize]) {}
+	TStack(size_t _memsize = 10) :top(-1); MemSize(_memsize) {
+	if (_memsize <= 0)
+		throw exception("stack size can't be zero or negative");
+	else
+		pMem = new T[MemSize];
+	}
 
-	~TStack() { delete[]pMem }
+	~TStack() { 
+		delete[]pMem
+	}
 
-	size_t size()const { return top + 1; }
+	size_t size()const { 
+		return top + 1; 
+	}
 
-	bool IsEmpty() const { return top == -1; }
+	bool IsEmpty() const {
+		return top == -1; 
+	}
 
-	bool TopElem() const { return top == MemSize - 1; }
+	bool TopElem() const {
+		return top == MemSize - 1;
+	}
+	
+	void clear() {
+		top = -1;
+	}
 
-	T Pop() { return pMem[top--]; }
+	T Pop() {
+		if (IsEmpty())
+			throw exception("Empty stack");
+		return pMem[top--];
+	}
 
 	void Push(const T& val) {
 		if (TopElem) {
