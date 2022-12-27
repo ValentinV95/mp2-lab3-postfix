@@ -3,7 +3,7 @@
 using namespace std;
 
 Lexema::Lexema(string _str) {
-	string lexema = _str;
+	lexema = _str;
 }
 
 Lexema::~Lexema() {}
@@ -15,14 +15,14 @@ void Operand::show(){
 	cout << lexema;
  }
 
-Operation::Operation(string _str) : Lexema(_str) {
-	if (_str == "~")
+Operation::Operation(char _str) : Lexema(&_str) {
+	if (_str == '~')
 		priority = 1;
-	if (_str == "*" || _str == "/")
+	if (_str == '*' || _str == '/')
 		priority = 2;
-	if (_str == "+" || _str == "-")
+	if (_str == '+' || _str == '-')
 		priority = 3;
-	if ((_str == "(") || (_str == ")"))
+	if ((_str == '(') || (_str == ')'))
 		priority = 0;
 }
 
@@ -39,7 +39,7 @@ Const::Const(string _str) : Operand(_str) {
 	for (; i < _str.size() && _str[i] != ','; i++) {
 		if (int(_str[i]) >= 48 && int(_str[i]) <= 57)
 		{
-			value = value * pow + (int(_str[i]) - 48);
+			value = value * pow + (int(_str[i])) - 48;
 		}
 	}
 	i++;
@@ -55,15 +55,15 @@ Const::Const(string _str) : Operand(_str) {
 
 Const::~Const() {}
 
-Variable::Variable(string _str) : Operand(_str) {}
+Variable::Variable(char _str) : Operand(&_str) {}
 
 Variable::~Variable() {}
 
 Arithmetic_expression::Arithmetic_expression(string expr) : infix(expr) {
 	size = expr.size();
-	Lexema** lexems = new Lexema * [expr.size()];
-	Lexema** postfix = new Lexema * [expr.size()];
-	void Parse();
+	lexems = new Lexema * [size];
+	postfix = new Lexema * [size];
+	Parse();
 };
 
 
@@ -76,34 +76,34 @@ bool Arithmetic_expression::IsOperation(char symb) {
 Arithmetic_expression::~Arithmetic_expression() {}
 
 void Arithmetic_expression::Parse() {
-	string operand;
-	int brackets = 0;
+
 	int j = 0;
 
 	for (int i = 0; i < infix.size(); i++) {
 
-		if (infix[i] >= 48 && infix[i] <= 57) {
-
+		if (int(infix[i]) >= 48 && int(infix[i]) <= 57) {
+			string operand;
 			int points = 0;
-			while ((infix[i] >= 48 && infix[i] <= 57) || (infix[i] = ',')) {
+			while ((int(infix[i]) >= 48 && int(infix[i]) <= 57) || (infix[i] == ',')) {
 				operand += infix[i];
+				i++;
 			}
 			lexems[j] = new Const(operand);
 			j++;
 		}
 
 		if (infix[i] >= 97 && infix[i] <= 122) {
-			lexems[j] = new Variable(&infix[i]);
-			j++;
+			lexems[j] = new Variable(infix[i]);
+			j++; 
 		}
 
 		if (IsOperation(infix[i]))  {
 			if ((infix[i] == '-' ) && ((i == 0) || (IsOperation(infix[i-1])&&(infix[i - 1]!=')')))) {
-				lexems[j] = new Operation("~");
+				lexems[j] = new Operation('~');
 				j++;
 			}
 			else {
-				lexems[j] = new Operation(&infix[i]);
+				lexems[j] = new Operation(infix[i]);
 				j++;
 			}				
 		}

@@ -24,7 +24,7 @@ class Operation : public Lexema {
 private:
 	int priority;
 public:
-	Operation(string _str);
+	Operation(char _str);
 	void show() override;
 	~Operation();
 };
@@ -40,7 +40,7 @@ private:
 	char var;
 	map <char, double> valOfvar;
 public:
-	Variable(string _str);
+	Variable(char _str);
 	~Variable();
 };
 class Arithmetic_expression {
