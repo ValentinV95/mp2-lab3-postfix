@@ -1,4 +1,4 @@
-#include <gtest.h>
+#include "gtest.h"
 #include "arithmetic.h"
 
 TEST(class_Operand, make_operand)

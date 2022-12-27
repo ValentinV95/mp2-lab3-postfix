@@ -1,5 +1,5 @@
 #include "stack.h"
-#include <gtest.h>
+#include "gtest.h"
 
 TEST(Stack, positive_length)
 {

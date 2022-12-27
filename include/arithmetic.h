@@ -1,5 +1,5 @@
 #include <string>
-#include "../include/stack.h"
+#include "stack.h"
 #include <map>
 
 class lexException : public std::exception {
