@@ -1,33 +1,32 @@
-#include <iomanip>
-#include "arithmetic.h"
+// реализаци€ пользовательского приложени€
 
-using std::cout;
-using std::endl;
+#include <iostream>
+#include "../include/arithmetic.h"
+#include <locale.h>
 
 int main()
 {
-	cout << "The program supports:" << endl;
-	cout << "- Unary ('-') and binary ('+', '-', '*', '/') operations" << endl;
-	cout << "- Brackets" << endl;
-	cout << "- Integer and real constants" << endl;
-	cout << "- Decimal separator only as a point: '.'" << endl;
-	cout << "- Exponential form of any signed ('-' or '+') or unsigned numbers" << endl;
-	cout << "- Variable names of any length using only lowercase Latin characters, excluding 'e'" << endl;
-	cout << "- Prohibition of spaces" << endl;
-
-	string source;
-	cout << endl << "Infix form: ";
-	std::getline(std::cin, source);  
+	setlocale(LC_ALL, "Russian");
+	std::cout << "-----------------SOLVING EXPRESSIONS-----------------\n" << "RULES:" << std::endl;
+	std::cout << "1)DON'T use space\n2)Arithmetic operation: *,/,+,-\n3)Variables should be named with one letter" << std::endl;
+	std::cout << "Enter your expressions:  ";
+	std::string Eq;
+	std::cin >> Eq;
 	try
 	{
-		TArithmetic expression(source);
-		cout << endl << "Postfix form: " << expression.GetPostfix() << endl;
-		cout << endl << "Expression value: " << expression.Calculate() << endl;
+		TPostfix Equation(Eq);
+		std::cout << "your infix form:" << std::endl;
+		std::cout << Equation.get_infixLexem() << std::endl;
+		std::cout << "your postfixfix form:" << std::endl;
+		std::cout << Equation.get_postfixLexem() << std::endl;
+		std::cout << "result:  " << Equation.resolve();
 	}
-	catch (const string message)
+	catch (const std::exception& ex)
 	{
-		cout << endl << message << endl;
+		std::cout << ex.what();
 	}
-
-	return 0;
+	catch (const lexException& e)
+	{
+		std::cout << e.what();
+	}
 }

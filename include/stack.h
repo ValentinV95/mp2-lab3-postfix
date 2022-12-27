@@ -1,72 +1,72 @@
-template<class T>
-class Stack
-{
+class Stack {
 private:
-	int top;
-	T* pMem;
-	size_t size;
-
-	void oversize()
-	{
-		T* tmpMem = new T[size * 2];
-		std::copy(pMem, pMem + size, tmpMem);
-		delete[] pMem;
-		this->pMem = tmpMem;
-		size *= 2;
-	}
+	T* data;
+	size_T size;
+	int index = -1;
 public:
-	Stack(size_t sz = 1) : size(sz), top(-1)
+	Stack(size_T sz = 1) : size(sz)
 	{
 		if (sz <= 0)
+			throw std::exception("Uncorrected length");
+		data = new T[size]();
+	}
+
+	Stack(const Stack<T>& a)
+	{
+		index = a.index;
+		size = a.size;
+		data = new T[size]();
+		for (size_T i = 0; i <= a.index; i++)
+			data[i] = a.data[i];
+	}
+
+	bool Full() noexcept
+	{
+		return index == size - 1;
+	}
+
+	bool Empty() noexcept
+	{
+		return index == -1;
+	}
+
+	void push(T Elem)
+	{
+		if (Full())
 		{
-			throw std::exception("Stack size should be greater than zero");
+			Stack<T> tmp(*this);
+			delete[] data;
+			size *= 2;
+			data = new T[size]();
+			for (size_T i = 0; i <= index; i++)
+				data[i] = tmp.data[i];
 		}
-		else
-		{
-			pMem = new T[size];
-		}
+		data[++index] = Elem;
 	}
 
-	size_t current_size() const
+	T& pop()
 	{
-		return top + 1;
+		if (this->Empty())
+			throw std::exception("Empty: stack_is_empty");
+		return data[index--];
 	}
 
-	void clear()
+	T& view_top()
 	{
-		top = -1;
+		if (this->Empty())
+			throw std::exception("view_top: stack_is_empty");
+		return data[index];
 	}
 
-	bool isEmpty() const
+	size_T GetLength()
 	{
-		return top == -1;
+		return index + 1;
 	}
 
-	bool isFull() const
+	void Clear()
 	{
-		return top == size - 1;
+		index = -1;
 	}
 
-	void push(const T& value)
-	{
-		if (isFull()) oversize();
-		pMem[++top] = value;
-	}
-
-	T pop()
-	{
-		if (isEmpty()) throw std::exception("Stack is empty");
-		return pMem[top--];
-	}
-
-	T show_top() const
-	{
-		if (isEmpty()) throw std::exception("Stack is empty");
-		return pMem[top];
-	}
-
-	~Stack()
-	{
-		delete[] pMem;
-	}
+	~Stack() { delete[] data; }
 };

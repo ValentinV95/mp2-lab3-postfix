@@ -49,37 +49,37 @@ void TArithmetic::Operation::SetValue(const string& val)
 	}
 }
 
-double TArithmetic::Operand::toNumeric(const string& strlex)
+double TArithmetic::Operand::in_Numerical(const string& strlex)
 {
-	double degree_indicator = 0.0;
+	double degree_ind = 0.0;
 	double set_value = 0.0;
 	double sign = 1.0;
-	double e_degree_indicator = 0.0;
+	double e_degree_ind = 0.0;
 	string after_e = "";
 
 	if (strlex[0] == '-')
 	{
 		sign *= -1.0;
-		degree_indicator--;
+		degree_ind--;
 	}
 	else if (strlex[0] == '+')
 	{
-		degree_indicator--;
+		degree_ind--;
 	}
 	if (strlex.find('.') == string::npos)
 	{
 		if (strlex.find('e') != string::npos)
 		{
-			degree_indicator += strlex.find('e');
+			degree_ind += strlex.find('e');
 		}
 		else
 		{
-			degree_indicator += strlex.size();
+			degree_ind += strlex.size();
 		}
 	}
 	else
 	{
-		degree_indicator += strlex.find('.');
+		degree_ind += strlex.find('.');
 
 	}
 	if (strlex.find('e') != string::npos)
@@ -88,7 +88,7 @@ double TArithmetic::Operand::toNumeric(const string& strlex)
 		{
 			after_e += strlex[i];
 		}
-		e_degree_indicator = toNumeric(after_e);
+		e_degree_ind = in_Numerical(after_e);
 	}
 	for (const char symb : strlex)
 	{
@@ -98,19 +98,19 @@ double TArithmetic::Operand::toNumeric(const string& strlex)
 		}
 		else if (symb != '-' && symb != '+' && symb != '.')
 		{
-			set_value += (symb - '0') * pow(10.0, --degree_indicator);
+			set_value += (symb - '0') * pow(10.0, --degree_ind);
 		}
 	}
 	if (strlex.find('e') != string::npos)
 	{
-		set_value *= pow(10.0, e_degree_indicator);
+		set_value *= pow(10.0, e_degree_ind);
 	}
 	return sign * set_value;
 }
 
 void TArithmetic::Constant::SetValue(const string& val)
 {
-	value = toNumeric(val);
+	value = in_Numerical(val);
 }
 
 TArithmetic::Constant::Constant(const string& data)
@@ -129,7 +129,7 @@ TArithmetic::Variable::Variable(const string& data)
 
 void TArithmetic::Variable::SetValue(const string& val)
 {
-	value = toNumeric(val);
+	value = in_Numerical(val);
 }
 
 bool TArithmetic::find_operation(const char& tmplex)
@@ -145,7 +145,7 @@ bool TArithmetic::find_operation(const char& tmplex)
 	return false;
 }
 
-bool TArithmetic::isDigit(const char& tmplex)
+bool TArithmetic::aNumber(const char& tmplex)
 {
 	return (tmplex >= '0') && (tmplex <= '9');
 }
@@ -161,11 +161,11 @@ const string TArithmetic::find_error()
 	int close_count = 0;
 	bool e_already_exists = false;
 	bool point_already_exists = false;
-	char nSym;  
-	string wrong_infix = "Unexpected lexem: ";
+	char nSym;
+	string wrong_infix = "Unforessen lexem: ";
 
 	wrong_infix += infix[0];
-	if (infix[0] != '-' && !isAlpha(infix[0]) && !isDigit(infix[0]) && infix[0] != '(')
+	if (infix[0] != '-' && !isAlpha(infix[0]) && !aNumber(infix[0]) && infix[0] != '(')
 	{
 		return wrong_infix + "<-";
 	}
@@ -179,7 +179,7 @@ const string TArithmetic::find_error()
 			if (infix[i] == '(')
 			{
 				open_count++;
-				if (nSym != '(' && nSym != '-' && (!isAlpha(nSym) || nSym == 'e') && !isDigit(nSym))
+				if (nSym != '(' && nSym != '-' && (!isAlpha(nSym) || nSym == 'e') && !aNumber(nSym))
 				{
 					return wrong_infix + "<-";
 				}
@@ -201,7 +201,7 @@ const string TArithmetic::find_error()
 					e_already_exists = false;
 					point_already_exists = false;
 				}
-				if (nSym != '-' && nSym != '(' && (!isAlpha(nSym) || nSym == 'e') && !isDigit(nSym))
+				if (nSym != '-' && nSym != '(' && (!isAlpha(nSym) || nSym == 'e') && !aNumber(nSym))
 				{
 					return wrong_infix + "<-";
 				}
@@ -213,7 +213,7 @@ const string TArithmetic::find_error()
 					return wrong_infix + "<-";
 				}
 			}
-			else if (isDigit(infix[i]))
+			else if (aNumber(infix[i]))
 			{
 				if (nSym == '.')
 				{
@@ -222,7 +222,7 @@ const string TArithmetic::find_error()
 						return wrong_infix + "<-";
 					}
 				}
-				else if (!isDigit(nSym) && (nSym == '(' || !find_operation(nSym)) && (nSym != 'e' || e_already_exists))
+				else if (!aNumber(nSym) && (nSym == '(' || !find_operation(nSym)) && (nSym != 'e' || e_already_exists))
 				{
 					return wrong_infix + "<-";
 				}
@@ -230,7 +230,7 @@ const string TArithmetic::find_error()
 			else if (infix[i] == '.')
 			{
 				point_already_exists = true;
-				if (!isDigit(nSym) && nSym != 'e' && (!find_operation(nSym) || nSym == '('))
+				if (!aNumber(nSym) && nSym != 'e' && (!find_operation(nSym) || nSym == '('))
 				{
 					return wrong_infix + "<-";
 				}
@@ -242,7 +242,7 @@ const string TArithmetic::find_error()
 				{
 					return wrong_infix + "<-" + "(invalid use of 'e' lexem)";
 				}
-				else if (!isDigit(infix[i - 1]) && infix[i - 1] != '.' || nSym != '-' && nSym != '+' && !isDigit(nSym))
+				else if (!aNumber(infix[i - 1]) && infix[i - 1] != '.' || nSym != '-' && nSym != '+' && !aNumber(nSym))
 				{
 					return wrong_infix + "<-" + "(invalid use of 'e' lexem)";
 				}
@@ -253,12 +253,12 @@ const string TArithmetic::find_error()
 			}
 		}
 	}
-	char lSym = infix[infix.size() - 1];  
+	char lSym = infix[infix.size() - 1];
 	if (lSym == ')')
 	{
 		close_count++;
 	}
-	else if ((!isAlpha(lSym) || lSym == 'e') && !isDigit(lSym) && (lSym != '.' || point_already_exists || e_already_exists))
+	else if ((!isAlpha(lSym) || lSym == 'e') && !aNumber(lSym) && (lSym != '.' || point_already_exists || e_already_exists))
 	{
 		return wrong_infix += "<-";
 	}
@@ -271,12 +271,12 @@ const string TArithmetic::find_error()
 
 bool TArithmetic::check_input(const string& inp)
 {
-	char nSym;  
-	char pSym;  
+	char nSym;
+	char pSym;
 	bool e_already_exists = false;
 	bool point_already_exists = false;
 
-	if (inp[0] != '-' && !isDigit(inp[0]))
+	if (inp[0] != '-' && !aNumber(inp[0]))
 	{
 		return false;
 	}
@@ -285,16 +285,16 @@ bool TArithmetic::check_input(const string& inp)
 		nSym = inp[i + 1];
 		pSym = inp[i - 1];
 
-		if (isDigit(inp[i]))
+		if (aNumber(inp[i]))
 		{
-			if (!isDigit(nSym) && nSym != '.' && nSym != 'e')
+			if (!aNumber(nSym) && nSym != '.' && nSym != 'e')
 			{
 				return false;
 			}
 		}
 		else if (inp[i] == '.')
 		{
-			if (point_already_exists || e_already_exists || !isDigit(pSym) || !isDigit(nSym) && nSym != 'e')
+			if (point_already_exists || e_already_exists || !aNumber(pSym) || !aNumber(nSym) && nSym != 'e')
 			{
 				return false;
 			}
@@ -302,7 +302,7 @@ bool TArithmetic::check_input(const string& inp)
 		}
 		else if (inp[i] == 'e')
 		{
-			if (e_already_exists || !isDigit(pSym) && pSym != '.' || !isDigit(nSym) && nSym != '-' && nSym != '+')
+			if (e_already_exists || !aNumber(pSym) && pSym != '.' || !aNumber(nSym) && nSym != '-' && nSym != '+')
 			{
 				return false;
 			}
@@ -310,7 +310,7 @@ bool TArithmetic::check_input(const string& inp)
 		}
 		else if (inp[i] == '-' || inp[i] == '+')
 		{
-			if (pSym != 'e' || !isDigit(nSym))
+			if (pSym != 'e' || !aNumber(nSym))
 			{
 				return false;
 			}
@@ -320,7 +320,7 @@ bool TArithmetic::check_input(const string& inp)
 			return false;
 		}
 	}
-	if (!isDigit(inp[inp.size() - 1]) && (inp[inp.size() - 1] != '.' || point_already_exists || e_already_exists))
+	if (!aNumber(inp[inp.size() - 1]) && (inp[inp.size() - 1] != '.' || point_already_exists || e_already_exists))
 	{
 		return false;
 	}
@@ -329,7 +329,7 @@ bool TArithmetic::check_input(const string& inp)
 
 void TArithmetic::parser()
 {
-	string multilex = "_";  
+	string multilex = "_";
 	int j = -1;
 	for (int i = 0; i < infix.size(); i++)
 	{
@@ -343,11 +343,11 @@ void TArithmetic::parser()
 			{
 				if (infix[i] == '(' || infix[i] == ')')
 				{
-					postfix_count--;  
+					postfix_count--;
 				}
-				if (i != 0 && infix[i - 1] != ')' && infix[i] != '(')  
-				{                                                      
-					if (isDigit(infix[i - 1]) || infix[i - 1] == '.')
+				if (i != 0 && infix[i - 1] != ')' && infix[i] != '(')
+				{
+					if (aNumber(infix[i - 1]) || infix[i - 1] == '.')
 					{
 						lexems[++j] = new Constant(multilex);
 					}
@@ -375,7 +375,7 @@ void TArithmetic::parser()
 	}
 	if (infix[infix.size() - 1] != ')')
 	{
-		if (isDigit(infix[infix.size() - 1]) || infix[infix.size() - 1] == '.')
+		if (aNumber(infix[infix.size() - 1]) || infix[infix.size() - 1] == '.')
 		{
 			lexems[++j] = new Constant(multilex);
 		}
@@ -390,14 +390,14 @@ void TArithmetic::parser()
 
 void TArithmetic::toPostfix()
 {
-	const int operations_size = (operations_count == 0) ? 1 : operations_count;  
+	const int operations_size = (operations_count == 0) ? 1 : operations_count;
 	Stack<Lexem*> operations(operations_size);
 	int j = -1;
 	for (int i = 0; i < lexems_count; i++)
 	{
 		if (lexems[i]->what() == "Operation")
 		{
-			if (!operations.isEmpty())
+			if (!operations.Empty())
 			{
 				if (lexems[i]->Get() == ")")
 				{
@@ -410,7 +410,7 @@ void TArithmetic::toPostfix()
 				}
 				else if (lexems[i]->Get() != "(" && lexems[i]->Get() != "~")
 				{
-					while (!operations.isEmpty() && operations.show_top()->Value() >= lexems[i]->Value())
+					while (!operations.Empty() && operations.show_top()->Value() >= lexems[i]->Value())
 					{
 						postfix[++j] = operations.pop();
 					}
@@ -426,7 +426,7 @@ void TArithmetic::toPostfix()
 			postfix[++j] = lexems[i];
 		}
 	}
-	while (!operations.isEmpty())
+	while (!operations.Empty())
 	{
 		postfix[++j] = operations.pop();
 	}
@@ -475,7 +475,7 @@ const double TArithmetic::Calculate()
 			if (!operands.count(postfix[i]->Get()))
 			{
 				std::cout << std::endl << postfix[i]->Get() << " = ";
-				std::getline(std::cin, input_value);  
+				std::getline(std::cin, input_value);
 
 				if (!check_input(input_value))
 				{
@@ -506,7 +506,7 @@ const double TArithmetic::Calculate()
 			}
 			else if (postfix[i]->Get() == "-")
 			{
-				values.push(-values.pop() + values.pop());  
+				values.push(-values.pop() + values.pop());
 			}
 			else if (postfix[i]->Get() == "*")
 			{

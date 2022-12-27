@@ -1,19 +1,19 @@
 #include <gtest.h>
 #include "arithmetic.h"
 
-TEST(class_Operand, can_make_operand)
+TEST(class_Operand, make_operand)
 {
 	ASSERT_NO_THROW(Operand("23432"));
 }
 
-TEST(class_Operand, can_whatis_for_operand)
+TEST(class_Operand, what_operand)
 {
 	Lexems* a[2];
 	a[0] = new Operand("34,54");
-	EXPECT_EQ("Operand", a[0]->whatis());
+	EXPECT_EQ("Operand", a[0]->what_is());
 }
 
-TEST(class_Operand, can_todo_for_operand)
+TEST(class_Operand, to_do_operand)
 {
 	Stack<double> S(2);
 	Lexems* a[2];
@@ -22,19 +22,19 @@ TEST(class_Operand, can_todo_for_operand)
 	EXPECT_EQ(34.54, S.view_top());
 }
 
-TEST(class_Operator, can_make_operator)
+TEST(class_Operator, make_operator)
 {
 	ASSERT_NO_THROW(Operator('*'));
 }
 
-TEST(class_Operator, can_whatis_for_operator)
+TEST(class_Operator, what_operator)
 {
 	Lexems* a[1];
 	a[0] = new Operator('*');
-	EXPECT_EQ("Operator", a[0]->whatis());
+	EXPECT_EQ("Operator", a[0]->what_is());
 }
 
-TEST(class_Operator, can_todo_for_operator)
+TEST(class_Operator, to_do_operator)
 {
 	Stack<double> S(2);
 	S.push(3); S.push(5);
@@ -44,7 +44,7 @@ TEST(class_Operator, can_todo_for_operator)
 	EXPECT_EQ(15, S.view_top());
 }
 
-TEST(class_Operator, throw_when_divisionbyzero_in_todo_for_operator)
+TEST(class_Operator, division_by_zero)
 {
 	Stack<double> S(2);
 	S.push(3); S.push(0);
@@ -66,31 +66,23 @@ TEST(class_Operator, can_prioritet)
 	EXPECT_EQ(3, a[4]->prioritet());
 }
 
-TEST(class_Operator, throw_when_unidentified_operations)
+TEST(class_Operator, unidentified_operation)
 {
 	ASSERT_ANY_THROW(Operator('&'));
 }
 
-TEST(class_Var, can_make_var)
+TEST(class_Var, make_var)
 {
 	ASSERT_NO_THROW(Var('x'));
 }
 
-TEST(class_Var, can_whatis_for_var)
+TEST(class_Var, what_is_var)
 {
 	Lexems* a[2];
 	a[0] = new Var('x');
-	EXPECT_EQ("Var", a[0]->whatis());
+	EXPECT_EQ("Var", a[0]->what_is());
 }
 
-/*TEST(calss_Var, can_todo_for_var)  //user enter number in console
-{
-	Stack<double> S(2);
-	Lexems* a[2];
-	a[0] = new Var('x');
-	a[0]->ToDo(S);
-	EXPECT_EQ(15, S.view_top());
-}*/
 
 TEST(Postfix, correct_posfix_constract)
 {
@@ -109,7 +101,7 @@ TEST(Postfix, correct_convert_unary_minus_instart)
 	EXPECT_EQ("~56*x", A.get_infixLexem());
 }
 
-TEST(Postfix, correct_convert_unary_minus_afteroperation)
+TEST(Postfix, correct_convert_unary_minus_after_operation)
 {
 	TPostfix A("56*-x");
 	EXPECT_EQ("56*~x", A.get_infixLexem());
@@ -199,6 +191,11 @@ TEST(Global_function, throw_when_no_correct_number_with_e)
 TEST(Global_function, throw_when_no_correct_number_with_point)
 {
 	ASSERT_ANY_THROW(convert("3,42e-2,0"));
+}
+
+TEST(Global_function, throw_when_no_correct_number_with_e_after_point)
+{
+	ASSERT_ANY_THROW(convert(",e"));
 }
 
 TEST(Global_function, is_operand)
