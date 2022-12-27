@@ -64,7 +64,7 @@ double TPostfix::StrToNum(string str)
 
 	while (exp == str.size() && i < str.size())
 	{
-		if (str[i] == DELIMITER && !dot && i != 0)
+		if (str[i] == DELIMITER && !dot && i!=0)
 		{
 			dot = i;
 		}
@@ -76,9 +76,9 @@ double TPostfix::StrToNum(string str)
 			if (str[exp + 1] == '-')
 				sign = -1;
 		}
-		else if ((int)str[i] - 48 > 9 || (int)str[i] - 48 < 0)
+		else if (str[i]>'9' || str[i] < '0')
 			if (dot || i == 0)
-				throw exception("To much '.' in number");
+				throw exception("To much '.' in number, or number starts with '.'");
 			else
 				throw exception("Num string contains invalid charakters");
 
@@ -104,7 +104,7 @@ Lexeme* TPostfix::CreateLexeme(string str,int start,int stop)
 	if (funcs.count(str) != 0 || ops.count(str) != 0 || str == "(" || str == ")")
 		return (Lexeme*)new Operation(str,make_pair(start,stop));
 
-	if (str[0] >= '0' && str[0] <= '9')
+	if (str[0] >= '0' && str[0] <= '9' || str[0]=='.')
 		return (Lexeme*)new Constant(StrToNum(str),str,make_pair(start, stop));
 
 	if(str!="e" && str!="pi")
@@ -144,10 +144,9 @@ void TPostfix::Parse()
 
 		if (infix[i] == ')')
 		{
-			if (counter >= 0)
-				counter--;
-			else
-				throw TPostfixException("Count of '(' and ')' is not equall", i);
+			counter--;
+			if (counter < 0)
+				throw TPostfixException("Count of '(' and ')' is not equall,or incorrect sequence of brackets", i);
 		}
 	}
 

@@ -71,7 +71,7 @@ public:
 		return size; 
 	}
 
-	void clear() { top = -1; }
+	void clear() { top = -1; size = 0; }
 
 	~Stack() { delete[] data; }
 };

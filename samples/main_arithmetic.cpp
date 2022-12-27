@@ -42,11 +42,11 @@ int main()
 		}
 		catch (TPostfixException& exc)
 		{
-			std::cout << exc.what();
+			std::cout << "\n" << exc.what()<<"\n";
 		}
 		catch (exception& exc)
 		{
-			std::cout << exc.what();
+			std::cout << "\n" << exc.what() << "\n";
 		}
 	}
 }
