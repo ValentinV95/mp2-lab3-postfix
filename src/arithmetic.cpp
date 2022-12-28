@@ -16,6 +16,15 @@ void Operand::show(){
 	cout << lexema;
  }
 
+int Operand::Priority() {
+	throw exception("operand has not priority");
+	return 0;
+}
+
+string Operand::NameOfClass() {
+	return "Operand";
+}
+
 Operation::Operation(char _str) : Lexema(&_str) {
 	if (_str == '~')
 		priority = 1;
@@ -25,6 +34,13 @@ Operation::Operation(char _str) : Lexema(&_str) {
 		priority = 3;
 	if ((_str == '(') || (_str == ')'))
 		priority = 0;
+}
+int Operation::Priority() {
+	return priority;
+}
+
+string Operation::NameOfClass() {
+	return "Operation";
 }
 
 void Operation::show() {
@@ -124,26 +140,24 @@ void Arithmetic_expression::ToPostfix() {
 	int j = 0;
 
 	for (int i = 0; i < infix.size(); i++) {
-		if ((int(lexems[i]) >= 48 && int(lexems[i]) <= 57) || (int(lexems[i]) >= 97 && int(lexems[i]) <= 122)) {
+		if (lexems[i]->NameOfClass() == "Operand") {
 			postfix[j] = lexems[i];
 			j++;
 		}
 
-		if (char(lexems[i]) == ')') {
+		if (lexems[i]->lexema == "(") {
 			while (Stk.TopElem() != '(') {
 				postfix[j] = Stk.Pop();
 				j++;
 			}
 		}
 
-		if (char(lexems[i]) == '(') {
+		if (lexems[i]->lexema == ")") {
 			Stk.Push(lexems[i]);
 		}
 
-		Operation *oper = (Operation*) lexems;
-		Operation TopElem = (Operation) Stk.TopElem();
-		if (IsOperation(char(lexems[i])) && char(lexems[i])!='(' && char(lexems[i])!=')' && oper->priority != 0) {
-			while ((Stk.IsEmpty()) || (TopElem.priority < (oper)->priority)) {
+		if (lexems[i]->NameOfClass() == "Operation" && lexems[i]->lexema != ")" && lexems[i]->lexema != "(" && lexems[i]->Priority()!=0) {
+			while ((Stk.IsEmpty()) || (Stk.TopElem()->Priority() < lexems[i]->Priority())) {
 				Stk.Push(lexems[i]);
 			}
 			postfix[j] = Stk.Pop();

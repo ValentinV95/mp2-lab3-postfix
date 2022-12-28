@@ -33,10 +33,14 @@ public:
 		return top == -1; 
 	}
 
-	bool TopElem() const {
+	bool IsFull() const {
 		return top == MemSize - 1;
 	}
 	
+	T TopElem() {
+		return pMem[top];
+	}
+
 	void clear() {
 		top = -1;
 	}
@@ -48,7 +52,7 @@ public:
 	}
 
 	void Push(const T& val) {
-		if (TopElem) {
+		if (IsFull) {
 			T* tmpMem = new T[MemSize * 2];
 			for (size_t i = 0; i < MemSize; i++) {
 				tmpMem[i] = pMem[i];

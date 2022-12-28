@@ -8,26 +8,32 @@ using std::string;
 
 class Lexema {
 protected:
-	string lexema;
+
 public:
+	string lexema;
 	Lexema(string _str);
 	~Lexema();
 	virtual void show() = 0;
+	virtual int Priority() = 0;
+	virtual string NameOfClass() = 0;
 };
 class Operand : public Lexema {
 public:
 	Operand(string _str);
 	void show() override;
+	int Priority() override;
 	~Operand();
+	string NameOfClass() override;
 };
 class Operation : public Lexema {
 protected:
-
-public:
 	int priority;
+public:
 	Operation(char _str);
 	void show() override;
 	~Operation();
+	int Priority() override;
+	string NameOfClass() override;
 };
 class Const : public Operand {
 private:
