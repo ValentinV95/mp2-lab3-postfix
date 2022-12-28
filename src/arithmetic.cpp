@@ -146,7 +146,7 @@ void Arithmetic_expression::ToPostfix() {
 		}
 
 		if (lexems[i]->lexema == "(") {
-			while (Stk.TopElem() != '(') {
+			while (Stk.TopElem()->lexema[i] != ')') {
 				postfix[j] = Stk.Pop();
 				j++;
 			}
