@@ -146,7 +146,7 @@ void Arithmetic_expression::ToPostfix() {
 		}
 
 		if (lexems[i]->lexema == "(") {
-			while (Stk.TopElem()->lexema[i] != ')') {
+			while (Stk.TopElem()->lexema != ")") {
 				postfix[j] = Stk.Pop();
 				j++;
 			}
@@ -169,5 +169,11 @@ void Arithmetic_expression::ToPostfix() {
 			j++;
 		}
 	}
+}
 
+void Arithmetic_expression::show_postfix() {
+	for (int i = 0; i < size; i++) {
+		cout << postfix[i];
+		cout << " ";
+	}
 }

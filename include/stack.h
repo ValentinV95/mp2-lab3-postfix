@@ -7,6 +7,7 @@
 // - получение количества элементов в стеке
 // - очистка стека
 // при вставке в полный стек должна перевыделяться память
+#pragma once
 template <typename T>
 class TStack {
 private:
@@ -14,7 +15,7 @@ private:
 	size_t MemSize;
 	T* pMem;
 public:
-	TStack(size_t _memsize = 10) :top(-1); MemSize(_memsize) {
+	TStack(size_t _memsize = 10) :top(-1), MemSize(_memsize) {
 	if (_memsize <= 0)
 		throw exception("stack size can't be zero or negative");
 	else
@@ -22,7 +23,7 @@ public:
 	}
 
 	~TStack() { 
-		delete[]pMem
+		delete[]pMem;
 	}
 
 	size_t size()const { 
@@ -52,7 +53,7 @@ public:
 	}
 
 	void Push(const T& val) {
-		if (IsFull) {
+		if (IsFull()) {
 			T* tmpMem = new T[MemSize * 2];
 			for (size_t i = 0; i < MemSize; i++) {
 				tmpMem[i] = pMem[i];

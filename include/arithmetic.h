@@ -61,6 +61,7 @@ private:
 public:
 	Arithmetic_expression(string expr);
 	~Arithmetic_expression();
+	void show_postfix();
 	bool IsOperation(char symb);
 	void show();
 };
