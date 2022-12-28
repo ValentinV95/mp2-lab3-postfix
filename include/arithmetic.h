@@ -21,9 +21,10 @@ public:
 	~Operand();
 };
 class Operation : public Lexema {
-private:
-	int priority;
+protected:
+
 public:
+	int priority;
 	Operation(char _str);
 	void show() override;
 	~Operation();
