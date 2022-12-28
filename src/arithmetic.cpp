@@ -133,6 +133,7 @@ void Arithmetic_expression::show() {
 		lexems[i]->show();
 		cout << " ";
 	}
+	cout << "\n";
 }
 
 void Arithmetic_expression::ToPostfix() {
@@ -173,7 +174,7 @@ void Arithmetic_expression::ToPostfix() {
 
 void Arithmetic_expression::show_postfix() {
 	for (int i = 0; i < size; i++) {
-		cout << postfix[i];
+		postfix[i]->show();
 		cout << " ";
 	}
 }
