@@ -1,5 +1,6 @@
 // реализация функций и классов для вычисления арифметических выражений
 #include "arithmetic.h"
+#include "stack.h"
 using namespace std;
 
 Lexema::Lexema(string _str) {
@@ -61,9 +62,10 @@ Variable::~Variable() {}
 
 Arithmetic_expression::Arithmetic_expression(string expr) : infix(expr) {
 	size = expr.size();
-	lexems = new Lexema * [size];
-	postfix = new Lexema * [size];
+	lexems = new Lexema * [expr.size()];
+	postfix = new Lexema * [expr.size()];
 	Parse();
+	ToPostfix();
 };
 
 
@@ -115,4 +117,43 @@ void Arithmetic_expression::show() {
 		lexems[i]->show();
 		cout << " ";
 	}
+}
+
+void Arithmetic_expression::ToPostfix() {
+	TStack <Lexema*> Stk(size);
+	int j = 0;
+
+	for (int i = 0; i < infix.size(); i++) {
+		if ((int(lexems[i]) >= 48 && int(lexems[i]) <= 57) || (int(lexems[i]) >= 97 && int(lexems[i]) <= 122)) {
+			postfix[j] = lexems[i];
+			j++;
+		}
+
+		if (char(lexems[i]) == ')') {
+			while (Stk.TopElem() != '(') {
+				postfix[j] = Stk.Pop();
+				j++;
+			}
+		}
+
+		if (char(lexems[i]) == '(') {
+			Stk.Push(lexems[i]);
+		}
+
+		Operation *oper = (Operation*) lexems;
+		Operation TopElem = (Operation) Stk.TopElem();
+		if (IsOperation(char(lexems[i])) && char(lexems[i])!='(' && char(lexems[i])!=')' && oper->priority != 0) {
+			while ((Stk.IsEmpty()) || (TopElem.priority < (oper)->priority)) {
+				Stk.Push(lexems[i]);
+			}
+			postfix[j] = Stk.Pop();
+			j++;
+		}
+
+		while (!Stk.IsEmpty()) {
+			postfix[j] = Stk.Pop();
+			j++;
+		}
+	}
+
 }
