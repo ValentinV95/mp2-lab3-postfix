@@ -78,8 +78,8 @@ Variable::~Variable() {}
 
 Arithmetic_expression::Arithmetic_expression(string expr) : infix(expr) {
 	size = expr.size();
-	lexems = new Lexema * [expr.size()];
-	postfix = new Lexema * [expr.size()];
+	lexems = new Lexema * [size];
+	postfix = new Lexema * [size];
 	Parse();
 	ToPostfix();
 };
@@ -107,26 +107,27 @@ void Arithmetic_expression::Parse() {
 				i++;
 			}
 			lexems[j] = new Const(operand);
+			j++; i--;
+		}
+
+		else if (infix[i] >= 97 && infix[i] <= 122) {
+			lexems[j] = new Variable(infix[i]);
 			j++;
 		}
 
-		if (infix[i] >= 97 && infix[i] <= 122) {
-			lexems[j] = new Variable(infix[i]);
-			j++; 
-		}
-
-		if (IsOperation(infix[i]))  {
-			if ((infix[i] == '-' ) && ((i == 0) || (IsOperation(infix[i-1])&&(infix[i - 1]!=')')))) {
+		else if (IsOperation(infix[i])) {
+			if ((infix[i] == '-') && ((i == 0) || (IsOperation(infix[i - 1]) && (infix[i - 1] != ')')))) {
 				lexems[j] = new Operation('~');
 				j++;
 			}
 			else {
 				lexems[j] = new Operation(infix[i]);
 				j++;
-			}				
+			}
 		}
 	}
 }
+
 
 void Arithmetic_expression::show() {
 	for (int i = 0; i < size; i++) {
@@ -146,29 +147,30 @@ void Arithmetic_expression::ToPostfix() {
 			j++;
 		}
 
-		if (lexems[i]->lexema == "(") {
-			while (Stk.TopElem()->lexema != ")") {
+		else if (lexems[i]->lexema == ")") {
+			while (Stk.TopElem()->lexema != "(") {
 				postfix[j] = Stk.Pop();
 				j++;
 			}
+			Stk.Pop();
 		}
 
-		if (lexems[i]->lexema == ")") {
+		else if (lexems[i]->lexema == "(") {
 			Stk.Push(lexems[i]);
 		}
 
-		if (lexems[i]->NameOfClass() == "Operation" && lexems[i]->lexema != ")" && lexems[i]->lexema != "(" && lexems[i]->Priority()!=0) {
-			while ((Stk.IsEmpty()) || (Stk.TopElem()->Priority() < lexems[i]->Priority())) {
-				Stk.Push(lexems[i]);
+		else {
+			while ((!Stk.IsEmpty()) && (Stk.TopElem()->Priority() <= lexems[i]->Priority())) {
+				postfix[j] = Stk.Pop();
+				j++;
 			}
-			postfix[j] = Stk.Pop();
-			j++;
+			Stk.Push(lexems[i]);
 		}
+	}
 
-		while (!Stk.IsEmpty()) {
-			postfix[j] = Stk.Pop();
-			j++;
-		}
+	while (!Stk.IsEmpty()) {
+		postfix[j] = Stk.Pop();
+		j++;
 	}
 }
 

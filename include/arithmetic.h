@@ -45,7 +45,6 @@ public:
 class Variable : public Operand {
 private:
 	char var;
-	map <char, double> valOfvar;
 public:
 	Variable(char _str);
 	~Variable();
