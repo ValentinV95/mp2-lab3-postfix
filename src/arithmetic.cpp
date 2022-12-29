@@ -111,7 +111,7 @@ void TPostfix::ToPostfix() {
 			st.Pop();
 		}
 
-		else if (SetOfLexems[i] == "~" || (SetOfLexems[i].size() == 1 && operations.find(SetOfLexems[i]) != string::npos)) {
+		else if (SetOfLexems[i].size() == 1 && operations.find(SetOfLexems[i]) != string::npos) {
 
 			while (!st.IsEmpty()) {
 				tmp = st.Pop();
@@ -127,6 +127,24 @@ void TPostfix::ToPostfix() {
 
 			st.Push(SetOfLexems[i]);
 		}
+		
+		else if (SetOfLexems[i] == "~") {
+
+			while (!st.IsEmpty()) {
+				tmp = st.Pop();
+
+				if (priority[SetOfLexems[i]] < priority[tmp]) {
+					postfixmas[number++] = tmp;
+				}
+				else {
+					st.Push(tmp);
+					break;
+				}
+			}
+
+			st.Push(SetOfLexems[i]);
+		}
+
 
 		else postfixmas[number++] = SetOfLexems[i];
 
@@ -182,12 +200,16 @@ double TPostfix::toNumber(string str) {
 		beforeE = toNumber(beforeEs);
 		afterE = toNumber(afterEs);
 
-		number = beforeE * pow(10.0, afterE);
+		if (afterE > 0) number = beforeE * pow(10.0, afterE);
+		else {
+			number = beforeE;
+			for (size_t i = 0; i < (-1.0 * afterE); i++) { number /= 10; }
+		}
 	}
 
 	else {
 
-		if (str[0] == '~') {
+		if (str[0] == '-') {
 
 			for (size_t i = 1; i < str.size(); i++) {
 				number = number * 10.0 + static_cast<double>(str[i] - '0');
