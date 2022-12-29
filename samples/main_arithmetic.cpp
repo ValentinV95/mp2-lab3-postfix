@@ -7,7 +7,7 @@ int main()
 {
 	//string expr;
 	//cin >> expr;
-	Arithmetic_expression exp("x/(x+0,3)");
+	Arithmetic_expression exp("10/(-10)");
 	exp.show();
 	exp.show_postfix();
 	map<char, double> values;

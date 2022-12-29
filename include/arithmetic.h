@@ -16,7 +16,8 @@ public:
 	virtual void show() = 0;
 	virtual int Priority() = 0;
 	virtual string NameOfClass() = 0;
-	//virtual void Calculate(TStack <double> &Stk) = 0;
+	virtual void Inicialize(double val) = 0;
+	virtual void Calculate(TStack <double>& Stk);
 };
 class Operand : public Lexema {
 public:
@@ -25,6 +26,8 @@ public:
 	int Priority() override;
 	~Operand();
 	string NameOfClass() override;
+	void Inicialize(double val) override;
+	void Calculate(TStack <double>& Stk) override;
 };
 class Operation : public Lexema {
 protected:
@@ -34,23 +37,27 @@ public:
 	void show() override;
 	~Operation();
 	int Priority() override;
-	//void Calculate(TStack <double> &Stk) override;
 	string NameOfClass() override;
+	void Inicialize(double val) override;
+	void Calculate(TStack <double>& Stk) override;
 };
 class Const : public Operand {
 private:
 	double value;
 public:
 	Const(string _str);
-	//void Calculate(TStack <double>& Stk) override;
+	void Inicialize(double val) override;
+	void Calculate(TStack <double>& Stk) override;
 	~Const();
 };
 class Variable : public Operand {
 private:
 	char var;
+	double value;
 public:
 	Variable(char _str);
-	//void Calculate(TStack <double>& Stk) override;
+	void Inicialize(double val) override;
+	void Calculate(TStack <double>& Stk) override;
 	~Variable();
 };
 class Arithmetic_expression {
@@ -59,6 +66,7 @@ private:
 	Lexema** lexems;
 	Lexema** postfix;
 	size_t size;
+	size_t size_postfix;
 	void Parse();
 	void ToPostfix();
 public:
@@ -66,6 +74,7 @@ public:
 	~Arithmetic_expression();
 	void show_postfix();
 	bool IsOperation(char symb);
-	void ShowResult();
+	void Input();
+	double Calculate();
 	void show();
 };

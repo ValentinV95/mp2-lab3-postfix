@@ -36,32 +36,32 @@ Operation::Operation(char _str) : Lexema(&_str) {
 		priority = 4;
 }
 
-//void Operation::Calculate(TStack <double> &Stk) {
-//
-//	double left, right;
-//	right = Stk.Pop();
-//
-//	if (lexema == "~") {
-//		Stk.Push((-1) * right);
-//	}
-//	else if (lexema == "*") {
-//		left = Stk.Pop();
-//		Stk.Push(left * right);
-//	}
-//	else if (lexema == "/") {
-//		left = Stk.Pop();
-//		Stk.Push(left/right);
-//	}
-//	else if (lexema == "-") {
-//		left = Stk.Pop();
-//		Stk.Push(left - right);
-//	}
-//	else if (lexema == "+") {
-//		left = Stk.Pop();
-//		Stk.Push(left + right);
-//	}
-//
-//}
+void Operation::Calculate(TStack <double> &Stk) {
+
+	double left, right;
+	right = Stk.Pop();
+
+	if (lexema == "~") {
+		Stk.Push((-1) * right);
+	}
+	else if (lexema == "*") {
+		left = Stk.Pop();
+		Stk.Push(left * right);
+	}
+	else if (lexema == "/") {
+		left = Stk.Pop();
+		Stk.Push(left/right);
+	}
+	else if (lexema == "-") {
+		left = Stk.Pop();
+		Stk.Push(left - right);
+	}
+	else if (lexema == "+") {
+		left = Stk.Pop();
+		Stk.Push(left + right);
+	}
+
+}
 
 int Operation::Priority() {
 	return priority;
@@ -100,23 +100,28 @@ Const::Const(string _str) : Operand(_str) {
 	}
 }
 
-//void Const::Calculate(TStack <double>& Stk) {
-//	Const lexema(lexema);
-//	Stk.Push(lexema);
-//}
+void Const::Calculate(TStack <double>& Stk) {
+	Stk.Push(value);
+}
 
 Const::~Const() {}
 
 Variable::Variable(char _str) : Operand(&_str) {}
 
-//void Variable::Calculate(TStack <double>& Stk){
-//
-//}
+void Variable::Calculate(TStack <double>& Stk){
+	Stk.Push(value);
+}
+
+
+void Variable::Inicialize(double val) {
+	value = val;
+}
 
 Variable::~Variable() {}
 
 Arithmetic_expression::Arithmetic_expression(string expr) : infix(expr) {
 	size = expr.size();
+	size_postfix = size;
 	lexems = new Lexema * [size];
 	postfix = new Lexema * [size];
 	Parse();
@@ -165,6 +170,7 @@ void Arithmetic_expression::Parse() {
 			}
 		}
 	}
+	size = j;
 }
 
 
@@ -185,14 +191,7 @@ void Arithmetic_expression::ToPostfix() {
 			postfix[j] = lexems[i];
 			j++;
 		}
-		else if (lexems[i]->Priority() != 0 && lexems[i]->NameOfClass() == "Operation") {
-			while ((!Stk.IsEmpty()) && (Stk.TopElem()->Priority() <= lexems[i]->Priority())) {
-				postfix[j] = Stk.Pop();
-				j++;
-			}
-			Stk.Push(lexems[i]);
-		}
-
+	
 		else if (lexems[i]->lexema == "(") {
 			Stk.Push(lexems[i]);
 		}
@@ -204,25 +203,53 @@ void Arithmetic_expression::ToPostfix() {
 			}
 			Stk.Pop();
 		}
-	}
 
+	else if (lexems[i]->Priority() != 0 && lexems[i]->NameOfClass() == "Operation") {
+			while ((!Stk.IsEmpty()) && (Stk.TopElem()->Priority() <= lexems[i]->Priority())) {
+				postfix[j] = Stk.Pop();
+				j++;
+			}
+			Stk.Push(lexems[i]);
+		}
+	}
 	while (!Stk.IsEmpty()) {
 		postfix[j] = Stk.Pop();
 		j++;
 	}
+
+	size_postfix = j;
 }
 
 
 void Arithmetic_expression::show_postfix() {
-	for (int i = 0; i < size; i++) {
+	for (int i = 0; i < size_postfix; i++) {
 		postfix[i]->show();
 		cout << " ";
 	}
 }
 
-//void Arithmetic_expression::ShowResult() {
-//	TStack <double> Stk;
-//	for (int i = 0; i < size; i++) {
-//		postfix[i]->Calculate(Stk);
-//	}
-//}
+void Arithmetic_expression::Input() {
+	map <char, double> value;
+	for (int i = 0; i < size_postfix; i++) {
+		if (lexems[i]->lexema[0] >= 97 && lexems[i]->lexema[0] <= 122) {
+			if (value.find(lexems[i]->lexema[0]) == value.end()) {
+				double input;
+				cout << "enter a value";
+				cin >> input;
+				value.insert(std::pair<char,double>(lexems[i]->lexema[0],input));
+			}
+			lexems[i]->Inicialize(value.at(lexems[i]->lexema[0]));
+		}
+	}
+}
+
+double Arithmetic_expression::Calculate() {
+	TStack <double> Stk;
+	for (int i = 0; i < size_postfix; i++) {
+		postfix[i]->Calculate(Stk);
+	}
+	return Stk.Pop();
+}
+
+
+
