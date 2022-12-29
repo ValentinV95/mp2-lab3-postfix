@@ -28,7 +28,7 @@ void Postfix::checkBrackets(const std::string& s)const
 {
     int leftBrackets = 0;
     int rightBrackets = 0;
-    for (int i = 0; i < s.length(); i++) 
+    for (int i = 0; i < s.length(); i++)
     {
         if (s[i] == '(')
         {
@@ -41,7 +41,7 @@ void Postfix::checkBrackets(const std::string& s)const
     }
     if (leftBrackets != rightBrackets)
     {
-        throw myExcp("Incorrect line.");
+        throw myExcp("Incorrect line. Bracket placement error.");
     }
 }
 
@@ -69,7 +69,7 @@ int Postfix::checkingLine(std::string& s)
         return true;
     }
     
-    for (size_t i = 0, j = 1; j < s.length(); j++) 
+    for (size_t i = 0, j = 1; j < s.length(); j++)
     {
         if (s[j] == ' ')
         {
@@ -95,7 +95,7 @@ int Postfix::checkingLine(std::string& s)
         {
             continue;
         }
-        if ((s[i] == '*') && ((s[j] == '+') || (s[j] == '-') || (s[j] == '/') || (s[j] == ')') ||  (s[j] == '*')))
+        if ((s[i] == '*') && ((s[j] == '+') || (s[j] == '-') || (s[j] == '/') || (s[j] == ')') || (s[i] == '*')))
         {
             return true;
         }
@@ -178,7 +178,7 @@ double NumConversion(std::string strlex)
 
 std::string Postfix::ToPostfix(std::string infixString)
 {
-    if (!infixString.length()) 
+    if (!infixString.length())
     {
         throw myExcp("String is empty.");
     }
@@ -198,20 +198,20 @@ std::string Postfix::ToPostfix(std::string infixString)
     {
         throw myExcp("Incorrect line. Error in arranging operations.");
     }
-    
+
     checkBrackets(infixString);
 
     std::map <char, int> operations;
-    operations['~'] = 4; 
-    operations['*'] = 3; 
+    operations['~'] = 4;
+    operations['*'] = 3;
     operations['/'] = 3;
-    operations['+'] = 2; 
+    operations['+'] = 2;
     operations['-'] = 2;
     operations['('] = 1;
 
     TStack<char> result;
     TStack<char> operationsStack;
-    for (size_t i = 0; i < infixString.length(); i++) 
+    for (size_t i = 0; i < infixString.length(); i++)
     {
         if (infixString[i] == ' ')
         {
@@ -244,7 +244,7 @@ std::string Postfix::ToPostfix(std::string infixString)
         if (infixString[i] == ')')
         {
             char t = '0';
-            while ((!operationsStack.isEmpty()) && (t != '(')) 
+            while ((!operationsStack.isEmpty()) && (t != '('))
             {
                 t = operationsStack.pop();
                 result.push(' ');
@@ -259,7 +259,7 @@ std::string Postfix::ToPostfix(std::string infixString)
         throw myExcp("Incorrect symbol.");
     }
 
-    while (!operationsStack.isEmpty()) 
+    while (!operationsStack.isEmpty())
     {
         result.push(' ');
         result.push(operationsStack.pop());
@@ -274,7 +274,7 @@ std::string Postfix::ToPostfix(std::string infixString)
     {
         operationsStack.push(result.pop());
     }
-    while (!operationsStack.isEmpty()) 
+    while (!operationsStack.isEmpty())
     {
         resultString += operationsStack.pop();
     }
@@ -300,9 +300,9 @@ double Postfix::calculate(const std::string& postfixString, std::map<char, doubl
             i++;
             continue;
         }
-        if ((tmp >= 'a') && (tmp <= 'z')) 
+        if ((tmp >= 'a') && (tmp <= 'z'))
         {
-            if (!values.count(tmp)) 
+            if (!values.count(tmp))
             {
                 std::cout << "Enter the " << tmp << ": ";
                 std::cin >> values[tmp];
@@ -326,7 +326,7 @@ double Postfix::calculate(const std::string& postfixString, std::map<char, doubl
         {
             throw myExcp("Error.");
         }
-        switch (tmp) 
+        switch (tmp)
         {
         case '+':
             rightOperand = result.pop();
@@ -346,7 +346,7 @@ double Postfix::calculate(const std::string& postfixString, std::map<char, doubl
         case '/':
             rightOperand = result.pop();
             leftOperand = result.pop();
-            if (rightOperand == 0)
+            if (rightOperand < 0.0001 && rightOperand > -0.0001)
             {
                 throw myExcp("Division by zero.");
             }
@@ -359,7 +359,7 @@ double Postfix::calculate(const std::string& postfixString, std::map<char, doubl
         }
         i++;
     }
-    if (!result.isEmpty())
+    if (result.isEmpty())
     {
         throw myExcp("Incorrect line.");
     }
