@@ -33,7 +33,7 @@ Operation::Operation(char _str) : Lexema(&_str) {
 	if (_str == '+' || _str == '-')
 		priority = 3;
 	if ((_str == '(') || (_str == ')'))
-		priority = 0;
+		priority = 4;
 }
 int Operation::Priority() {
 	return priority;
@@ -50,13 +50,17 @@ void Operation::show() {
 Operation::~Operation() {}
 
 Const::Const(string _str) : Operand(_str) {
+
 	int pow = 10;
-	value = int(_str[0]) - 48;
-	int i = 1;
-	for (; i < _str.size() && _str[i] != ','; i++) {
+	int i = 0;
+	//value = int(_str[0]) - 48;
+	//value = 1;
+	string point = ",";
+	
+	for (i = 1; _str!=point && i<_str.size(); i++) {
 		if (int(_str[i]) >= 48 && int(_str[i]) <= 57)
 		{
-			value = value * pow + (int(_str[i])) - 48;
+			value = value * pow + (int(_str[i]) - 48);
 		}
 	}
 	i++;
@@ -67,7 +71,6 @@ Const::Const(string _str) : Operand(_str) {
 			pow = pow * 10;
 		}
 	}
-
 }
 
 Const::~Const() {}
@@ -116,7 +119,7 @@ void Arithmetic_expression::Parse() {
 		}
 
 		else if (IsOperation(infix[i])) {
-			if ((infix[i] == '-') && ((i == 0) || (IsOperation(infix[i - 1]) && (infix[i - 1] != ')')))) {
+			if ((infix[i] == '-') && ((i == 4) || (IsOperation(infix[i - 1]) && (infix[i - 1] != ')')))) {
 				lexems[j] = new Operation('~');
 				j++;
 			}
@@ -140,11 +143,22 @@ void Arithmetic_expression::show() {
 void Arithmetic_expression::ToPostfix() {
 	TStack <Lexema*> Stk(size);
 	int j = 0;
-
-	for (int i = 0; i < infix.size(); i++) {
+	int i = 0;
+	for (i = 0; i < size; i++) {
 		if (lexems[i]->NameOfClass() == "Operand") {
 			postfix[j] = lexems[i];
 			j++;
+		}
+		else if (lexems[i]->Priority() != 0 && lexems[i]->NameOfClass() == "Operation") {
+			while ((!Stk.IsEmpty()) && (Stk.TopElem()->Priority() <= lexems[i]->Priority())) {
+				postfix[j] = Stk.Pop();
+				j++;
+			}
+			Stk.Push(lexems[i]);
+		}
+
+		else if (lexems[i]->lexema == "(") {
+			Stk.Push(lexems[i]);
 		}
 
 		else if (lexems[i]->lexema == ")") {
@@ -154,18 +168,6 @@ void Arithmetic_expression::ToPostfix() {
 			}
 			Stk.Pop();
 		}
-
-		else if (lexems[i]->lexema == "(") {
-			Stk.Push(lexems[i]);
-		}
-
-		else {
-			while ((!Stk.IsEmpty()) && (Stk.TopElem()->Priority() <= lexems[i]->Priority())) {
-				postfix[j] = Stk.Pop();
-				j++;
-			}
-			Stk.Push(lexems[i]);
-		}
 	}
 
 	while (!Stk.IsEmpty()) {
@@ -173,6 +175,7 @@ void Arithmetic_expression::ToPostfix() {
 		j++;
 	}
 }
+
 
 void Arithmetic_expression::show_postfix() {
 	for (int i = 0; i < size; i++) {

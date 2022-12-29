@@ -8,6 +8,8 @@
 // - очистка стека
 // при вставке в полный стек должна перевыделяться память
 #pragma once
+using namespace std;
+
 template <typename T>
 class TStack {
 private:
@@ -38,7 +40,9 @@ public:
 		return top == MemSize - 1;
 	}
 	
-	T TopElem() {
+	T& TopElem() {
+		if (IsEmpty())
+			throw exception("Empty stack");
 		return pMem[top];
 	}
 
@@ -46,7 +50,7 @@ public:
 		top = -1;
 	}
 
-	T Pop() {
+	T& Pop() {
 		if (IsEmpty())
 			throw exception("Empty stack");
 		return pMem[top--];
@@ -65,3 +69,79 @@ public:
 		pMem[++top] = val;
 	}
 };
+
+//#pragma once
+//
+//template <class T>
+//class TStack {
+//private:
+//	T* data;
+//	size_t size;
+//	int index = -1;
+//public:
+//	TStack(size_t sz = 1) : size(sz)
+//	{
+//		if (sz <= 0)
+//			throw std::exception("uncorrect length");
+//		data = new T[size]();
+//	}
+//
+//	TStack(const TStack<T>& a)
+//	{
+//		index = a.index;
+//		size = a.size;
+//		data = new T[size]();
+//		for (size_t i = 0; i <= a.index; i++)
+//			data[i] = a.data[i];
+//	}
+//
+//	bool IsFull() noexcept			
+//	{
+//		return index == size - 1;
+//	}
+//
+//	bool IsEmpty() noexcept			
+//	{
+//		return index == -1;
+//	}
+//
+//	void Push(T Elem)				
+//	{
+//		if (IsFull())
+//		{
+//			TStack<T> tmp(*this);
+//			delete[] data;
+//			size *= 2;
+//			data = new T[size]();
+//			for (size_t i = 0; i <= index; i++)
+//				data[i] = tmp.data[i];
+//		}
+//		data[++index] = Elem;
+//	}
+//
+//	T& Pop()					  
+//	{
+//		if (this->IsEmpty())
+//			throw std::exception("isEmpty: stack_is_empty");
+//		return data[index--];
+//	}
+//
+//	T& TopElem()              
+//	{
+//		if (this->IsEmpty())
+//			throw std::exception("view_top: stack_is_empty");
+//		return data[index];
+//	}
+//
+//	size_t GetLength()         
+//	{
+//		return index + 1;
+//	}
+//
+//	void clear()                
+//	{
+//		index = -1;
+//	}
+//
+//	~TStack() { delete[] data; }
+//};
