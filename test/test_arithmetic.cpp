@@ -6,7 +6,7 @@
 TEST(Postfix, operation_plus)
 {
 	std::string str = "a+b+c";
-	std::string str1 = "ab+c+";
+	std::string str1 = "a b + c +";
 	Postfix p;
 
 	EXPECT_EQ(str1, p.ToPostfix(str));
@@ -15,7 +15,7 @@ TEST(Postfix, operation_plus)
 TEST(Postfix, operation_sub)
 {
 	std::string str = "a-b-c";
-	std::string str1 = "ab-c-";
+	std::string str1 = "a b - c -";
 	Postfix p;
 
 	EXPECT_EQ(str1, p.ToPostfix(str));
@@ -24,7 +24,7 @@ TEST(Postfix, operation_sub)
 TEST(Postfix, operation_mul_and_div)
 {
 	std::string str = "a*b/c";
-	std::string str1 = "ab*c/";
+	std::string str1 = "a b * c /";
 	Postfix p;
 
 	EXPECT_EQ(str1, p.ToPostfix(str));
@@ -32,8 +32,8 @@ TEST(Postfix, operation_mul_and_div)
 
 TEST(Postfix, operation_unary_minus)
 {
-	std::string str = "~~a";
-	std::string str1 = "~a~";
+	std::string str = "a--a";
+	std::string str1 = "a  a ~ -";
 	Postfix p;
 
 	EXPECT_EQ(str1, p.ToPostfix(str));
@@ -41,8 +41,8 @@ TEST(Postfix, operation_unary_minus)
 
 TEST(Postfix, expression_1)
 {
-	std::string str = "(a+b-~a)*a";
-	std::string str1 = "ab+a~-a*";
+	std::string str = "(a+b--a)*a";
+	std::string str1 = " a b +  a ~ -  a *";
 	Postfix p;
 
 	EXPECT_EQ(str1, p.ToPostfix(str));
@@ -50,8 +50,8 @@ TEST(Postfix, expression_1)
 
 TEST(Postfix, expression_2)
 {
-	std::string str = "~a+(a*a)/a-a";
-	std::string str1 = "a~aa*a/+a-";
+	std::string str = "a+(a*a)/a-a";
+	std::string str1 = "a  a a *  a / + a -";
 	Postfix p;
 
 	EXPECT_EQ(str1, p.ToPostfix(str));
@@ -102,19 +102,20 @@ TEST(Postfix, calculate_operation_mul_and_div)
 TEST(Postfix, calculate_operation_unary_minus)
 {
 	Postfix p;
-	std::string str = "~a";
+	std::string str = "b--a";
 
 	std::map<char, double> m;
 
 	m['a'] = 5;
+	m['b'] = 2;
 
-	EXPECT_EQ(-5, p.calculate(p.ToPostfix(str), m));
+	EXPECT_EQ(7, p.calculate(p.ToPostfix(str), m));
 }
 
 TEST(Postfix, calculate_expression_1)
 {
 	Postfix p;
-	std::string str = "(a+b-~a)*a";
+	std::string str = "(a+b--a)*a";
 
 	std::map<char, double> m;
 
@@ -127,11 +128,11 @@ TEST(Postfix, calculate_expression_1)
 TEST(Postfix, calculate_expression_2)
 {
 	Postfix p;
-	std::string str = "~a+(a*a)/a-a";
+	std::string str = "a+-a+(a*a)/a-a";
 
 	std::map<char, double> m;
 
 	m['a'] = 5;
 
-	EXPECT_EQ(-5, p.calculate(p.ToPostfix(str), m));
+	EXPECT_EQ(0, p.calculate(p.ToPostfix(str), m));
 }
