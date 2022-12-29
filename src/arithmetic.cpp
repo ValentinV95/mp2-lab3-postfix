@@ -75,7 +75,7 @@ int Postfix::checkingLine(std::string& s)
         {
             continue;
         }
-        if ((s[i] == '(') && ((s[j] == '+') || (s[j] == '*') || (s[j] == '/')))
+        if ((s[i] == '(') && ((s[j] == '+') || (s[j] == '*') || (s[j] == '/') || (s[j] == '-')))
         {
             return true;
         }
@@ -95,7 +95,7 @@ int Postfix::checkingLine(std::string& s)
         {
             continue;
         }
-        if ((s[i] == '*') && ((s[j] == '+') || (s[j] == '-') || (s[j] == '/') || (s[j] == ')') || (s[i] == '*')))
+        if ((s[i] == '*') && ((s[j] == '+') || (s[j] == '-') || (s[j] == '/') || (s[j] == '+') || (s[j] == ')')))
         {
             return true;
         }
@@ -107,11 +107,15 @@ int Postfix::checkingLine(std::string& s)
         {
             return true;
         }
-        if ((s[i] == '-') && ((s[j] == '+') || (s[j] == '-') || (s[j] == '/') || (s[j] == '*') || (s[j] == ')')))
+        if ((s[i] == '-') && ((s[j] == '+') || (s[j] == '-') || (s[j] == '/') || (s[j] == '+') || (s[j] == ')')))
         {
             return true;
         }
         if ((s[j] == ')') && ((s[i] == '+') || (s[i] == '-') || (s[i] == '*') || (s[i] == '/')))
+        {
+            return true;
+        }
+        if ((s[i] == '~') && ((s[j] == '+') || (s[j] == '-') || (s[j] == '/') || (s[j] == '*') || (s[j] == ')')))
         {
             return true;
         }
