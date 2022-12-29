@@ -7,17 +7,17 @@
 #include <stdexcept>
 #include "string"
 #include "stack.h"
-#include "vector"
 #include "map"
 
 class Postfix 
 {
 protected:
-	int isOperator(char);
+	int operationPriority(char);
 	void checkBrackets(const std::string&)const;
-	int checkingLine(const std::string&)const;
+	bool isDigit(const char&);
+	int checkingLine(std::string&);
 public:
-	std::string ToPostfix(const std::string&)const;
+	std::string ToPostfix(std::string);
 	double calculate(const std::string&, std::map<char, double>&);
 };
 
