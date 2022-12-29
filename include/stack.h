@@ -18,12 +18,12 @@ private:
 	int top;
 	T* elemArr;
 public:
-	Stack(size_t size = 4)
+	Stack(int size = 4)
 	{
 		top = -1;
 		if (size < 0)
 			throw out_of_range("size should be greater or equal than zero");
-		this->size = size;                        //проверку на размер
+		this->size = size;                       
 		elemArr = new T[size];
 	};
 
@@ -62,7 +62,7 @@ public:
 	T pop()
 	{
 		if (isEmpty())
-			throw out_of_range("you cant get element, stack is empty");          //кинуть исключение
+			throw out_of_range("you cant get element, stack is empty");         
 		return elemArr[top--];
 	}
 
@@ -71,7 +71,7 @@ public:
 	{
 		if (isEmpty())
 		{
-			throw out_of_range("you cant get element, stack is empty");           //исключение
+			throw out_of_range("you cant get element, stack is empty");          
 		}                                 
 		return elemArr[top];
 	}

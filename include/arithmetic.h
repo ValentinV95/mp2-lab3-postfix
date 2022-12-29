@@ -18,7 +18,7 @@ public:
 class Operation : public Lexem
 {
 private:
-	size_t priority;                                         // контроль 0-3
+	size_t priority;                                         
 public:
 	Operation(char opn);
 	Operation(const Operation& op);
@@ -70,4 +70,7 @@ public:
 	void toPostfix();
 	void showPostfix();
 	double calculate();
+	string get_origin_expression();
+	string getPostfix();
+	void setVarValues_for_test(double a, double b, double c, double d);
 };
