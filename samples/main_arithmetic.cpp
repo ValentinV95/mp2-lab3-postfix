@@ -1,12 +1,12 @@
 // реализация пользовательского приложения
 
-
 #include "arithmetic.h"
 
 int main() 
 {
     std::string str = "";
-    std::cout << "List of operation:\n'+' - addition\n'-' - subtraction\n'*' - multiplication\n'/' - division\n'~' - unary minus" << std::endl;
+    std::cout << "Enter variables from a to z" << std::endl;
+    std::cout << "List of operation:\n'+' - addition\n'-' - subtraction (and unary minus)\n'*' - multiplication\n'/' - division" << std::endl;
     std::cout << "Enter an arithmetic expression." << std::endl;
     getline(std::cin, str);
     std::map<char, double> m;
