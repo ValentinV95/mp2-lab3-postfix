@@ -28,7 +28,8 @@ int main()
 		values[c] = val;
 		}
 
-		cout << str.Calculate(values);
+		cout << str.GetPostfix() << '\n' << endl;
+		cout << "The result of expression:" << str.Calculate(values);
 	}
 	catch (const string error){
 		cout << "Wrong expression:" << endl << error << endl;
