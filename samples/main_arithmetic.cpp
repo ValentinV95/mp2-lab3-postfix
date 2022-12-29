@@ -5,18 +5,14 @@ using namespace std;
 
 int main()
 {
-	//string expr;
-	//cin >> expr;
-	Arithmetic_expression exp("10/(-10)");
+	string expr;
+	TStack <double> st;
+	cin >> expr;
+	Arithmetic_expression exp(expr);
 	exp.show();
 	exp.show_postfix();
 	map<char, double> values;
-
-	//try {
-	//	TStack <double> st(0);
-	//}
-	//catch(string * msg){
-	//	cout << msg;
-	//}
-	//cout << "empty stack";
+	exp.Input();
+	double res = exp.Calculate();
+	cout << res;
 }

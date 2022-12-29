@@ -251,5 +251,18 @@ double Arithmetic_expression::Calculate() {
 	return Stk.Pop();
 }
 
+void Const::Inicialize(double val){}
 
+void Operand::Calculate(TStack <double> &Stk) {}
 
+void Operation::Inicialize(double val){
+	
+}
+
+int Const::Priority() {
+	return 0;
+}
+
+int Variable::Priority() {
+	return 0;
+}

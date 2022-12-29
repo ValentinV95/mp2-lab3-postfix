@@ -17,7 +17,7 @@ public:
 	virtual int Priority() = 0;
 	virtual string NameOfClass() = 0;
 	virtual void Inicialize(double val) = 0;
-	virtual void Calculate(TStack <double>& Stk);
+	virtual void Calculate(TStack <double>& Stk) = 0;
 };
 class Operand : public Lexema {
 public:
@@ -26,7 +26,6 @@ public:
 	int Priority() override;
 	~Operand();
 	string NameOfClass() override;
-	void Inicialize(double val) override;
 	void Calculate(TStack <double>& Stk) override;
 };
 class Operation : public Lexema {
@@ -49,6 +48,7 @@ public:
 	void Inicialize(double val) override;
 	void Calculate(TStack <double>& Stk) override;
 	~Const();
+	int Priority()override;
 };
 class Variable : public Operand {
 private:
@@ -58,6 +58,7 @@ public:
 	Variable(char _str);
 	void Inicialize(double val) override;
 	void Calculate(TStack <double>& Stk) override;
+	int Priority()override;
 	~Variable();
 };
 class Arithmetic_expression {
