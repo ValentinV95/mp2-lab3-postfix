@@ -7,10 +7,10 @@ int main()
 {
 	//string expr;
 	//cin >> expr;
-	Arithmetic_expression exp("x/(x+3/1,23)");
+	Arithmetic_expression exp("x/(x+0,3)");
 	exp.show();
 	exp.show_postfix();
-
+	map<char, double> values;
 
 	//try {
 	//	TStack <double> st(0);

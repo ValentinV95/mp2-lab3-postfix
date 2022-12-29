@@ -35,6 +35,34 @@ Operation::Operation(char _str) : Lexema(&_str) {
 	if ((_str == '(') || (_str == ')'))
 		priority = 4;
 }
+
+//void Operation::Calculate(TStack <double> &Stk) {
+//
+//	double left, right;
+//	right = Stk.Pop();
+//
+//	if (lexema == "~") {
+//		Stk.Push((-1) * right);
+//	}
+//	else if (lexema == "*") {
+//		left = Stk.Pop();
+//		Stk.Push(left * right);
+//	}
+//	else if (lexema == "/") {
+//		left = Stk.Pop();
+//		Stk.Push(left/right);
+//	}
+//	else if (lexema == "-") {
+//		left = Stk.Pop();
+//		Stk.Push(left - right);
+//	}
+//	else if (lexema == "+") {
+//		left = Stk.Pop();
+//		Stk.Push(left + right);
+//	}
+//
+//}
+
 int Operation::Priority() {
 	return priority;
 }
@@ -51,19 +79,18 @@ Operation::~Operation() {}
 
 Const::Const(string _str) : Operand(_str) {
 
-	int pow = 10;
 	int i = 0;
-	//value = int(_str[0]) - 48;
-	//value = 1;
-	string point = ",";
-	
-	for (i = 1; _str!=point && i<_str.size(); i++) {
+	int pow = 10;
+	value = int(_str[0]) - 48;
+
+	for(i = 1;i<_str.size() && _str!=",";i++) {
 		if (int(_str[i]) >= 48 && int(_str[i]) <= 57)
 		{
 			value = value * pow + (int(_str[i]) - 48);
 		}
 	}
 	i++;
+
 	for (; i < _str.size(); i++) {
 		if (int(_str[i]) >= 48 && int(_str[i]) <= 57)
 		{
@@ -73,9 +100,18 @@ Const::Const(string _str) : Operand(_str) {
 	}
 }
 
+//void Const::Calculate(TStack <double>& Stk) {
+//	Const lexema(lexema);
+//	Stk.Push(lexema);
+//}
+
 Const::~Const() {}
 
 Variable::Variable(char _str) : Operand(&_str) {}
+
+//void Variable::Calculate(TStack <double>& Stk){
+//
+//}
 
 Variable::~Variable() {}
 
@@ -183,3 +219,10 @@ void Arithmetic_expression::show_postfix() {
 		cout << " ";
 	}
 }
+
+//void Arithmetic_expression::ShowResult() {
+//	TStack <double> Stk;
+//	for (int i = 0; i < size; i++) {
+//		postfix[i]->Calculate(Stk);
+//	}
+//}
