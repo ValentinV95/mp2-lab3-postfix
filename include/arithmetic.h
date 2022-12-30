@@ -55,20 +55,18 @@ public:
 };
 
 class TPostfix {
-
-private:
-	size_t m_size;
-	string m_infix = "NULL";
-
-	std::vector<Lexem*> m_postfix;
-	map<char, double> m_variables;
 public:
 	TPostfix(string str);
+	void set_variable(char name, double value);
+	vector<char> get_variable_names();
+	string show_postfix();
+	double calculate();
+
+private:
+	void parse();
 	void add_variable(char name, double value);
-	void toPostfix();
-	void setInfix(string infix);
-	void checkInfix();
-	string showPostfix();
-	size_t getSize();
-	double CALCULATE();
+
+	string m_infix;
+	std::vector<Lexem*> m_postfix;
+	map<char, double> m_variables;
 };

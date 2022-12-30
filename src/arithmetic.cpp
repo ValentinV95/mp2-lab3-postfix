@@ -73,31 +73,9 @@ double stringToDouble(string s)
 
 TPostfix::TPostfix(string str) {
 	m_infix = str;
-	m_size = NULL;
-}
-
-void TPostfix::checkInfix() {
-	size_t tsize = m_infix.length();
-	for (size_t i = 0; i < tsize; ++i)
-	{
-		if (m_infix.at(i) >= '0' && m_infix.at(i) <= '9' || m_infix.at(i) == 'e' || m_infix.at(i) == '.' || m_infix.at(i) == '-'){
-			if (m_infix.at(i) == '-' && tsize == 1){
-				throw "Invalid expression";
-			}
-			if (m_infix.at(i) == 'e') {
-				if (i == 0 || m_infix.at(i - 1) < '0' && m_infix.at(i - 1) != '.' || m_infix.at(i - 1) > '9' || (i + 1) == tsize || m_infix.at(i + 1) < '0' && m_infix.at(i + 1) != '-' || m_infix.at(i + 1) > '9') {
-					throw "Wrong exponational notation";
-				}
-			}
-			if (m_infix.at(i) == '.') {
-				if (i == 0 || m_infix.at(i - 1) < '0' || m_infix.at(i - 1) > '9' || (i + 1) == tsize || m_infix.at(i + 1) < '0' || m_infix.at(i + 1) > '9' && m_infix.at(i + 1) != 'e') {
-					throw "Invalid expression";
-				}
-			}
-		}
-		else {
-			throw "Wrong symbol";
-		}
+	parse();
+	if (m_postfix.empty()) {
+		throw invalid_argument("invalid expression");
 	}
 }
 
@@ -130,7 +108,23 @@ void TPostfix::add_variable(char name, double value)
 	m_variables[name] = value;
 }
 
-void TPostfix::toPostfix() {
+void TPostfix::set_variable(char name, double value)
+{
+	m_variables.at(name) = value;
+}
+
+vector<char> TPostfix::get_variable_names()
+{
+	vector<char> names;
+	for (const auto& pair : m_variables)
+	{
+		const auto& name = pair.first;
+		names.push_back(name);
+	}
+	return names;
+}
+
+void TPostfix::parse() {
 	string value;
 	char variable = '\0';
 	TStack<Operation*> stack;
@@ -143,6 +137,7 @@ void TPostfix::toPostfix() {
 		else if (c >= 'a' && c <= 'z')
 		{
 			variable = c;
+			m_variables.emplace(c, 0.0);
 		}
 		else if (c == '-' && value.empty() && variable == '\0' && (stack.IsEmpty() || stack.showTop()->show() == "("))
 		{
@@ -211,43 +206,20 @@ void TPostfix::toPostfix() {
 	}
 }
 
-string TPostfix::showPostfix() {
-	string postfixStr = "";
-	if (m_infix != "NULL" && m_postfix.empty()) {
-		setInfix(m_infix);
-		toPostfix();
-	}
-	if (!m_postfix.empty()) {
-		for (auto& lexem : m_postfix) {
-			postfixStr += lexem->show() + " ";
-		}
-		return postfixStr;
-	}
-	else {
-		throw invalid_argument("invalid expression");
-	}
-}
-
-void TPostfix::setInfix(string infx) {
-	m_infix = infx;
-	m_postfix.clear();
-	m_size = 0;
-}
-
-size_t TPostfix::getSize()
-{
-	return m_postfix.size();
-}
-
-double TPostfix::CALCULATE()
-{
-	if (m_infix != "NULL") {
-		setInfix(m_infix);
-		toPostfix();
-	}
+string TPostfix::show_postfix() {
 	if (m_postfix.empty()) {
 		throw invalid_argument("invalid expression");
 	}
+
+	string postfixStr = "";
+	for (auto& lexem : m_postfix) {
+		postfixStr += lexem->show() + " ";
+	}
+	return postfixStr;
+}
+
+double TPostfix::calculate()
+{
 	double varTemp;
 	double res, left, right;
 	string showStr;
