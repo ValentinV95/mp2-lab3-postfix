@@ -67,9 +67,10 @@ private:
 	Lexema** postfix;
 	size_t size;
 	size_t size_postfix;
+
+public:
 	void Parse();
 	void ToPostfix();
-public:
 	Arithmetic_expression(string expr);
 	~Arithmetic_expression();
 	void show_postfix();

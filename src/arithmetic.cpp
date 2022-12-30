@@ -140,8 +140,17 @@ Arithmetic_expression::~Arithmetic_expression() {}
 void Arithmetic_expression::Parse() {
 
 	int j = 0;
+	int brackets_count = 0;
 
 	for (int i = 0; i < infix.size(); i++) {
+		
+		if (infix[i] == '(') {
+			brackets_count++;
+		}
+
+		if (infix[i] == ')') {
+			brackets_count--;
+		}
 
 		if (int(infix[i]) >= 48 && int(infix[i]) <= 57) {
 			string operand;
@@ -169,8 +178,12 @@ void Arithmetic_expression::Parse() {
 				j++;
 			}
 		}
+	
 	}
 	size = j;
+	if (brackets_count != 0) {
+		throw exception("error");
+	}
 }
 
 
@@ -230,11 +243,11 @@ void Arithmetic_expression::show_postfix() {
 
 void Arithmetic_expression::Input() {
 	map <char, double> value;
-	for (int i = 0; i < size_postfix; i++) {
+	for (int i = 0; i < size_postfix+1; i++) {
 		if (lexems[i]->lexema[0] >= 97 && lexems[i]->lexema[0] <= 122) {
 			if (value.find(lexems[i]->lexema[0]) == value.end()) {
 				double input;
-				cout << "enter a value";
+				cout << "enter" << lexems[i]->lexema <<"value";
 				cin >> input;
 				value.insert(std::pair<char,double>(lexems[i]->lexema[0],input));
 			}
@@ -258,15 +271,13 @@ void Arithmetic_expression::Checking_Correct() {
 
 	for (int i = 0; i < size; i++) {
 
-		string error = "uncorrect notation";
-
-		if (infix[i] == '(' && (infix[i + 1] == '+') && (infix[i + 1] == '*') && (infix[i + 1] == '/'))
+		if (infix[i] == '(' && ((infix[i + 1] == '+') || (infix[i + 1] == '*') || (infix[i + 1] == '/')))
 			throw exception("uncorrect notation");
 
-		if (infix[i] == ')' && (infix[i + 1] == '+') && (infix[i + 1] == '*') && (infix[i + 1] == '/') && (infix[i + 1] == '-'))
+		if (infix[i] == ')' && ((infix[i + 1] == '+') || (infix[i + 1] == '*') || (infix[i + 1] == '/') || (infix[i + 1] == '-')))
 			throw exception("uncorrect notation");
 
-		if (lexems[j]->Priority() == 1 && (infix[i + 1] == '+') && (infix[i + 1] == '*') && (infix[i + 1] == '/') && (infix[i + 1] == '-') && (infix[i + 1] == ')')) {
+		if (lexems[j]->Priority() == 1 && ((infix[i + 1] == '+') || (infix[i + 1] == '*') || (infix[i + 1] == '/') || (infix[i + 1] == '-') || (infix[i + 1] == ')'))) {
 			throw exception("uncorrect notation");
 			j++;
 		}
@@ -277,11 +288,11 @@ void Arithmetic_expression::Checking_Correct() {
 		}
 
 
-		if ((lexems[j]->Priority() == 2 || lexems[j]->Priority() == 3) && (infix[i + 1] == '+') && (infix[i + 1] == '*') && (infix[i + 1] == '/') && infix[i + 1] != '(' && infix[i + 1] != '-') {
+		if ((lexems[j]->Priority() == 2 || lexems[j]->Priority() == 3) && ((infix[i + 1] == '+') || (infix[i + 1] == '*') || (infix[i + 1] == '/') || infix[i + 1] != '(' || infix[i + 1] != '-')) {
 			throw exception("uncorrect notation");
 			j++;
 		}
-		if ((lexems[j]->Priority() == 2 || lexems[j]->Priority() == 3) && (infix[i - 1] == '+') && (infix[i - 1] == '*') && (infix[i - 1] == '/') && infix[i - 1] != ')') {
+		if ((lexems[j]->Priority() == 2 || lexems[j]->Priority() == 3) && ((infix[i - 1] == '+') || (infix[i - 1] == '*') || (infix[i - 1] == '/') || infix[i - 1] != ')')) {
 			throw exception("uncorrect notation");
 			j++;
 		}

@@ -6,14 +6,19 @@ using namespace std;
 int main()
 {
 	string expr;
-	TStack <double> st;
 	cin >> expr;
-	Arithmetic_expression exp(expr);
-	exp.show();
-	exp.show_postfix();
-	map<char, double> values;
-	exp.Input();
-	double res = exp.Calculate();
-	cout << res;
-	exp.Checking_Correct();
+	try {
+		Arithmetic_expression exp(expr);
+		exp.Checking_Correct();	
+		exp.show();
+		exp.show_postfix();
+		map<char, double> values;
+		exp.Input();
+		double res = exp.Calculate();
+		cout << res;	
+	}
+	catch (std::exception& ex) {
+		cout << ex.what() << endl;
+	}
+	
 }
