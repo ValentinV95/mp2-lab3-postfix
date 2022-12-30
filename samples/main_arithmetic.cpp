@@ -12,12 +12,11 @@ int main()
 		exp.Checking_Correct();	
 		exp.show();
 		exp.show_postfix();
-		map<char, double> values;
 		exp.Input();
 		double res = exp.Calculate();
 		cout << res;	
 	}
-	catch (std::exception& ex) {
+	catch (const std::exception& ex) {
 		cout << ex.what() << endl;
 	}
 	

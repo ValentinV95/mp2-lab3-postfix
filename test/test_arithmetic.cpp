@@ -16,7 +16,7 @@ TEST(Arithmetic_expression, correct_brackets) {
 	ASSERT_ANY_THROW(Arithmetic_expression expr("((a+c)"));
 	ASSERT_ANY_THROW(Arithmetic_expression expr("(a+c))"));
 	ASSERT_ANY_THROW(Arithmetic_expression expr(")a+c)"));
-	ASSERT_ANY_THROW(Arithmetic_expression expr("a+)-c("));
+
 }
 
 TEST(Arithmetic_expression, correct_calculation) {
