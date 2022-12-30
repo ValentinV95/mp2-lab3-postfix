@@ -24,4 +24,5 @@ TEST(Arithmetic_expression, correct_calculation) {
 	double res;
 	res = expr.Calculate();
 	EXPECT_EQ(true, abs(res - 21.0) < 0.00001);
-};
+}
+
