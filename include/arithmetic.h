@@ -18,7 +18,6 @@ private:
 
 	int size, sizesol;
 
-	vector<char> lexems;
 	map<string, int> priority;
 
 	string* SetOfLexems;
