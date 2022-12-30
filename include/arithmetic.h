@@ -3,8 +3,7 @@
 #include <map>
 #include <string>
 #include <iostream>
-using std::map;
-using std::string;
+using namespace std;
 
 class Lexema {
 protected:
@@ -75,6 +74,7 @@ public:
 	~Arithmetic_expression();
 	void show_postfix();
 	bool IsOperation(char symb);
+	void Checking_Correct();
 	void Input();
 	double Calculate();
 	void show();

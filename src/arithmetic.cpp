@@ -251,13 +251,48 @@ double Arithmetic_expression::Calculate() {
 	return Stk.Pop();
 }
 
+
+void Arithmetic_expression::Checking_Correct() {
+
+	int j = 0;
+
+	for (int i = 0; i < size; i++) {
+
+		string error = "uncorrect notation";
+
+		if (infix[i] == '(' && (infix[i + 1] == '+') && (infix[i + 1] == '*') && (infix[i + 1] == '/'))
+			throw exception("uncorrect notation");
+
+		if (infix[i] == ')' && (infix[i + 1] == '+') && (infix[i + 1] == '*') && (infix[i + 1] == '/') && (infix[i + 1] == '-'))
+			throw exception("uncorrect notation");
+
+		if (lexems[j]->Priority() == 1 && (infix[i + 1] == '+') && (infix[i + 1] == '*') && (infix[i + 1] == '/') && (infix[i + 1] == '-') && (infix[i + 1] == ')')) {
+			throw exception("uncorrect notation");
+			j++;
+		}
+
+		if ((lexems[j]->Priority() == 2 || lexems[j]->Priority() == 3) && (j == 0 || j == infix.size())) {
+			throw exception("uncorrect notation");
+			j++;
+		}
+
+
+		if ((lexems[j]->Priority() == 2 || lexems[j]->Priority() == 3) && (infix[i + 1] == '+') && (infix[i + 1] == '*') && (infix[i + 1] == '/') && infix[i + 1] != '(' && infix[i + 1] != '-') {
+			throw exception("uncorrect notation");
+			j++;
+		}
+		if ((lexems[j]->Priority() == 2 || lexems[j]->Priority() == 3) && (infix[i - 1] == '+') && (infix[i - 1] == '*') && (infix[i - 1] == '/') && infix[i - 1] != ')') {
+			throw exception("uncorrect notation");
+			j++;
+		}
+	}
+}
+
 void Const::Inicialize(double val){}
 
 void Operand::Calculate(TStack <double> &Stk) {}
 
-void Operation::Inicialize(double val){
-	
-}
+void Operation::Inicialize(double val){}
 
 int Const::Priority() {
 	return 0;

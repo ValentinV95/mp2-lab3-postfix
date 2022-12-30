@@ -15,4 +15,5 @@ int main()
 	exp.Input();
 	double res = exp.Calculate();
 	cout << res;
+	exp.Checking_Correct();
 }
