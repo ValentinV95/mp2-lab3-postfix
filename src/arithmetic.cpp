@@ -145,7 +145,9 @@ _Variable::_Variable(char var, int sgn) {
 
 TPostfix::TPostfix(string infix)
 {
-	infix.erase(remove(infix.begin(), infix.end(), ' '), infix.end());
+	//infix.erase(remove_if(infix.begin(), infix.end(), ' '), infix.end());
+	infix.erase(remove_if(infix.begin(), infix.end(), ::isspace), infix.end());	
+	cout << infix << endl;
 	Lexema** arr;
 	int _size = infix.size();
 	int _sign = 1;
@@ -358,16 +360,18 @@ double TPostfix::Calculate()
 			cout << postfix[i]->GetOperation() << endl;
 			if (!vars.empty())
 			{
+				bool isequal = false;
 				for (int j = 0; j < vars.size(); j++)
 				{
 					cout << "size:" << vars.size() << " indx : " << j << endl;
 					if (vars[j] == postfix[i]->GetOperation())
 					{
-						//cout << i << " : " << postfix[i]->GetOperation() << endl;
-						break;
+						isequal = true;
 					}
+				}
+				if (!isequal)
+				{
 					vars.push(postfix[i]->GetOperation());
-
 				}
 			}
 			else
@@ -390,7 +394,7 @@ double TPostfix::Calculate()
 			cout << "Enter value of variable " << vars[j]<<": ";
 			cin >> value;
 			cout << endl;
-			vbs.push( value);
+			vbs.push(value);
 			cout << vars[j] <<"="<<vbs[j] << endl;
 		}
 	}

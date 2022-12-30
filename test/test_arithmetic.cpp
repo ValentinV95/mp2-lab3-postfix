@@ -39,7 +39,7 @@ TEST(constant, gettype)
 TEST(variable, create_variable)
 {
 	_Variable vb('a',1);
-	EXPECT_EQ(vb._GetOperation(), 'a');
+	EXPECT_EQ(vb.GetOperation(), 'a');
 }
 
 TEST(variable, get_type)
