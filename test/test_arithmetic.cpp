@@ -5,7 +5,7 @@
 TEST(arithmetic, one_number)
 {
 	EXPECT_EQ(1, TPostfix("1").calculate());
-	EXPECT_EQ(2, TPostfix("2").calculate());
+	EXPECT_EQ(2.3, TPostfix("2.3").calculate());
 }
 
 TEST(arithmetic, unar_sub)
@@ -77,13 +77,14 @@ TEST(arithmetic, multyple_variables)
 
 TEST(arithmetic, stupid_infix_form)
 {
-	;
 	ASSERT_NO_THROW(TPostfix("1").calculate());
 	ASSERT_ANY_THROW(TPostfix("-").calculate());
 	ASSERT_ANY_THROW(TPostfix("1-").calculate());
 	ASSERT_ANY_THROW(TPostfix("1-()").calculate());
 	ASSERT_ANY_THROW(TPostfix("1()").calculate());
 	ASSERT_ANY_THROW(TPostfix("1(2)").calculate());
+	ASSERT_ANY_THROW(TPostfix("(1)2").calculate());
 	ASSERT_ANY_THROW(TPostfix("()").calculate());
+	ASSERT_ANY_THROW(TPostfix("1--2").calculate());
 }
 	

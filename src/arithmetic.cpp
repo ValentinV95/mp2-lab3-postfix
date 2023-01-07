@@ -130,7 +130,7 @@ void TPostfix::parse() {
 	TStack<Operation*> stack;
 	for (const auto& c : m_infix)
 	{
-		if (c >= '0' && c <= '9')
+		if (c >= '0' && c <= '9' || c == '.')
 		{
 			value += c;
 		}

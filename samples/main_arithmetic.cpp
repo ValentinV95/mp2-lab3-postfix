@@ -20,23 +20,27 @@ int main()
 	TPostfix data(equation);
 
 
-	cout << "Input variables values:" << endl;
-	for (const auto& variable : data.get_variable_names())
+	const auto variables = data.get_variable_names();
+	if (!variables.empty())
 	{
-		cout << variable << ": ";
-		double value;
-		cin >> value;
-		data.set_variable(variable, value);
+		cout << "Input variables values:" << endl;
+		for (const auto& variable : variables)
+		{
+			cout << variable << ": ";
+			double value;
+			cin >> value;
+			data.set_variable(variable, value);
+		}
 	}
 
 	try
 	{
+		cout << "answer: " << data.calculate() << endl;
 		cout << "Postfix form: " << data.show_postfix() << endl;
-		cout << "answer: " << data.calculate();
 	}
 	catch (const exception& e)
 	{
-		cout << "exception:" << e.what() << endl;
+		cout << "Invalid expression:\n" << e.what() << endl;
 	}
 	
 
